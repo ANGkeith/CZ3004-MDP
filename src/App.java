@@ -1,7 +1,5 @@
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -10,8 +8,8 @@ import views.*;
 
 public class App extends JFrame {
     private JPanel contentPane;
-    private ObstaclePanel obstaclePane;
-    private LiveArenaPanel liveArenaPane;
+    private WestPanel westPanel;
+    private EastPanel eastPanel;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -31,9 +29,9 @@ public class App extends JFrame {
         setResizable(true);
         setTitle("MDP Simulator");
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(3);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
-        setSize(1200, 600);
+        setSize(1200, 650);
 
         setLocationRelativeTo(null);
     }
@@ -45,15 +43,18 @@ public class App extends JFrame {
     private void initComponents() {
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(0, 0));
-        contentPane.setBackground(Color.DARK_GRAY);
         setContentPane(contentPane);
 
-        obstaclePane = new ObstaclePanel();
-        obstaclePane.setVisible(true);
-        contentPane.add(obstaclePane, "East");
 
-        liveArenaPane = new LiveArenaPanel();
-        liveArenaPane.setVisible(true);
-        contentPane.add(liveArenaPane, "West");
+        westPanel = new WestPanel();
+        westPanel.setBackground(null);
+        westPanel.setVisible(true);
+        contentPane.add(westPanel, "West");
+
+        eastPanel = new EastPanel();
+        eastPanel.setBackground(null);
+        eastPanel.setVisible(true);
+        contentPane.add(eastPanel, "East");
+
     }
 }

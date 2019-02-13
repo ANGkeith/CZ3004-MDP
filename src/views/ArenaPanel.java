@@ -31,14 +31,12 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
 
     public ArenaPanel(int curRobotRow, int curRobotCol, Orientation orientation) {
         mockArena = new Arena();
-        /*
         try {
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             mockArena.binStringToArena(fileReader.read());
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        */
         liveArena = new Arena();
         myRobot = new MyRobot(curRobotRow, curRobotCol, orientation, mockArena);
         setFocusable(true);
@@ -47,91 +45,79 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         t.start();
     }
 
-    public void paintComponent(Graphics g)
-    {
-        for (int row = 0; row < 20; row++) {
-            for (int col = 0; col < 15; col++) {
-                fillGrid(g, row, col);
-                drawGridBorder(g, row, col);
-            }
-        }
+    public void paintComponent(Graphics g) {
+        // the order of the elements being painted matters
+        fillGrids(g);
+        displaySensorRange(g);
+
+        drawGridBorder(g);
         drawArenaDivider(g);
         displayRobot(g, myRobot.getCurRow(), myRobot.getCurCol());
     }
 
+    private void fillGrids(Graphics g) {
+        for (int row = 0; row < ARENA_HEIGHT; row++) {
+            for (int col = 0; col < ARENA_WIDTH; col++) {
+                grid = liveArena.getGrid(row, col);
 
-    private void drawGridBorder(Graphics g, int row, int col)
-    {
-        g.setColor(ARENA_GRID_LINE_COLOR);
-        ((Graphics2D)g).setStroke(new java.awt.BasicStroke(2.0F));
-        g.drawRect(col * 25, row * 25, 25, 25);
+                if (Arena.isStartZone(row, col)) {
+                    g.setColor(Color.GREEN);
+                } else if (Arena.isGoalZone(row, col)) {
+                    g.setColor(Color.BLUE);
+                } else if (!grid.hasBeenExplored()) {
+                    g.setColor(Color.BLACK);
+                } else if (grid.hasObstacle()) {
+                    g.setColor(Color.RED);
+                } else {
+                    g.setColor(Color.white);
+                }
+                g.fillRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+            }
+        }
     }
 
+    private void displaySensorRange(Graphics g) {
+        Sensor[][] allSensor = myRobot.getAllSensor();
+        Graphics2D g2d = (Graphics2D)g;
 
+        g2d.setColor(SENSOR_RANGE_COLOR);
+        for (Sensor[] groupSensor: allSensor) {
+            for (Sensor sensor: groupSensor) {
+                g2d.fillRect(
+                        sensor.getSensorCol() * GRID_SIZE,
+                        sensor.getSensorRow() * GRID_SIZE,
+                        GRID_SIZE,
+                        GRID_SIZE);
+            }
+        }
+    }
 
-    private void drawArenaDivider(Graphics g)
-    {
+    private void drawGridBorder(Graphics g){
+        for (int row = 0; row < ARENA_HEIGHT; row++) {
+            for (int col = 0; col < ARENA_WIDTH; col++) {
+                g.setColor(ARENA_GRID_LINE_COLOR);
+                ((Graphics2D)g).setStroke(new java.awt.BasicStroke(2.0F));
+                g.drawRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+            }
+        }
+    }
+
+    private void drawArenaDivider(Graphics g) {
         g.setColor(ARENA_DIVIDER_LINE_COLOR);
-        g.fillRect(0, 248, 375, 4);
+        g.fillRect(0, (ARENA_HEIGHT/2 - 1 ) * GRID_SIZE + GRID_SIZE - 2, ARENA_WIDTH * GRID_SIZE, ARENA_DIVIDER_LINE_THICKNESS);
     }
 
-
-
-    private void displayRobot(Graphics g, int row, int col)
-    {
+    private void displayRobot(Graphics g, int row, int col) {
         g.setColor(Color.black);
-
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
-
-
-        Ellipse2D robotImg = new Ellipse2D.Double((col - 1) * 25, (row - 1) * 25, 75.0D, 75.0D);
-
-
-
+        Ellipse2D robotImg = new Ellipse2D.Double((col - 1) * GRID_SIZE, (row - 1) * GRID_SIZE, 75.0D, 75.0D);
         g2.fill(robotImg);
-
         paintOrientationMarker(g2, myRobot);
 
-        updateLiveArenaGrids(myRobot.getFrontSensor());
-        updateLiveArenaGrids(myRobot.getRightSensor());
-        updateLiveArenaGrids(myRobot.getLeftSensor());
-    }
-
-    private void fillGrid(Graphics g, int row, int col)
-    {
-        grid = liveArena.getGrid(row, col);
-
-        if (isStartZone(row, col)) {
-            g.setColor(Color.GREEN);
-        } else if (isGoalZone(row, col)) {
-            g.setColor(Color.BLUE);
-        }
-        else if (!grid.hasBeenExplored()) {
-            g.setColor(Color.BLACK);
-        }
-        else if (grid.hasObstacle()) {
-            g.setColor(Color.RED);
-        } else {
-            g.setColor(Color.white);
-        }
-
-
-        g.fillRect(col * 25, row * 25, 25, 25);
-
-
-
-
-
-
-        Sensor[] frontSensors = myRobot.getFrontSensor();
-        Sensor[] leftSensor = myRobot.getLeftSensor();
-        Sensor[] rightSensor = myRobot.getRightSensor();
-
-        Graphics2D g2d = (Graphics2D)g;
-        paintSensor(g2d, frontSensors);
-        paintSensor(g2d, leftSensor);
-        paintSensor(g2d, rightSensor);
+        getRobotSensorReading(myRobot.getFrontSensor());
+        getRobotSensorReading(myRobot.getRightSensor());
+        getRobotSensorReading(myRobot.getLeftSensor());
     }
 
     private void paintOrientationMarker(Graphics2D g2, MyRobot myRobot) {
@@ -156,55 +142,27 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         g2.fill(orientationMarker);
     }
 
-    private void paintSensor(Graphics2D g2d, Sensor[] sensors) {
-        g2d.setColor(new Color(212, 255, 46, 1));
-        for (int i = 0; i < sensors.length; i++) {
-            g2d.fillRect(
-                    sensors[i].getSensorCol() * GRID_SIZE,
-                    sensors[i].getSensorRow() * GRID_SIZE,
-                    25,
-                    25);
-        }
-    }
-
-
     public void actionPerformed(ActionEvent e) {
         repaint();
-    }
-
-    private boolean isGoalZone(int row, int col) {
-        return (row < 3) && (col > 11);
-    }
-
-    private boolean isStartZone(int row, int col) {
-        return (row > 16) && (col < 3);
-    }
-
-    public void keyTyped(KeyEvent e) {
-
     }
 
     public void keyReleased(KeyEvent e) {
         curRobotCol = myRobot.getCurCol();
         curRobotRow = myRobot.getCurRow();
         curOrientation = myRobot.getCurOrientation();
-        if (e.getKeyCode() == 38) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
             myRobot.move(My_Robot_Instruction.FORWARD);
-        } else if (e.getKeyCode() == 39) {
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             myRobot.move(My_Robot_Instruction.TURN_RIGHT);
-        } else if (e.getKeyCode() == 37) {
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             myRobot.move(My_Robot_Instruction.TURN_LEFT);
         }
-        updateLiveArenaGrids(myRobot.getFrontSensor());
-        updateLiveArenaGrids(myRobot.getRightSensor());
-        updateLiveArenaGrids(myRobot.getLeftSensor());
+        getRobotSensorReading(myRobot.getFrontSensor());
+        getRobotSensorReading(myRobot.getRightSensor());
+        getRobotSensorReading(myRobot.getLeftSensor());
     }
 
-    public void keyPressed(KeyEvent e) {
-
-    }
-
-    private void updateLiveArenaGrids(Sensor[] sensors) {
+    private void getRobotSensorReading(Sensor[] sensors) {
         for (int i = 0; i < sensors.length; i++) {
             if (Arena.isValidRowCol(sensors[i].getSensorRow(), sensors[i].getSensorCol())) {
                 curSensedGrid = liveArena.getGrid(sensors[i].getSensorRow(), sensors[i].getSensorCol());
@@ -213,4 +171,9 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
             }
         }
     }
+
+    public void keyPressed(KeyEvent e) { }
+
+    public void keyTyped(KeyEvent e) { }
+
 }

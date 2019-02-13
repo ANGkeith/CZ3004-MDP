@@ -12,6 +12,7 @@ public class MyRobot
     private Sensor[] frontSensor;
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
+    private Sensor[][] allSensor = new Sensor[3][15];
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena mockArena)
     {
@@ -169,5 +170,12 @@ public class MyRobot
 
     public Sensor[] getLeftSensor() {
         return leftSensor;
+    }
+
+    public Sensor[][] getAllSensor() {
+        allSensor[0] = getFrontSensor();
+        allSensor[1] = getRightSensor();
+        allSensor[2] = getLeftSensor();
+        return allSensor;
     }
 }
