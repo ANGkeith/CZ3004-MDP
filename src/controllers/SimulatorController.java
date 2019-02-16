@@ -1,9 +1,9 @@
 package controllers;
 
-import models.MyRobot;
 import static models.Constants.*;
+
+import models.MyRobot;
 import utils.FileReaderWriter;
-import views.ArenaPanel;
 import views.CenterPanel;
 import views.EastPanel;
 import views.WestPanel;
@@ -23,10 +23,10 @@ public class SimulatorController {
 
     }
 
-    public SimulatorController(CenterPanel centerPanel){
+    public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
         centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
-        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel));
+        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot));
         centerPanel.addRestartBtnListener(e -> restart(centerPanel));
 
     }
@@ -39,7 +39,6 @@ public class SimulatorController {
 
 
 
-    ///////
 
     private void enableConfigurations(CenterPanel centerPanel) {
         for (int i = 0; i < centerPanel.getLbls().length; i++) {
@@ -53,7 +52,7 @@ public class SimulatorController {
 
     private void disableConfigurations(CenterPanel centerPanel) {
         for (int i = 0; i < centerPanel.getLbls().length; i++) {
-            centerPanel.getFields()[i].setEnabled(true);
+            centerPanel.getFields()[i].setEnabled(false);
         }
         centerPanel.getOkBtn().setEnabled(false);
         centerPanel.getCancelBtn().setEnabled(false);
@@ -61,7 +60,14 @@ public class SimulatorController {
         centerPanel.getOrientationSelection().setEnabled(false);
     }
 
-    private void saveConfigurations(CenterPanel centerPanel) {
+    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
+        String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
+        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10));
+        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10));
+
+        Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
+        myRobot.setCurOrientation(selectedOrientation);
+
         disableConfigurations(centerPanel);
     }
 
@@ -87,10 +93,28 @@ public class SimulatorController {
         }
     }
 
+
+
+    // utils
+
+    private String[] parseInputToRowColArr(String s) {
+        return s.split(",\\s*");
+    }
+
+    public Orientation orientationStringToEnum(String s) {
+        if (s == "North") {
+            return Orientation.N;
+        } else if (s == "East") {
+            return Orientation.E;
+        } else if (s == "South") {
+            return Orientation.S;
+        }
+        return Orientation.W;
+    }
+
     private void untoggleObstacle(JButton arenaGrids) {
         if (arenaGrids.getBackground() == OBSTACLE_COLOR) {
             arenaGrids.setBackground(MAP_COLOR);
         }
     }
-
 }

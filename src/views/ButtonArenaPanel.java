@@ -6,7 +6,6 @@ import models.Arena;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 import static models.Constants.*;
 

@@ -1,5 +1,6 @@
 package views;
 
+import models.MyRobot;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ public class CenterPanel extends JPanel {
     private JPanel configPanel;
 
 
-    public CenterPanel() {
+    public CenterPanel(MyRobot myRobot) {
         mainPanel = new JPanel();
         mainPanel.setBackground(null);
         mainPanel.setPreferredSize(new Dimension(300, 650));
@@ -54,14 +55,14 @@ public class CenterPanel extends JPanel {
         lbls[3] = new JLabel("Enter way point:");
 
         fields = new JTextField[4];
-        fields[0] = new JTextField();
+        fields[0] = new JTextField(myRobot.getCurRow() + ", " + myRobot.getCurCol());
         fields[1] = new JTextField();
         fields[2] = new JTextField();
         fields[3] = new JTextField();
 
         orientationLbl = new JLabel("Starting orientation:");
-
         orientationSelection = new JComboBox<>(orientationList);
+        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
 
         configPanel.add(orientationLbl);
         orientationSelection.setEnabled(false);
@@ -97,6 +98,19 @@ public class CenterPanel extends JPanel {
     }
 
 
+
+    // utils
+    public String orientationEnumToString(Orientation o) {
+        if (o == Orientation.N) {
+            return "North";
+        } else if (o == Orientation.E) {
+            return "East";
+        } else if (o == Orientation.S) {
+            return "South";
+        }
+        return "West";
+    }
+
     // Listener
     public void addOkBtnListener(ActionListener a) {
         okBtn.addActionListener(a);
@@ -115,6 +129,7 @@ public class CenterPanel extends JPanel {
     }
 
 
+    // getter & setters
     public JComboBox<String> getOrientationSelection() {
         return orientationSelection;
     }

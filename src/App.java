@@ -76,7 +76,7 @@ public class App extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        centerPanel = new CenterPanel();
+        centerPanel = new CenterPanel(myRobot);
         centerPanel.setBackground(null);
         centerPanel.setVisible(true);
         contentPane.add(centerPanel, BorderLayout.CENTER);
@@ -93,7 +93,7 @@ public class App extends JFrame {
 
         // Controllers
         westPanelController = new SimulatorController(westPanel);
-        centerPanelController = new SimulatorController(centerPanel);
+        centerPanelController = new SimulatorController(centerPanel, myRobot);
         eastPanelController = new SimulatorController(eastPanel);
 
     }
