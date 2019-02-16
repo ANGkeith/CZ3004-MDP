@@ -8,7 +8,6 @@ import utils.FileReaderWriter;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import static models.Constants.*;
@@ -38,6 +37,11 @@ public class ButtonArenaPanel extends JPanel {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
                 arenaGrids[r][c] = new JButton();
+                arenaGrids[r][c].setToolTipText((r+1) +", " + (c+1));
+
+                // Show tool tips immediately
+                ToolTipManager.sharedInstance().setInitialDelay(0);
+
                 createArenaGridLine(arenaGrids, r, c);
                 if (Arena.isGoalZone(r, c)) {
                     createGoalZone(arenaGrids, r, c);
