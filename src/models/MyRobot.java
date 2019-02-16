@@ -2,8 +2,7 @@ package models;
 
 import static models.Constants.*;
 
-public class MyRobot
-{
+public class MyRobot {
     private int curRow;
 
     private int curCol;
@@ -109,7 +108,7 @@ public class MyRobot
     }
 
     public boolean hasObstacleRightOnTheRight() {
-        return frontSensor[0].getReading() || frontSensor[1].getReading();
+        return rightSensor[0].getReading() || rightSensor[2].getReading();
     }
 
     public int getCurCol() {

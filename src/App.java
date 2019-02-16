@@ -69,7 +69,7 @@ public class App extends JFrame {
             ioException.printStackTrace();
         }
         myRobot = new MyRobot(18, 1, Orientation.N, referenceArena);
-        arena = new Arena();
+        arena = new Arena(myRobot);
 
         // Views
         contentPane = new JPanel();
@@ -93,7 +93,7 @@ public class App extends JFrame {
 
         // Controllers
         westPanelController = new SimulatorController(westPanel);
-        centerPanelController = new SimulatorController(centerPanel, myRobot);
+        centerPanelController = new SimulatorController(centerPanel, myRobot, arena);
         eastPanelController = new SimulatorController(eastPanel);
 
     }

@@ -20,7 +20,7 @@ public class EastPanel extends JPanel{
 
     private JPanel buttonPanel;
 
-    private JButton loadButton;
+    private JButton saveButton;
     private JButton clearButton;
 
     public EastPanel(Arena referenceArena) {
@@ -43,8 +43,8 @@ public class EastPanel extends JPanel{
         buttonPanel.setBackground(null);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        loadButton = new JButton("Load Map");
-        buttonPanel.add(loadButton);
+        saveButton = new JButton("Save Map");
+        buttonPanel.add(saveButton);
 
         buttonPanel.add(javax.swing.Box.createRigidArea(new Dimension(10, 0)));
 
@@ -55,8 +55,8 @@ public class EastPanel extends JPanel{
         add(mainPanel);
     }
 
-    public void addLoadBtnListener(ActionListener a) {
-        loadButton.addActionListener(a);
+    public void addSaveBtnListener(ActionListener a) {
+        saveButton.addActionListener(a);
     }
 
     public void addClearBtnListener(ActionListener a) {

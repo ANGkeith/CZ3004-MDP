@@ -36,9 +36,6 @@ public class Constants {
     public static final int APP_HEIGHT = 650;
 
 
-
-
-
     public enum My_Robot_Instruction {
         FORWARD,
         TURN_LEFT,

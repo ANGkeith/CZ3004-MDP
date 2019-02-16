@@ -43,8 +43,6 @@ public class CenterPanel extends JPanel {
         fastestPathBtn = new JButton("Start Fastest Path");
         restartBtn = new JButton("Restart");
 
-
-
         configPanel = new JPanel(new MigLayout("fillx"));
         configPanel.setBorder(new TitledBorder("Robot's Configuration"));
 
@@ -55,7 +53,7 @@ public class CenterPanel extends JPanel {
         lbls[3] = new JLabel("Enter way point:");
 
         fields = new JTextField[4];
-        fields[0] = new JTextField(myRobot.getCurRow() + ", " + myRobot.getCurCol());
+        fields[0] = new JTextField((myRobot.getCurRow()+1) + ", " + (myRobot.getCurCol()+1));
         fields[1] = new JTextField();
         fields[2] = new JTextField();
         fields[3] = new JTextField();
@@ -87,12 +85,12 @@ public class CenterPanel extends JPanel {
 
         mainPanel.add(title, "alignx center, spanx, wrap");
 
+        configPanel.add(buttonPanel, "gapy 10 0, spanx, pushx, alignx right");
+        mainPanel.add(configPanel, "pushx, growx, gapy 10 0, wrap");
+
         mainPanel.add(explorationBtn, "gapy 50 0, wrap, alignx center");
         mainPanel.add(fastestPathBtn, "gapy 10 0, wrap, alignx center");
         mainPanel.add(restartBtn, "gapy 10 0, wrap, alignx center");
-
-        configPanel.add(buttonPanel, "gapy 10 0, spanx, pushx, alignx right");
-        mainPanel.add(configPanel, "pushx, growx, gapy 50 0, wrap");
 
         add(mainPanel);
     }
@@ -112,6 +110,12 @@ public class CenterPanel extends JPanel {
     }
 
     // Listener
+    public void addExplorationBtnListener(ActionListener a) {
+        explorationBtn.addActionListener(a);
+    }
+    public void addFastestPathBtnListener(ActionListener a) {
+        fastestPathBtn.addActionListener(a);
+    }
     public void addOkBtnListener(ActionListener a) {
         okBtn.addActionListener(a);
     }
@@ -125,7 +129,7 @@ public class CenterPanel extends JPanel {
     }
 
     public void addRestartBtnListener(ActionListener a) {
-        modifyBtn.addActionListener(a);
+        restartBtn.addActionListener(a);
     }
 
 

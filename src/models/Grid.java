@@ -13,7 +13,9 @@ public class Grid {
         hasObstacle = (!hasObstacle);
     }
 
-    public boolean hasObstacle() { return hasObstacle; }
+    public boolean hasObstacle() {
+        return hasObstacle;
+    }
 
     public void setHasObstacle(boolean hasObstacle)
     {

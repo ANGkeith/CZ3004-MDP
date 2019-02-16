@@ -2,6 +2,7 @@ package controllers;
 
 import static models.Constants.*;
 
+import models.Arena;
 import models.MyRobot;
 import utils.FileReaderWriter;
 import views.CenterPanel;
@@ -16,29 +17,24 @@ import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
 public class SimulatorController {
 
-
-
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
-
     }
 
-    public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
+    public SimulatorController(CenterPanel centerPanel, MyRobot myRobot, Arena arena){
         centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
-        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot));
-        centerPanel.addRestartBtnListener(e -> restart(centerPanel));
+        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
 
+        // TODO centerPanel.addExplorationBtnListener();
+        // TODO centerPanel.addFastestPathBtnListener();
+        centerPanel.addRestartBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
     }
 
     public SimulatorController(EastPanel eastPanel) {
-        eastPanel.addLoadBtnListener(e -> loadMap(eastPanel));
+        eastPanel.addSaveBtnListener(e -> saveMap(eastPanel));
         eastPanel.addClearBtnListener(e -> clearObstacle(eastPanel));
     }
-
-
-
-
 
     private void enableConfigurations(CenterPanel centerPanel) {
         for (int i = 0; i < centerPanel.getLbls().length; i++) {
@@ -60,22 +56,24 @@ public class SimulatorController {
         centerPanel.getOrientationSelection().setEnabled(false);
     }
 
-    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
+    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
-        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10));
-        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10));
+
+        // Have to plus 1 because the row and col starts from 0;
+        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
+        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
 
         Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
         myRobot.setCurOrientation(selectedOrientation);
 
         disableConfigurations(centerPanel);
+
+        arena.reinitializeArena();
+        arena.setHasExploredBasedOnOccupiedGrid(myRobot);
     }
 
-    private void restart(CenterPanel centerPanel) {
 
-    }
-
-    private void loadMap(EastPanel eastPanel) {
+    private void saveMap(EastPanel eastPanel) {
         try {
             FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             fileWriter.write(eastPanel.getReferenceArena().obstacleToString());
@@ -88,7 +86,7 @@ public class SimulatorController {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
                 untoggleObstacle(eastPanel.getButtonArenaPanel().arenaGrids[r][c]);
-                eastPanel.getReferenceArena().resetObstacle();
+                eastPanel.getReferenceArena().clearObstacle();
             }
         }
     }
