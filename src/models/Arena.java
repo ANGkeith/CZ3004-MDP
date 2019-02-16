@@ -11,13 +11,8 @@ public class Arena {
         for (int r = 0; r < ARENA_HEIGHT; ++r) {
             for (int c = 0; c < ARENA_WIDTH; ++c) {
                 this.grids[r][c] = new Grid();
-                this.grids[r][c].setIsVirtualWall(true);
             }
         }
-    }
-
-    private boolean isVirtualWall(int row, int col) {
-        return row == 0 || row == 19 || col == 0 || col == 14;
     }
 
     public Grid getGrid(int row, int col) {
