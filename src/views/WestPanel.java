@@ -7,9 +7,9 @@ import static models.Constants.*;
 
 public class WestPanel extends JPanel{
 
-    JPanel mainPanel;
-    ArenaPanel arena;
-    LabelDecoratorPanel labelDecoratorPanel;
+    private JPanel mainPanel;
+    private ArenaPanel arena;
+    private LabelDecoratorPanel labelDecoratorPanel;
 
     public WestPanel() {
         mainPanel = new JPanel();
@@ -21,22 +21,14 @@ public class WestPanel extends JPanel{
         arena.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
         arena.setOpaque(false);
 
-        ButtonArenaPanel a = new ButtonArenaPanel();
-        a.setBackground(null);
-        a.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
-
         labelDecoratorPanel = new LabelDecoratorPanel(arena);
         labelDecoratorPanel.setBackground(null);
         mainPanel.add(labelDecoratorPanel);
 
-
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.MAGENTA);
-        //buttonPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, 0));
 
         JButton testMovement = new JButton("Test movement");
-        //TODO add in listener
         testMovement.addActionListener( e -> enableArrowKeyMovement());
         buttonPanel.add(testMovement);
         mainPanel.add(buttonPanel);

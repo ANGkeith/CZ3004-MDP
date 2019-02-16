@@ -24,6 +24,15 @@ public class Constants {
     public static final Color SECONDARY_COLOR = new Color(0,30,30);
 
 
+    public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
+
+
+
+    // Size
+    public static final int APP_WIDTH = 1200;
+    public static final int APP_HEIGHT = 650;
+
+
 
 
 

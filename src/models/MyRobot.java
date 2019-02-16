@@ -66,18 +66,6 @@ public class MyRobot
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     private void initSensor()
     {
         /*

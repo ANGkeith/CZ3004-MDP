@@ -52,7 +52,6 @@ public class EastPanel extends JPanel{
     }
 
     private void loadMap() {
-        System.out.println(arena.userDefinedArena.obstacleToString());
         try {
             FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             fileWriter.write(arena.userDefinedArena.obstacleToString());

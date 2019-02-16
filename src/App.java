@@ -1,15 +1,15 @@
 
 import java.awt.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import views.*;
-
+import static models.Constants.*;
 
 public class App extends JFrame {
     private JPanel contentPane;
-    private WestPanel westPanel;
+    private CenterPanel centerPanel;
     private EastPanel eastPanel;
+    private WestPanel westPanel;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -26,14 +26,14 @@ public class App extends JFrame {
     }
 
     public App() {
-        setResizable(true);
+        setResizable(false);
         setTitle("MDP Simulator");
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
-        setSize(1200, 650);
-
+        setSize(APP_WIDTH, APP_HEIGHT);
+        pack();
         setLocationRelativeTo(null);
+
     }
 
 
@@ -45,16 +45,20 @@ public class App extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
+        centerPanel = new CenterPanel();
+        centerPanel.setBackground(null);
+        centerPanel.setVisible(true);
+        contentPane.add(centerPanel, BorderLayout.CENTER);
 
         westPanel = new WestPanel();
         westPanel.setBackground(null);
         westPanel.setVisible(true);
-        contentPane.add(westPanel, "West");
+        contentPane.add(westPanel, BorderLayout.WEST);
 
         eastPanel = new EastPanel();
         eastPanel.setBackground(null);
         eastPanel.setVisible(true);
-        contentPane.add(eastPanel, "East");
+        contentPane.add(eastPanel, BorderLayout.EAST);
 
     }
 }
