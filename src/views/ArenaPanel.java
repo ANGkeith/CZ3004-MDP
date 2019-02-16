@@ -60,15 +60,15 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
                 grid = liveArena.getGrid(row, col);
 
                 if (Arena.isStartZone(row, col)) {
-                    g.setColor(Color.GREEN);
+                    g.setColor(START_ZONE_COLOR);
                 } else if (Arena.isGoalZone(row, col)) {
-                    g.setColor(Color.BLUE);
+                    g.setColor(GOAL_ZONE_COLOR);
                 } else if (!grid.hasBeenExplored()) {
-                    g.setColor(Color.BLACK);
+                    g.setColor(UNEXPLORED_COLOR);
                 } else if (grid.hasObstacle()) {
-                    g.setColor(Color.RED);
+                    g.setColor(OBSTACLE_COLOR);
                 } else {
-                    g.setColor(Color.white);
+                    g.setColor(EXPLORED_COLOR);
                 }
                 g.fillRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
             }
@@ -107,7 +107,7 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
     }
 
     private void displayRobot(Graphics g, int row, int col) {
-        g.setColor(Color.black);
+        g.setColor(ROBOT_COLOR);
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         Ellipse2D robotImg = new Ellipse2D.Double((col - 1) * GRID_SIZE, (row - 1) * GRID_SIZE, 75.0D, 75.0D);

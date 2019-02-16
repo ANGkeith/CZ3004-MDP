@@ -9,8 +9,11 @@ public class Constants {
     public static final int GRID_SIZE = 25;
     public static final Color ARENA_LABEL_COLOR = Color.darkGray;
     // public static final Color ARENA_LABEL_COLOR = Color.WHITE;
-    public static final Color OBSTACLE_COLOR = Color.black;
+    public static final Color EXPLORED_COLOR = Color.white;
+    public static final Color UNEXPLORED_COLOR = Color.black;
+    public static final Color OBSTACLE_COLOR = Color.RED;
     public static final Color MAP_COLOR = Color.lightGray;
+    public static final Color ROBOT_COLOR = Color.black;
     public static final Color ARENA_DIVIDER_LINE_COLOR = Color.BLUE;
     public static final int ARENA_DIVIDER_LINE_THICKNESS = 4;
     public static final Color ARENA_GRID_LINE_COLOR = Color.darkGray;

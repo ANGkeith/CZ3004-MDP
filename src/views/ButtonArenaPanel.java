@@ -22,7 +22,7 @@ public class ButtonArenaPanel extends JPanel {
     public ButtonArenaPanel(){
         arena = new JPanel(new GridLayout(0, ARENA_WIDTH));
 
-        arena.setBackground(Color.green);
+        arena.setBackground(null);
         arena.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
         arenaGrids = new JButton[ARENA_HEIGHT][ARENA_WIDTH];
         userDefinedArena = new Arena();
