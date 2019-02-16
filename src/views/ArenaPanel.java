@@ -17,8 +17,7 @@ import models.Grid;
 import models.MyRobot;
 import models.Sensor;
 
-public class ArenaPanel extends JPanel implements ActionListener, java.awt.event.KeyListener
-{
+public class ArenaPanel extends JPanel implements ActionListener, java.awt.event.KeyListener {
     Timer t = new Timer(500, this);
     int curRobotCol;
     int curRobotRow;
@@ -92,11 +91,11 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         }
     }
 
-    private void drawGridBorder(Graphics g){
+    private void drawGridBorder(Graphics g) {
         for (int row = 0; row < ARENA_HEIGHT; row++) {
             for (int col = 0; col < ARENA_WIDTH; col++) {
                 g.setColor(ARENA_GRID_LINE_COLOR);
-                ((Graphics2D)g).setStroke(new java.awt.BasicStroke(2.0F));
+                ((Graphics2D) g).setStroke(new java.awt.BasicStroke(2.0F));
                 g.drawRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
             }
         }
@@ -115,9 +114,9 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         g2.fill(robotImg);
         paintOrientationMarker(g2, myRobot);
 
-        getRobotSensorReading(myRobot.getFrontSensor());
-        getRobotSensorReading(myRobot.getRightSensor());
-        getRobotSensorReading(myRobot.getLeftSensor());
+        getRobotSensorReadings(myRobot.getFrontSensor());
+        getRobotSensorReadings(myRobot.getRightSensor());
+        getRobotSensorReadings(myRobot.getLeftSensor());
     }
 
     private void paintOrientationMarker(Graphics2D g2, MyRobot myRobot) {
@@ -157,23 +156,25 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             myRobot.move(My_Robot_Instruction.TURN_LEFT);
         }
-        getRobotSensorReading(myRobot.getFrontSensor());
-        getRobotSensorReading(myRobot.getRightSensor());
-        getRobotSensorReading(myRobot.getLeftSensor());
+        getRobotSensorReadings(myRobot.getFrontSensor());
+        getRobotSensorReadings(myRobot.getRightSensor());
+        getRobotSensorReadings(myRobot.getLeftSensor());
     }
 
-    private void getRobotSensorReading(Sensor[] sensors) {
+    private void getRobotSensorReadings(Sensor[] sensors) {
         for (int i = 0; i < sensors.length; i++) {
             if (Arena.isValidRowCol(sensors[i].getSensorRow(), sensors[i].getSensorCol())) {
                 curSensedGrid = liveArena.getGrid(sensors[i].getSensorRow(), sensors[i].getSensorCol());
                 curSensedGrid.setHasBeenExplored(true);
-                curSensedGrid.setHasObstacle(sensors[i].sense());
+                curSensedGrid.setHasObstacle(sensors[i].getReading());
             }
         }
     }
 
-    public void keyPressed(KeyEvent e) { }
+    public void keyPressed(KeyEvent e) {
+    }
 
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {
+    }
 
 }

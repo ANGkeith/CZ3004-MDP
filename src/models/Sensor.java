@@ -50,7 +50,7 @@ public class Sensor
         return sensorPosition;
     }
 
-    public boolean sense() {
+    public boolean getReading() {
         if (Arena.isValidRowCol(getSensorRow(), getSensorCol())) {
             return mockArena.getGrid(getSensorPosition()[0], getSensorPosition()[1]).hasObstacle();
         }

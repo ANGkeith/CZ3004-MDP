@@ -27,7 +27,7 @@ public class MyRobot
         int temp = 0;
         if (myRobotInstruction == My_Robot_Instruction.FORWARD)
         {
-            if (!obstacleDetected()) {
+            if (!hasObstacleRightInFront()) {
                 if (curOrientation == Orientation.N) {
                     temp = curRow - 1;
                     setCurRow(temp);
@@ -72,8 +72,8 @@ public class MyRobot
                          0  1  2
                          3  4  5
          0  1  2  3  4  [ ][ ][ ] 0  1
-         5  6  7  8  9  [ ][ ][ ] 2  3
-         10 11 12 13 14 [ ][ ][ ] 4  5
+                        [ ][ ][ ]
+                        [ ][ ][ ] 2  3
 
         This shows the sensor's representation;
          */
@@ -85,39 +85,31 @@ public class MyRobot
         frontSensor[4] = new Sensor(this, mockArena, -2, 0);
         frontSensor[5] = new Sensor(this, mockArena, -2, 1);
 
-        rightSensor = new Sensor[6];
+        rightSensor = new Sensor[4];
         rightSensor[0] = new Sensor(this, mockArena, -1, 2);
         rightSensor[1] = new Sensor(this, mockArena, -1, 3);
-        rightSensor[2] = new Sensor(this, mockArena, 0, 2);
-        rightSensor[3] = new Sensor(this, mockArena, 0, 3);
-        rightSensor[4] = new Sensor(this, mockArena, 1, 2);
-        rightSensor[5] = new Sensor(this, mockArena, 1, 3);
+        rightSensor[2] = new Sensor(this, mockArena, 1, 2);
+        rightSensor[3] = new Sensor(this, mockArena, 1, 3);
 
-        leftSensor = new Sensor[15];
+        leftSensor = new Sensor[5];
         leftSensor[0] = new Sensor(this, mockArena, -1, -6);
         leftSensor[1] = new Sensor(this, mockArena, -1, -5);
         leftSensor[2] = new Sensor(this, mockArena, -1, -4);
         leftSensor[3] = new Sensor(this, mockArena, -1, -3);
         leftSensor[4] = new Sensor(this, mockArena, -1, -2);
-        leftSensor[5] = new Sensor(this, mockArena, 0, -6);
-        leftSensor[6] = new Sensor(this, mockArena, 0, -5);
-        leftSensor[7] = new Sensor(this, mockArena, 0, -4);
-        leftSensor[8] = new Sensor(this, mockArena, 0, -3);
-        leftSensor[9] = new Sensor(this, mockArena, 0, -2);
-        leftSensor[10] = new Sensor(this, mockArena, 1, -6);
-        leftSensor[11] = new Sensor(this, mockArena, 1, -5);
-        leftSensor[12] = new Sensor(this, mockArena, 1, -4);
-        leftSensor[13] = new Sensor(this, mockArena, 1, -3);
-        leftSensor[14] = new Sensor(this, mockArena, 1, -2);
     }
 
-    private boolean obstacleDetected() {
+    public boolean hasObstacleRightInFront() {
         for (int i = 3; i < 6; i++) {
-            if (frontSensor[i].sense()) {
+            if (frontSensor[i].getReading()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean hasObstacleRightOnTheRight() {
+        return frontSensor[0].getReading() || frontSensor[1].getReading();
     }
 
     public int getCurCol() {

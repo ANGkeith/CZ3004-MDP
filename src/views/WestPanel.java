@@ -16,7 +16,7 @@ public class WestPanel extends JPanel{
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(null);
 
-        arena = new ArenaPanel(18, 1, Orientation.N);
+        arena = new ArenaPanel(18, 1, Orientation.E);
         arena.setBackground(null);
         arena.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
         arena.setOpaque(false);
