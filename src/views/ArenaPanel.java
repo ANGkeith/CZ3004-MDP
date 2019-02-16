@@ -1,14 +1,11 @@
 package views;
 
-import utils.FileReaderWriter;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
-import java.io.IOException;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import models.Arena;
@@ -18,26 +15,21 @@ import models.MyRobot;
 import models.Sensor;
 
 public class ArenaPanel extends JPanel implements ActionListener, java.awt.event.KeyListener {
+
+    private MyRobot myRobot;
+    private Arena arena;
+    private Grid grid;
+    private Grid curSensedGrid;
+
     Timer t = new Timer(500, this);
     int curRobotCol;
     int curRobotRow;
     Orientation curOrientation;
-    private Grid grid;
-    private MyRobot myRobot;
-    private Arena liveArena;
-    private Arena mockArena;
-    private Grid curSensedGrid;
 
-    public ArenaPanel(int curRobotRow, int curRobotCol, Orientation orientation) {
-        mockArena = new Arena();
-        try {
-            FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
-            mockArena.binStringToArena(fileReader.read());
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-        liveArena = new Arena();
-        myRobot = new MyRobot(curRobotRow, curRobotCol, orientation, mockArena);
+    public ArenaPanel(MyRobot myRobot, Arena arena) {
+        this.arena = arena;
+        this.myRobot = myRobot;
+
         setFocusable(true);
         requestFocus();
         addKeyListener(this);
@@ -57,7 +49,7 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
     private void fillGrids(Graphics g) {
         for (int row = 0; row < ARENA_HEIGHT; row++) {
             for (int col = 0; col < ARENA_WIDTH; col++) {
-                grid = liveArena.getGrid(row, col);
+                grid = arena.getGrid(row, col);
 
                 if (Arena.isStartZone(row, col)) {
                     g.setColor(START_ZONE_COLOR);
@@ -164,7 +156,7 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
     private void getRobotSensorReadings(Sensor[] sensors) {
         for (int i = 0; i < sensors.length; i++) {
             if (Arena.isValidRowCol(sensors[i].getSensorRow(), sensors[i].getSensorCol())) {
-                curSensedGrid = liveArena.getGrid(sensors[i].getSensorRow(), sensors[i].getSensorCol());
+                curSensedGrid = arena.getGrid(sensors[i].getSensorRow(), sensors[i].getSensorCol());
                 curSensedGrid.setHasBeenExplored(true);
                 curSensedGrid.setHasObstacle(sensors[i].getReading());
             }

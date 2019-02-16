@@ -5,35 +5,46 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
+
 import static models.Constants.*;
 
 public class CenterPanel extends JPanel {
 
 
+    private JLabel orientationLbl;
     private JLabel[] lbls;
     private JTextField[] fields;
-    private JLabel orientationLbl;
+
     private JComboBox <String> orientationSelection;
     private JButton cancelBtn;
     private JButton modifyBtn;
     private JButton okBtn;
+    private JPanel buttonPanel;
+    private JButton explorationBtn;
+    private JButton fastestPathBtn;
+    private JButton restartBtn;
+    private JLabel title;
+    private JPanel mainPanel;
+    private JPanel configPanel;
+
 
     public CenterPanel() {
-        JPanel mainPanel = new JPanel();
+        mainPanel = new JPanel();
         mainPanel.setBackground(null);
         mainPanel.setPreferredSize(new Dimension(300, 650));
         mainPanel.setLayout(new MigLayout("fillx"));
 
-        JLabel title = new JLabel("MDP GROUP 2");
+        title = new JLabel("MDP GROUP 2");
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 30));
 
-        JButton explorationBtn = new JButton("Start Exploration ");
-        JButton fastestPathBtn = new JButton("Start Fastest Path");
-        JButton restartBtn = new JButton("Restart");
+        explorationBtn = new JButton("Start Exploration ");
+        fastestPathBtn = new JButton("Start Fastest Path");
+        restartBtn = new JButton("Restart");
 
 
 
-        JPanel configPanel = new JPanel(new MigLayout("fillx"));
+        configPanel = new JPanel(new MigLayout("fillx"));
         configPanel.setBorder(new TitledBorder("Robot's Configuration"));
 
         lbls = new JLabel[4];
@@ -52,27 +63,23 @@ public class CenterPanel extends JPanel {
 
         orientationSelection = new JComboBox<>(orientationList);
 
+        configPanel.add(orientationLbl);
+        orientationSelection.setEnabled(false);
+        configPanel.add(orientationSelection, "wrap");
+
         for (int i = 0; i < lbls.length; i++) {
             fields[i].setEnabled(false);
-            if (i == 1) {
-                configPanel.add(orientationLbl);
-                orientationSelection.setEnabled(false);
-                configPanel.add(orientationSelection, "wrap");
-            }
             configPanel.add(lbls[i]);
             configPanel.add(fields[i], "wrap, growx");
         }
 
 
-        JPanel buttonPanel = new JPanel(new MigLayout("fillx, inset 0"));
+        buttonPanel = new JPanel(new MigLayout("fillx, inset 0"));
         okBtn = new JButton("Ok");
         okBtn.setEnabled(false);
-        okBtn.addActionListener(e -> saveConfigurations());
         cancelBtn = new JButton("Cancel");
         cancelBtn.setEnabled(false);
-        cancelBtn.addActionListener(e -> disableConfigurations());
         modifyBtn = new JButton("Modify");
-        modifyBtn.addActionListener(e -> enableConfigurations());
         buttonPanel.add(okBtn);
         buttonPanel.add(cancelBtn);
         buttonPanel.add(modifyBtn);
@@ -90,28 +97,45 @@ public class CenterPanel extends JPanel {
     }
 
 
-    private void enableConfigurations() {
-        for (int i = 0; i < lbls.length; i++) {
-            fields[i].setEnabled(true);
-        }
-        okBtn.setEnabled(true);
-        cancelBtn.setEnabled(true);
-        modifyBtn.setEnabled(false);
-        orientationSelection.setEnabled(true);
+    // Listener
+    public void addOkBtnListener(ActionListener a) {
+        okBtn.addActionListener(a);
     }
 
-    private void disableConfigurations() {
-        for (int i = 0; i < lbls.length; i++) {
-            fields[i].setEnabled(false);
-        }
-        okBtn.setEnabled(false);
-        cancelBtn.setEnabled(false);
-        modifyBtn.setEnabled(true);
-        orientationSelection.setEnabled(false);
+    public void addCancelBtnListener(ActionListener a) {
+        cancelBtn.addActionListener(a);
     }
 
-    private void saveConfigurations() {
-        disableConfigurations();
-        // TODO set model
+    public void addModifyBtnListener(ActionListener a) {
+        modifyBtn.addActionListener(a);
+    }
+
+    public void addRestartBtnListener(ActionListener a) {
+        modifyBtn.addActionListener(a);
+    }
+
+
+    public JComboBox<String> getOrientationSelection() {
+        return orientationSelection;
+    }
+
+    public JButton getCancelBtn() {
+        return cancelBtn;
+    }
+
+    public JButton getModifyBtn() {
+        return modifyBtn;
+    }
+
+    public JButton getOkBtn() {
+        return okBtn;
+    }
+
+    public JLabel[] getLbls() {
+        return lbls;
+    }
+
+    public JTextField[] getFields() {
+        return fields;
     }
 }

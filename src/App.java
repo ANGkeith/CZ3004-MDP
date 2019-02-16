@@ -1,15 +1,31 @@
 
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.*;
 
+import controllers.SimulatorController;
+import models.Arena;
+import models.MyRobot;
+import utils.FileReaderWriter;
 import views.*;
 import static models.Constants.*;
 
 public class App extends JFrame {
+    // Views
     private JPanel contentPane;
     private CenterPanel centerPanel;
     private EastPanel eastPanel;
     private WestPanel westPanel;
+
+    // Models
+    private Arena arena;
+    private Arena referenceArena;
+    private MyRobot myRobot;
+
+    //Controller
+    private SimulatorController westPanelController;
+    private SimulatorController centerPanelController;
+    private SimulatorController eastPanelController;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -41,6 +57,21 @@ public class App extends JFrame {
 
 
     private void initComponents() {
+
+
+
+        // Models
+        referenceArena = new Arena();
+        try {
+            FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
+            referenceArena.binStringToArena(fileReader.read());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        myRobot = new MyRobot(18, 1, Orientation.N, referenceArena);
+        arena = new Arena();
+
+        // Views
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
@@ -50,15 +81,20 @@ public class App extends JFrame {
         centerPanel.setVisible(true);
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
-        westPanel = new WestPanel();
+        westPanel = new WestPanel(myRobot, arena);
         westPanel.setBackground(null);
         westPanel.setVisible(true);
         contentPane.add(westPanel, BorderLayout.WEST);
 
-        eastPanel = new EastPanel();
+        eastPanel = new EastPanel(referenceArena);
         eastPanel.setBackground(null);
         eastPanel.setVisible(true);
         contentPane.add(eastPanel, BorderLayout.EAST);
+
+        // Controllers
+        westPanelController = new SimulatorController(westPanel);
+        centerPanelController = new SimulatorController(centerPanel);
+        eastPanelController = new SimulatorController(eastPanel);
 
     }
 }

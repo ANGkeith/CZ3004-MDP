@@ -1,43 +1,53 @@
 package views;
 
+import models.Arena;
+import models.MyRobot;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import static models.Constants.*;
 
 public class WestPanel extends JPanel{
 
     private JPanel mainPanel;
-    private ArenaPanel arena;
+    public ArenaPanel arenaPanel;
     private LabelDecoratorPanel labelDecoratorPanel;
+    private JButton testMovement;
+    private JPanel buttonPanel;
 
-    public WestPanel() {
+    private MyRobot myRobot;
+    private Arena arena;
+
+    public WestPanel(MyRobot myRobot, Arena arena) {
+        this.myRobot = myRobot;
+        this.arena = arena;
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(null);
 
-        arena = new ArenaPanel(18, 1, Orientation.E);
-        arena.setBackground(null);
-        arena.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
-        arena.setOpaque(false);
+        arenaPanel = new ArenaPanel(myRobot, arena);
+        arenaPanel.setBackground(null);
+        arenaPanel.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
+        arenaPanel.setOpaque(false);
 
-        labelDecoratorPanel = new LabelDecoratorPanel(arena);
+        labelDecoratorPanel = new LabelDecoratorPanel(arenaPanel);
         labelDecoratorPanel.setBackground(null);
         mainPanel.add(labelDecoratorPanel);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, 0));
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton testMovement = new JButton("Test movement");
-        testMovement.addActionListener( e -> enableArrowKeyMovement());
+        testMovement = new JButton("Test movement");
         buttonPanel.add(testMovement);
         mainPanel.add(buttonPanel);
 
         add(mainPanel);
     }
 
-    // Listener Logic
-    private void enableArrowKeyMovement() {
-        arena.requestFocus();
+    public void addTestMovementListener(ActionListener a) {
+        testMovement.addActionListener(a);
     }
 }

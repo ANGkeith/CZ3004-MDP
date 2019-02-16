@@ -8,18 +8,18 @@ public class MyRobot
 
     private int curCol;
     private Orientation curOrientation;
-    private Arena mockArena;
+    private Arena referenceArena;
     private Sensor[] frontSensor;
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
     private Sensor[][] allSensor = new Sensor[3][15];
 
-    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena mockArena)
+    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena)
     {
         this.curRow = curRow;
         this.curCol = curCol;
         this.curOrientation = curOrientation;
-        this.mockArena = mockArena;
+        this.referenceArena = referenceArena;
         initSensor();
     }
 
@@ -78,25 +78,25 @@ public class MyRobot
         This shows the sensor's representation;
          */
         frontSensor = new Sensor[6];
-        frontSensor[0] = new Sensor(this, mockArena, -3, -1);
-        frontSensor[1] = new Sensor(this, mockArena, -3, 0);
-        frontSensor[2] = new Sensor(this, mockArena, -3, 1);
-        frontSensor[3] = new Sensor(this, mockArena, -2, -1);
-        frontSensor[4] = new Sensor(this, mockArena, -2, 0);
-        frontSensor[5] = new Sensor(this, mockArena, -2, 1);
+        frontSensor[0] = new Sensor(this, referenceArena, -3, -1);
+        frontSensor[1] = new Sensor(this, referenceArena, -3, 0);
+        frontSensor[2] = new Sensor(this, referenceArena, -3, 1);
+        frontSensor[3] = new Sensor(this, referenceArena, -2, -1);
+        frontSensor[4] = new Sensor(this, referenceArena, -2, 0);
+        frontSensor[5] = new Sensor(this, referenceArena, -2, 1);
 
         rightSensor = new Sensor[4];
-        rightSensor[0] = new Sensor(this, mockArena, -1, 2);
-        rightSensor[1] = new Sensor(this, mockArena, -1, 3);
-        rightSensor[2] = new Sensor(this, mockArena, 1, 2);
-        rightSensor[3] = new Sensor(this, mockArena, 1, 3);
+        rightSensor[0] = new Sensor(this, referenceArena, -1, 2);
+        rightSensor[1] = new Sensor(this, referenceArena, -1, 3);
+        rightSensor[2] = new Sensor(this, referenceArena, 1, 2);
+        rightSensor[3] = new Sensor(this, referenceArena, 1, 3);
 
         leftSensor = new Sensor[5];
-        leftSensor[0] = new Sensor(this, mockArena, -1, -6);
-        leftSensor[1] = new Sensor(this, mockArena, -1, -5);
-        leftSensor[2] = new Sensor(this, mockArena, -1, -4);
-        leftSensor[3] = new Sensor(this, mockArena, -1, -3);
-        leftSensor[4] = new Sensor(this, mockArena, -1, -2);
+        leftSensor[0] = new Sensor(this, referenceArena, -1, -6);
+        leftSensor[1] = new Sensor(this, referenceArena, -1, -5);
+        leftSensor[2] = new Sensor(this, referenceArena, -1, -4);
+        leftSensor[3] = new Sensor(this, referenceArena, -1, -3);
+        leftSensor[4] = new Sensor(this, referenceArena, -1, -2);
     }
 
     public boolean hasObstacleRightInFront() {

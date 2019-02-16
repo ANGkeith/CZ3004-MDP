@@ -2,36 +2,27 @@ package views;
 
 import controllers.ToggleButtonController;
 import models.Arena;
-import models.Grid;
-import utils.FileReaderWriter;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
-import java.io.IOException;
+import java.awt.event.ActionListener;
 
 import static models.Constants.*;
 
 public class ButtonArenaPanel extends JPanel {
-    private JPanel arena;
-    private Grid grid;
+    private JPanel buttonArenaPanel;
     public JButton[][] arenaGrids;
     private ToggleButtonController toggleButtonController;
-    public Arena userDefinedArena;
+    private Arena referenceArena;
 
-    public ButtonArenaPanel(){
-        arena = new JPanel(new GridLayout(0, ARENA_WIDTH));
+    public ButtonArenaPanel(Arena referenceArena){
+        buttonArenaPanel = new JPanel(new GridLayout(0, ARENA_WIDTH));
 
-        arena.setBackground(null);
-        arena.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
+        buttonArenaPanel.setBackground(null);
+        buttonArenaPanel.setPreferredSize(new Dimension(ARENA_WIDTH * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
         arenaGrids = new JButton[ARENA_HEIGHT][ARENA_WIDTH];
-        userDefinedArena = new Arena();
-        try {
-            FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
-            userDefinedArena.binStringToArena(fileReader.read());
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+        this.referenceArena = referenceArena;
 
 
         for (int r = 0; r < ARENA_HEIGHT; r++) {
@@ -48,16 +39,16 @@ public class ButtonArenaPanel extends JPanel {
                 } else if (Arena.isStartZone(r, c)) {
                     createStartZone(arenaGrids, r, c);
                 } else {
-                    if (userDefinedArena.getGrid(r, c).hasObstacle()) {
+                    if (referenceArena.getGrid(r, c).hasObstacle()) {
                         fillObstacle(arenaGrids, r, c);
                     }
-                    toggleButtonController = new ToggleButtonController(arenaGrids[r][c], userDefinedArena.getGrid(r, c));
+                    toggleButtonController = new ToggleButtonController(arenaGrids[r][c], referenceArena.getGrid(r, c));
                     arenaGrids[r][c].addActionListener(toggleButtonController);
                 }
-                arena.add(arenaGrids[r][c]);
+                buttonArenaPanel.add(arenaGrids[r][c]);
             }
         }
-        add(arena);
+        add(buttonArenaPanel);
     }
 
     private void createArenaGridLine(JButton[][] arenaGrids, int r, int c) {
@@ -96,4 +87,5 @@ public class ButtonArenaPanel extends JPanel {
     private void fillObstacle(JButton[][] arenaGrids, int r, int c) {
         arenaGrids[r][c].setBackground(OBSTACLE_COLOR);
     }
+
 }
