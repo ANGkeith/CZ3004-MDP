@@ -18,7 +18,7 @@ import static models.Constants.ARENA_DESCRIPTOR_PATH;
 public class SimulatorController {
     float forwardSpeed;
     float turningSpeed;
-
+    SwingWorker<Void, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
     }
@@ -27,7 +27,7 @@ public class SimulatorController {
         centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
         centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
-        centerPanel.addRestartBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
+        centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot, arena));
         centerPanel.addExplorationBtnListener(e -> exploration(myRobot));
 
     }
@@ -79,6 +79,10 @@ public class SimulatorController {
         // TODO stop thread
     }
 
+    private void restart(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
+       saveConfigurations(centerPanel, myRobot, arena);
+       explorationWorker.cancel(true);
+    }
 
     private void saveMap(EastPanel eastPanel) {
         try {
@@ -122,7 +126,7 @@ public class SimulatorController {
 
 
     private void exploration(MyRobot myRobot){
-        SwingWorker<Void, Void> explorationWorker = new SwingWorker<Void, Void>() {
+        explorationWorker = new SwingWorker<Void, Void>() {
             int turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
             int fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
 
@@ -169,6 +173,7 @@ public class SimulatorController {
         };
 
         explorationWorker.execute();
+
     }
 
 
