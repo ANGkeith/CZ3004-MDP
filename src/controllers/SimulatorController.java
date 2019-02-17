@@ -16,6 +16,8 @@ import java.nio.file.FileSystems;
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
 public class SimulatorController {
+    float forwardSpeed;
+    float turningSpeed;
 
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
@@ -25,10 +27,9 @@ public class SimulatorController {
         centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
         centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
-
-        // TODO centerPanel.addExplorationBtnListener();
-        // TODO centerPanel.addFastestPathBtnListener();
         centerPanel.addRestartBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
+        centerPanel.addExplorationBtnListener(e -> exploration(myRobot));
+
     }
 
     public SimulatorController(EastPanel eastPanel) {
@@ -58,10 +59,14 @@ public class SimulatorController {
 
     private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
+        double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
+        double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
         // Have to plus 1 because the row and col starts from 0;
         myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
         myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
+        myRobot.setForwardSpeed(forwardSpeed);
+        myRobot.setTurningSpeed(turningSpeed);
 
         Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
         myRobot.setCurOrientation(selectedOrientation);
@@ -70,6 +75,8 @@ public class SimulatorController {
 
         arena.reinitializeArena();
         arena.setHasExploredBasedOnOccupiedGrid(myRobot);
+
+        // TODO stop thread
     }
 
 
@@ -91,10 +98,7 @@ public class SimulatorController {
         }
     }
 
-
-
     // utils
-
     private String[] parseInputToRowColArr(String s) {
         return s.split(",\\s*");
     }
@@ -115,4 +119,58 @@ public class SimulatorController {
             arenaGrids.setBackground(MAP_COLOR);
         }
     }
+
+
+    private void exploration(MyRobot myRobot){
+        SwingWorker<Void, Void> explorationWorker = new SwingWorker<Void, Void>() {
+            int turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
+            int fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                while (true) {
+                    if (myRobot.hasObstacleToItsImmediateRight()) {
+                        if (!myRobot.hasObstacleRightInFront()) {
+                            forward();
+                        } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
+                            left();
+                        } else if (myRobot.hasObstacleToItsImmediateLeft()) {
+                            right();
+                            right();
+                            while(myRobot.hasObstacleToItsImmediateRight()) {
+                                forward();
+                            }
+                            right();
+                            forward();
+                            forward();
+                            forward();
+                        }
+                    } else {
+                        right();
+                        forward();
+                        forward();
+                        forward();
+                    }
+                }
+
+            }
+            private void forward() throws InterruptedException {
+                myRobot.move(My_Robot_Instruction.FORWARD);
+                Thread.sleep(fwdSpeedMs);
+            }
+            private void right() throws InterruptedException {
+                myRobot.move(My_Robot_Instruction.TURN_RIGHT);
+                Thread.sleep(turningSpeedMs);
+            }
+            private void left() throws InterruptedException {
+                myRobot.move(My_Robot_Instruction.TURN_LEFT);
+                Thread.sleep(turningSpeedMs);
+            }
+        };
+
+        explorationWorker.execute();
+    }
+
+
+
 }

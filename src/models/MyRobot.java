@@ -12,13 +12,16 @@ public class MyRobot {
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
     private Sensor[][] allSensor;
+    private double forwardSpeed;
+    private double turningSpeed;
 
-    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena)
-    {
+    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena) {
         this.curRow = curRow;
         this.curCol = curCol;
         this.curOrientation = curOrientation;
         this.referenceArena = referenceArena;
+        this.forwardSpeed = 1.0;
+        this.turningSpeed = 0.5;
         initSensor();
     }
 
@@ -27,19 +30,20 @@ public class MyRobot {
         if (myRobotInstruction == My_Robot_Instruction.FORWARD)
         {
             if (true) {
-            // if (!hasObstacleRightInFront()) {
-                if (curOrientation == Orientation.N) {
-                    temp = curRow - 1;
-                    setCurRow(temp);
-                } else if (curOrientation == Orientation.E) {
-                    temp = curCol + 1;
-                    setCurCol(temp);
-                } else if (curOrientation == Orientation.S) {
-                    temp = curRow + 1;
-                    setCurRow(temp);
-                } else if (curOrientation == Orientation.W) {
-                    temp = curCol - 1;
-                    setCurCol(temp);
+                if (!hasObstacleRightInFront()) {
+                    if (curOrientation == Orientation.N) {
+                        temp = curRow - 1;
+                        setCurRow(temp);
+                    } else if (curOrientation == Orientation.E) {
+                        temp = curCol + 1;
+                        setCurCol(temp);
+                    } else if (curOrientation == Orientation.S) {
+                        temp = curRow + 1;
+                        setCurRow(temp);
+                    } else if (curOrientation == Orientation.W) {
+                        temp = curCol - 1;
+                        setCurCol(temp);
+                    }
                 }
             }
         } else if (myRobotInstruction == My_Robot_Instruction.TURN_RIGHT) {
@@ -122,6 +126,15 @@ public class MyRobot {
         return false;
     }
 
+    public boolean hasObstacleToItsImmediateLeft() {
+        for (int i = 0; i < leftSensor.length; i++) {
+            if (leftSensor[i].getSimulatedSensorReading() == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Sensor[] getFrontSensor() {
         return frontSensor;
     }
@@ -166,5 +179,21 @@ public class MyRobot {
 
     public void setCurOrientation(Orientation curOrientation) {
         this.curOrientation = curOrientation;
+    }
+
+    public double getForwardSpeed() {
+        return forwardSpeed;
+    }
+
+    public void setForwardSpeed(double forwardSpeed) {
+        this.forwardSpeed = forwardSpeed;
+    }
+
+    public double getTurningSpeed() {
+        return turningSpeed;
+    }
+
+    public void setTurningSpeed(double turningSpeed) {
+        this.turningSpeed = turningSpeed;
     }
 }

@@ -57,9 +57,6 @@ public class App extends JFrame {
 
 
     private void initComponents() {
-
-
-
         // Models
         referenceArena = new Arena();
         try {

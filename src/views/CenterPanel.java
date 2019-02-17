@@ -54,8 +54,8 @@ public class CenterPanel extends JPanel {
 
         fields = new JTextField[4];
         fields[0] = new JTextField((myRobot.getCurRow()+1) + ", " + (myRobot.getCurCol()+1));
-        fields[1] = new JTextField();
-        fields[2] = new JTextField();
+        fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
+        fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();
 
         orientationLbl = new JLabel("Starting orientation:");
