@@ -19,11 +19,11 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
     private MyRobot myRobot;
     private Arena arena;
     private Grid grid;
-    private Grid curSensedGrid;
 
     Timer t = new Timer(500, this);
     int curRobotCol;
     int curRobotRow;
+    Sensor[][] frontRightLeftSensors;
     Orientation curOrientation;
 
     public ArenaPanel(MyRobot myRobot, Arena arena) {
@@ -67,22 +67,93 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         }
     }
 
-    private void displaySensorRange(Graphics g) {
-        Sensor[][] allSensor = myRobot.getAllSensor();
-        Graphics2D g2d = (Graphics2D)g;
 
-        g2d.setColor(SENSOR_RANGE_COLOR);
-        for (Sensor[] groupSensor: allSensor) {
-            for (Sensor sensor: groupSensor) {
-                g2d.fillRect(
-                        sensor.getSensorCol() * GRID_SIZE,
-                        sensor.getSensorRow() * GRID_SIZE,
-                        GRID_SIZE,
-                        GRID_SIZE);
+    private void updateArenaBasedOnSensorReadings() {
+        int numOfSensibleGrid;
+        int curRow;
+        int curCol;
+        frontRightLeftSensors = myRobot.getAllSensor();
+
+        for (Sensor[] sensors: frontRightLeftSensors) {
+            for (Sensor sensor: sensors) {
+                numOfSensibleGrid = sensor.getSimulatedSensorReading();
+                if (sensor.getSimulatedSensorReading() == 0) {
+                    numOfSensibleGrid = sensor.getSensorRange();
+                }
+                for (int i = 1; i <= numOfSensibleGrid; i++) {
+                    switch(sensor.getSensorOrientation()) {
+                        case N:
+                            curRow = sensor.getSensorAbsoluteRow() - i;
+                            curCol = sensor.getSensorAbsoluteCol();
+                            break;
+                        case E:
+                            curRow = sensor.getSensorAbsoluteRow();
+                            curCol = sensor.getSensorAbsoluteCol() + i;
+                            break;
+                        case S:
+                            curRow = sensor.getSensorAbsoluteRow() + i;
+                            curCol = sensor.getSensorAbsoluteCol();
+                            break;
+                        default:
+                            curRow = sensor.getSensorAbsoluteRow();
+                            curCol = sensor.getSensorAbsoluteCol() - i;
+                            break;
+                    }
+                    if (Arena.isValidRowCol(curRow, curCol)) {
+                        grid = arena.getGrid(curRow, curCol);
+                        grid.setHasBeenExplored(true);
+                        if (i == sensor.getSimulatedSensorReading()) {
+                            grid.setHasObstacle(true);
+                        }
+                    }
+                }
             }
         }
     }
 
+    private void displaySensorRange(Graphics g) {
+        int numOfSensibleGrid;
+        int curRow;
+        int curCol;
+        frontRightLeftSensors = myRobot.getAllSensor();
+
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setColor(SENSOR_RANGE_COLOR);
+
+        for (Sensor[] sensors: frontRightLeftSensors) {
+            for (Sensor sensor: sensors) {
+                numOfSensibleGrid = sensor.getSimulatedSensorReading();
+                if (sensor.getSimulatedSensorReading() == 0) {
+                    numOfSensibleGrid = sensor.getSensorRange();
+                }
+                for (int i = 1; i <= numOfSensibleGrid; i++) {
+                    switch(sensor.getSensorOrientation()) {
+                        case N:
+                            curRow = sensor.getSensorAbsoluteRow() - i;
+                            curCol = sensor.getSensorAbsoluteCol();
+                            break;
+                        case E:
+                            curRow = sensor.getSensorAbsoluteRow();
+                            curCol = sensor.getSensorAbsoluteCol() + i;
+                            break;
+                        case S:
+                            curRow = sensor.getSensorAbsoluteRow() + i;
+                            curCol = sensor.getSensorAbsoluteCol();
+                            break;
+                        default:
+                            curRow = sensor.getSensorAbsoluteRow();
+                            curCol = sensor.getSensorAbsoluteCol() - i;
+                            break;
+                    }
+                    g2d.fillRect(
+                            curCol * GRID_SIZE,
+                            curRow * GRID_SIZE,
+                            GRID_SIZE,
+                            GRID_SIZE);
+                }
+            }
+        }
+    }
     private void drawGridBorder(Graphics g) {
         for (int row = 0; row < ARENA_HEIGHT; row++) {
             for (int col = 0; col < ARENA_WIDTH; col++) {
@@ -106,9 +177,7 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
         g2.fill(robotImg);
         paintOrientationMarker(g2, myRobot);
 
-        getRobotSensorReadings(myRobot.getFrontSensor());
-        getRobotSensorReadings(myRobot.getRightSensor());
-        getRobotSensorReadings(myRobot.getLeftSensor());
+        updateArenaBasedOnSensorReadings();
     }
 
     private void paintOrientationMarker(Graphics2D g2, MyRobot myRobot) {
@@ -147,19 +216,6 @@ public class ArenaPanel extends JPanel implements ActionListener, java.awt.event
             myRobot.move(My_Robot_Instruction.TURN_RIGHT);
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             myRobot.move(My_Robot_Instruction.TURN_LEFT);
-        }
-        getRobotSensorReadings(myRobot.getFrontSensor());
-        getRobotSensorReadings(myRobot.getRightSensor());
-        getRobotSensorReadings(myRobot.getLeftSensor());
-    }
-
-    private void getRobotSensorReadings(Sensor[] sensors) {
-        for (int i = 0; i < sensors.length; i++) {
-            if (Arena.isValidRowCol(sensors[i].getSensorRow(), sensors[i].getSensorCol())) {
-                curSensedGrid = arena.getGrid(sensors[i].getSensorRow(), sensors[i].getSensorCol());
-                curSensedGrid.setHasBeenExplored(true);
-                curSensedGrid.setHasObstacle(sensors[i].getReading());
-            }
         }
     }
 

@@ -48,4 +48,11 @@ public class Constants {
         S,
         W,
     }
+
+    // this position is relative to the orientation of the robot
+    public enum Sensor_Position {
+        FRONT,
+        RIGHT,
+        LEFT,
+    }
 }

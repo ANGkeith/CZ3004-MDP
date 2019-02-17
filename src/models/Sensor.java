@@ -4,56 +4,135 @@ import static models.Constants.*;
 public class Sensor
 {
     private MyRobot myRobot;
-    private Arena mockArena;
-    Orientation robotOrientation;
-    private int[] sensorPosition = new int[2];
+    private Arena referenceArena;
+
+    private int sensorRange;
 
     private int relativeRow;
     private int relativeCol;
+    private Sensor_Position sensor_position;
 
-    public Sensor(MyRobot myRobot, Arena mockArena, int relativeRow, int relativeCol)
-    {
+
+    // The relative row and col is the relative position of the sensor w.r.t the center of the north-oriented robot
+    public Sensor(MyRobot myRobot, Arena referenceArena, int relativeRow, int relativeCol, Sensor_Position sensor_position, int sensorRange) {
         this.myRobot = myRobot;
         this.relativeRow = relativeRow;
         this.relativeCol = relativeCol;
-        this.mockArena = mockArena;
+        this.referenceArena = referenceArena;
+        this.sensor_position = sensor_position;
+        this.sensorRange = sensorRange;
+
     }
 
-    public int getSensorRow() {
-        return getSensorPosition()[0];
+    public Orientation getSensorOrientation() {
+
+        switch (sensor_position) {
+            case FRONT:
+                return myRobot.getCurOrientation();
+            case LEFT:
+                switch (myRobot.getCurOrientation()) {
+                    case N:
+                        return Orientation.W;
+                    case E:
+                        return Orientation.N;
+                    case S:
+                        return Orientation.E;
+                    case W:
+                        return Orientation.S;
+                }
+            default:
+                switch (myRobot.getCurOrientation()) {
+                    case N:
+                        return Orientation.E;
+                    case E:
+                        return Orientation.S;
+                    case S:
+                        return Orientation.W;
+                    default:
+                        return Orientation.N;
+                }
+        }
     }
 
-    public int getSensorCol() {
-        return getSensorPosition()[1];
-    }
+    /*
+        Method for simulating the readings by the sensor it returns the distance (in number of grids) of the obstacle
+        from the sensor.
 
-    public int[] getSensorPosition() {
-        robotOrientation = myRobot.getCurOrientation();
-        switch (robotOrientation) {
+        If there are no obstacle detected within the range, a value of 0 is returned
+    */
+    public int getSimulatedSensorReading() {
+        switch(getSensorOrientation()) {
             case N:
-                sensorPosition[0] = (myRobot.getCurRow() + relativeRow);
-                sensorPosition[1] = (myRobot.getCurCol() + relativeCol);
+                for (int i = 1; i <= sensorRange; i++) {
+                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() - i, getSensorAbsoluteCol())) {
+                        return i;
+                    }
+                }
                 break;
             case E:
-                sensorPosition[0] = (myRobot.getCurRow() + relativeCol);
-                sensorPosition[1] = (myRobot.getCurCol() - relativeRow);
+                for (int i = 1; i <= sensorRange; i++) {
+                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() + i)) {
+                        return i;
+                    }
+                }
                 break;
             case S:
-                sensorPosition[0] = (myRobot.getCurRow() - relativeRow);
-                sensorPosition[1] = (myRobot.getCurCol() - relativeCol);
+                for (int i = 1; i <= sensorRange; i++) {
+                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() + i, getSensorAbsoluteCol())) {
+                        return i;
+                    }
+                }
                 break;
             case W:
-                sensorPosition[0] = (myRobot.getCurRow() - relativeCol);
-                sensorPosition[1] = (myRobot.getCurCol() + relativeRow);
+                for (int i = 1; i <= sensorRange; i++) {
+                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() - 1)) {
+                        return i;
+                    }
+                }
+                break;
         }
-
-        return sensorPosition;
+        //
+        return 0;
     }
 
-    public boolean getReading() {
-        if (Arena.isValidRowCol(getSensorRow(), getSensorCol())) {
-            return mockArena.getGrid(getSensorPosition()[0], getSensorPosition()[1]).hasObstacle();
+    public boolean checkForObstacleAgainstReferenceArena(int row, int col) {
+        if (Arena.isValidRowCol(row, col)) {
+            return referenceArena.getGrid(row, col).hasObstacle();
         }
         return true;
+    }
+
+    public int getSensorAbsoluteRow() {
+        switch(myRobot.getCurOrientation()) {
+            case N:
+                return myRobot.getCurRow() + relativeRow;
+            case E:
+                return myRobot.getCurRow() + relativeCol;
+            case S:
+                return myRobot.getCurRow() - relativeRow;
+            case W:
+                return myRobot.getCurRow() - relativeCol;
+            default:
+                return -1;
+        }
+    }
+
+    public int getSensorAbsoluteCol() {
+        switch(myRobot.getCurOrientation()) {
+            case N:
+                return myRobot.getCurCol() + relativeCol;
+            case E:
+                return myRobot.getCurCol() - relativeRow;
+            case S:
+                return myRobot.getCurCol() - relativeCol;
+            case W:
+                return myRobot.getCurCol() + relativeRow;
+            default:
+                return -1;
+        }
+    }
+
+    public int getSensorRange() {
+        return sensorRange;
     }
 }

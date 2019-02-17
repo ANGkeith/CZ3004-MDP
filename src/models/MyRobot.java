@@ -11,7 +11,7 @@ public class MyRobot {
     private Sensor[] frontSensor;
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
-    private Sensor[][] allSensor = new Sensor[3][15];
+    private Sensor[][] allSensor;
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena)
     {
@@ -23,10 +23,11 @@ public class MyRobot {
     }
 
     public void move(My_Robot_Instruction myRobotInstruction) {
-        int temp = 0;
+        int temp;
         if (myRobotInstruction == My_Robot_Instruction.FORWARD)
         {
-            if (!hasObstacleRightInFront()) {
+            if (true) {
+            // if (!hasObstacleRightInFront()) {
                 if (curOrientation == Orientation.N) {
                     temp = curRow - 1;
                     setCurRow(temp);
@@ -68,47 +69,75 @@ public class MyRobot {
     private void initSensor()
     {
         /*
-                         0  1  2
-                         3  4  5
-         0  1  2  3  4  [ ][ ][ ] 0  1
+            Front Sensor:
+                         x  x  x
+                         x  x  x
+                        [0][1][2]
                         [ ][ ][ ]
-                        [ ][ ][ ] 2  3
+                        [ ][ ][ ]
 
-        This shows the sensor's representation;
+            Right Sensor:
+                        [ ][ ][0]x x
+                        [ ][ ][ ]
+                        [ ][ ][1]x x
+
+            Left Sensor:
+               x x x x x[0][ ][ ]
+                        [ ][ ][ ]
+                        [ ][ ][ ]
+
          */
-        frontSensor = new Sensor[6];
-        frontSensor[0] = new Sensor(this, referenceArena, -3, -1);
-        frontSensor[1] = new Sensor(this, referenceArena, -3, 0);
-        frontSensor[2] = new Sensor(this, referenceArena, -3, 1);
-        frontSensor[3] = new Sensor(this, referenceArena, -2, -1);
-        frontSensor[4] = new Sensor(this, referenceArena, -2, 0);
-        frontSensor[5] = new Sensor(this, referenceArena, -2, 1);
 
-        rightSensor = new Sensor[4];
-        rightSensor[0] = new Sensor(this, referenceArena, -1, 2);
-        rightSensor[1] = new Sensor(this, referenceArena, -1, 3);
-        rightSensor[2] = new Sensor(this, referenceArena, 1, 2);
-        rightSensor[3] = new Sensor(this, referenceArena, 1, 3);
+        frontSensor = new Sensor[3];
+        rightSensor = new Sensor[2];
+        leftSensor = new Sensor[1];
 
-        leftSensor = new Sensor[5];
-        leftSensor[0] = new Sensor(this, referenceArena, -1, -6);
-        leftSensor[1] = new Sensor(this, referenceArena, -1, -5);
-        leftSensor[2] = new Sensor(this, referenceArena, -1, -4);
-        leftSensor[3] = new Sensor(this, referenceArena, -1, -3);
-        leftSensor[4] = new Sensor(this, referenceArena, -1, -2);
+        frontSensor[0] = new Sensor(this, referenceArena, -1, -1, Sensor_Position.FRONT, 2);
+        frontSensor[1] = new Sensor(this, referenceArena, -1, 0, Sensor_Position.FRONT, 2);
+        frontSensor[2] = new Sensor(this, referenceArena, -1, 1, Sensor_Position.FRONT, 2);
+
+        rightSensor[0] = new Sensor(this, referenceArena, -1, 1, Sensor_Position.RIGHT, 2);
+        rightSensor[1] = new Sensor(this, referenceArena, 1, 1, Sensor_Position.RIGHT, 2);
+
+        leftSensor[0] = new Sensor(this, referenceArena, -1, -1, Sensor_Position.LEFT, 5);
+
+        allSensor = new Sensor[3][3];
     }
 
-    public boolean hasObstacleRightInFront() {
-        for (int i = 3; i < 6; i++) {
-            if (frontSensor[i].getReading()) {
+    public boolean hasObstacleToItsImmediateRight() {
+        for (int i = 0; i < rightSensor.length; i++) {
+            if (rightSensor[i].getSimulatedSensorReading() == 1) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean hasObstacleRightOnTheRight() {
-        return rightSensor[0].getReading() || rightSensor[2].getReading();
+    public boolean hasObstacleRightInFront() {
+        for (int i = 0; i < frontSensor.length; i++) {
+            if (frontSensor[i].getSimulatedSensorReading() == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Sensor[] getFrontSensor() {
+        return frontSensor;
+    }
+
+    public Sensor[] getRightSensor() {
+        return rightSensor;
+    }
+    public Sensor[] getLeftSensor() {
+        return leftSensor;
+    }
+
+    public Sensor[][] getAllSensor() {
+        allSensor[0] = getFrontSensor();
+        allSensor[1] = getRightSensor();
+        allSensor[2] = getLeftSensor();
+        return allSensor;
     }
 
     public int getCurCol() {
@@ -137,24 +166,5 @@ public class MyRobot {
 
     public void setCurOrientation(Orientation curOrientation) {
         this.curOrientation = curOrientation;
-    }
-
-    public Sensor[] getFrontSensor() {
-        return frontSensor;
-    }
-
-    public Sensor[] getRightSensor() {
-        return rightSensor;
-    }
-
-    public Sensor[] getLeftSensor() {
-        return leftSensor;
-    }
-
-    public Sensor[][] getAllSensor() {
-        allSensor[0] = getFrontSensor();
-        allSensor[1] = getRightSensor();
-        allSensor[2] = getLeftSensor();
-        return allSensor;
     }
 }

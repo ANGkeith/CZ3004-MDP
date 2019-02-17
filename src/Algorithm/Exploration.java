@@ -5,8 +5,7 @@ public class Exploration {
     private void exploreAlongWall (MyRobot myRobot) {
 
         while (true) {
-            if (myRobot.hasObstacleRightOnTheRight() && !myRobot.hasObstacleRightInFront()) {
-            }
+            //if (myRobot.hasObstacleRightOnTheRight() && !myRobot.hasObstacleRightInFront()) {
 
         }
     }
