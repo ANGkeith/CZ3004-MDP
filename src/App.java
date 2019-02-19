@@ -3,6 +3,7 @@ import java.awt.*;
 import java.io.IOException;
 import javax.swing.*;
 
+import controllers.ArenaPanelController;
 import controllers.SimulatorController;
 import models.Arena;
 import models.MyRobot;
@@ -26,6 +27,7 @@ public class App extends JFrame {
     private SimulatorController westPanelController;
     private SimulatorController centerPanelController;
     private SimulatorController eastPanelController;
+    private ArenaPanelController arenaPanelController;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -92,6 +94,7 @@ public class App extends JFrame {
         westPanelController = new SimulatorController(westPanel);
         centerPanelController = new SimulatorController(centerPanel, myRobot, arena);
         eastPanelController = new SimulatorController(eastPanel);
+        arenaPanelController = new ArenaPanelController(westPanel.arenaPanel, myRobot, arena);
 
     }
 }

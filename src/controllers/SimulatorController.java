@@ -16,8 +16,6 @@ import java.nio.file.FileSystems;
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
 public class SimulatorController {
-    float forwardSpeed;
-    float turningSpeed;
     SwingWorker<Void, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
@@ -62,6 +60,8 @@ public class SimulatorController {
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
+        arena.reinitializeArena();
+
         // Have to plus 1 because the row and col starts from 0;
         myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
         myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
@@ -73,7 +73,6 @@ public class SimulatorController {
 
         disableConfigurations(centerPanel);
 
-        arena.reinitializeArena();
         arena.setHasExploredBasedOnOccupiedGrid(myRobot);
 
         // TODO stop thread
@@ -81,7 +80,9 @@ public class SimulatorController {
 
     private void restart(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
        saveConfigurations(centerPanel, myRobot, arena);
-       explorationWorker.cancel(true);
+       if (explorationWorker != null) {
+           explorationWorker.cancel(true);
+       }
     }
 
     private void saveMap(EastPanel eastPanel) {

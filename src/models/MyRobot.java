@@ -1,10 +1,14 @@
 package models;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import static models.Constants.*;
 
 public class MyRobot {
-    private int curRow;
+    public static final String UPDATEGUI = "updateGui";
 
+    private int curRow;
     private int curCol;
     private Orientation curOrientation;
     private Arena referenceArena;
@@ -14,6 +18,7 @@ public class MyRobot {
     private Sensor[][] allSensor;
     private double forwardSpeed;
     private double turningSpeed;
+    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena) {
         this.curRow = curRow;
@@ -158,8 +163,10 @@ public class MyRobot {
     }
 
     public void setCurCol(int curCol) {
-        if ((curCol != 0) && (curCol != 14)) {
+        int oldValue = this.curCol;
+        if ((curCol != 0) && (curCol != 14) && hasChangeInValue(this.curCol, curCol)) {
             this.curCol = curCol;
+            pcs.firePropertyChange(UPDATEGUI, oldValue, curCol);
         }
     }
 
@@ -168,8 +175,10 @@ public class MyRobot {
     }
 
     public void setCurRow(int curRow) {
-        if ((curRow != 0) && (curRow != 19)) {
+        int oldValue = this.curRow;
+        if ((curRow != 0) && (curRow != 19) && hasChangeInValue(this.curRow, curRow)) {
             this.curRow = curRow;
+            pcs.firePropertyChange(UPDATEGUI, oldValue, curRow);
         }
     }
 
@@ -178,7 +187,9 @@ public class MyRobot {
     }
 
     public void setCurOrientation(Orientation curOrientation) {
+        Orientation oldValue = this.curOrientation;
         this.curOrientation = curOrientation;
+        pcs.firePropertyChange(UPDATEGUI, oldValue, curOrientation);
     }
 
     public double getForwardSpeed() {
@@ -195,5 +206,17 @@ public class MyRobot {
 
     public void setTurningSpeed(double turningSpeed) {
         this.turningSpeed = turningSpeed;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
+    private boolean hasChangeInValue(int oldValue, int newValue) {
+        return oldValue != newValue;
     }
 }

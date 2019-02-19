@@ -114,4 +114,21 @@ public class Arena {
     public Grid getGrid(int row, int col) {
         return this.grids[row][col];
     }
+
+
+    /*
+    public void debugArena() {
+        System.out.println("$$$$$$$$$$$Debug Arena$$$$$$$$$$$$");
+        for (int r = 0; r < ARENA_HEIGHT; r++) {
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                if (grids[r][c].hasBeenExplored()) {
+                    System.out.print("1 ");
+                } else {
+                    System.out.print("0 ");
+                }
+            }
+            System.out.println();
+        }
+    }
+    */
 }
