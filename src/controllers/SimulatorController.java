@@ -60,7 +60,6 @@ public class SimulatorController {
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
-
         // Have to plus 1 because the row and col starts from 0;
         myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
         myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
@@ -155,8 +154,10 @@ public class SimulatorController {
                     } else {
                         right();
                         forward();
-                        forward();
-                        forward();
+                        if (myRobot.hasObstacleRightInFront()) {
+                            left();
+                            forward();
+                        }
                     }
                 }
 
