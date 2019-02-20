@@ -18,7 +18,7 @@ public class MyRobot {
     private Sensor[][] allSensor;
     private double forwardSpeed;
     private double turningSpeed;
-    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena) {
         this.curRow = curRow;

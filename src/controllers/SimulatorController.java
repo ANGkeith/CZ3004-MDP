@@ -60,7 +60,6 @@ public class SimulatorController {
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
-        arena.reinitializeArena();
 
         // Have to plus 1 because the row and col starts from 0;
         myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
@@ -72,6 +71,9 @@ public class SimulatorController {
         myRobot.setCurOrientation(selectedOrientation);
 
         disableConfigurations(centerPanel);
+
+        arena.reinitializeArena();
+        myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 
         arena.setHasExploredBasedOnOccupiedGrid(myRobot);
 
