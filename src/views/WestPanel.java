@@ -20,13 +20,15 @@ public class WestPanel extends JPanel{
     private MyRobot myRobot;
     private Arena arena;
 
-    public WestPanel(MyRobot myRobot, Arena arena) {
+    public WestPanel(MyRobot myRobot) {
         this.myRobot = myRobot;
-        this.arena = arena;
+        this.arena = myRobot.getArena();
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(null);
+
+        mainPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 40)));
 
         arenaPanel = new ArenaPanel(myRobot, arena);
         arenaPanel.setBackground(null);
@@ -41,6 +43,7 @@ public class WestPanel extends JPanel{
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         testMovement = new JButton("Test movement");
+        testMovement.setToolTipText("Activate arrow key movement");
         buttonPanel.add(testMovement);
         mainPanel.add(buttonPanel);
 

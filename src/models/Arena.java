@@ -20,20 +20,21 @@ public class Arena {
         }
     }
 
-    public Arena(MyRobot myRobot) {
+    // ============================== utils
+
+    public double getCoveragePercentage() {
+        int exploredGrids = 0;
+        int totalGrids = ARENA_HEIGHT * ARENA_WIDTH;
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
-                this.grids[r][c] = new Grid();
-                if (isGoalZone(r, c) || isStartZone(r, c)) {
-                    this.grids[r][c].setHasObstacle(false);
-                    this.grids[r][c].setHasBeenExplored(true);
+                if (getGrid(r, c).hasBeenExplored()) {
+                    exploredGrids++;
                 }
             }
+
         }
+        return (double) exploredGrids/totalGrids*100;
     }
-
-
-    // ============================== utils
 
     public void setHasExploredBasedOnOccupiedGrid(MyRobot myRobot) {
         int row = myRobot.getCurRow();

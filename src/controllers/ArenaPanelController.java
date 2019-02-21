@@ -5,6 +5,8 @@ import models.MyRobot;
 import models.Sensor;
 import views.ArenaPanel;
 import models.Arena;
+import views.CenterPanel;
+
 import static models.Constants.*;
 
 import java.awt.event.KeyEvent;
@@ -15,14 +17,17 @@ import java.beans.PropertyChangeListener;
 public class ArenaPanelController  implements PropertyChangeListener, KeyListener {
 
     private ArenaPanel arenaPanel;
+    private CenterPanel centerPanel;
     private MyRobot myRobot;
     private Arena arena;
     private Grid grid;
+    private String coverage;
 
-    public ArenaPanelController(ArenaPanel arenaPanel, MyRobot myRobot, Arena arena) {
+    public ArenaPanelController(ArenaPanel arenaPanel, CenterPanel centerPanel, MyRobot myRobot) {
         this.myRobot = myRobot;
         this.arenaPanel = arenaPanel;
-        this.arena = arena;
+        this.arena = myRobot.getArena();
+        this.centerPanel = centerPanel;
         myRobot.addPropertyChangeListener(this);
 
         arenaPanel.addKeyListener(this);
@@ -33,6 +38,12 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
     public void propertyChange(PropertyChangeEvent evt) {
         if (MyRobot.UPDATEGUI.equals(evt.getPropertyName())) {
             updateArenaBasedOnSensorReadings();
+
+            coverage = String.format("%.2f", arena.getCoveragePercentage());
+            centerPanel.getStatusLbls()[1].setText(centerPanel.statusPrefixedLbls[1] + coverage);
+            centerPanel.getStatusLbls()[2].setText(centerPanel.statusPrefixedLbls[2] + SimulatorController.numFwd);
+            centerPanel.getStatusLbls()[3].setText(centerPanel.statusPrefixedLbls[3] + SimulatorController.numTurn);
+
             arenaPanel.revalidate();
             arenaPanel.repaint();
         }

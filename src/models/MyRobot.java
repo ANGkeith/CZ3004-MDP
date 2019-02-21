@@ -12,15 +12,18 @@ public class MyRobot {
     private int curCol;
     private Orientation curOrientation;
     private Arena referenceArena;
+    private Arena arena;
     private Sensor[] frontSensor;
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
     private Sensor[][] allSensor;
     private double forwardSpeed;
     private double turningSpeed;
+    private boolean foundGoalZone;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena referenceArena) {
+    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena arena, Arena referenceArena) {
+        this.arena = arena;
         this.curRow = curRow;
         this.curCol = curCol;
         this.curOrientation = curOrientation;
@@ -32,8 +35,7 @@ public class MyRobot {
 
     public void move(My_Robot_Instruction myRobotInstruction) {
         int temp;
-        if (myRobotInstruction == My_Robot_Instruction.FORWARD)
-        {
+        if (myRobotInstruction == My_Robot_Instruction.FORWARD) {
             if (true) {
                 if (!hasObstacleRightInFront()) {
                     if (curOrientation == Orientation.N) {
@@ -75,8 +77,7 @@ public class MyRobot {
     }
 
 
-    private void initSensor()
-    {
+    private void initSensor() {
         /*
             Front Sensor:
                          x  x  x
@@ -219,4 +220,9 @@ public class MyRobot {
     private boolean hasChangeInValue(int oldValue, int newValue) {
         return oldValue != newValue;
     }
+
+    public Arena getArena() {
+        return arena;
+    }
+
 }

@@ -30,6 +30,9 @@ public class EastPanel extends JPanel{
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(null);
 
+        mainPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 40)));
+
+
         buttonArenaPanel = new ButtonArenaPanel(referenceArena);
         buttonArenaPanel.setBorder(new EmptyBorder(-5, 0, 0, 0));
         buttonArenaPanel.setBackground(null);

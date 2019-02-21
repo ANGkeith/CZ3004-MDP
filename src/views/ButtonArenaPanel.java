@@ -64,7 +64,7 @@ public class ButtonArenaPanel extends JPanel {
         else {
             arenaGrids[r][c].setBorder(BorderFactory.createLineBorder(ARENA_GRID_LINE_COLOR));
         }
-        arenaGrids[r][c].setBackground(MAP_COLOR);
+        arenaGrids[r][c].setBackground(EXPLORED_COLOR);
     }
 
     private void createGoalZone(JButton[][] arenaGrids, int r, int c) {

@@ -48,7 +48,6 @@ public class App extends JFrame {
         setTitle("MDP Simulator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
-        setSize(APP_WIDTH, APP_HEIGHT);
         pack();
         setLocationRelativeTo(null);
 
@@ -61,18 +60,19 @@ public class App extends JFrame {
     private void initComponents() {
         // Models
         referenceArena = new Arena();
+        arena = new Arena();
         try {
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             referenceArena.binStringToArena(fileReader.read());
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        myRobot = new MyRobot(18, 1, Orientation.N, referenceArena);
-        arena = new Arena(myRobot);
+        myRobot = new MyRobot(18, 1, Orientation.N, arena, referenceArena);
 
         // Views
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(0, 0));
+        contentPane.setBackground(null);
         setContentPane(contentPane);
 
         centerPanel = new CenterPanel(myRobot);
@@ -80,7 +80,7 @@ public class App extends JFrame {
         centerPanel.setVisible(true);
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
-        westPanel = new WestPanel(myRobot, arena);
+        westPanel = new WestPanel(myRobot);
         westPanel.setBackground(null);
         westPanel.setVisible(true);
         contentPane.add(westPanel, BorderLayout.WEST);
@@ -92,9 +92,9 @@ public class App extends JFrame {
 
         // Controllers
         westPanelController = new SimulatorController(westPanel);
-        centerPanelController = new SimulatorController(centerPanel, myRobot, arena);
+        centerPanelController = new SimulatorController(centerPanel, myRobot);
         eastPanelController = new SimulatorController(eastPanel);
-        arenaPanelController = new ArenaPanelController(westPanel.arenaPanel, myRobot, arena);
+        arenaPanelController = new ArenaPanelController(westPanel.arenaPanel, centerPanel, myRobot);
 
     }
 }

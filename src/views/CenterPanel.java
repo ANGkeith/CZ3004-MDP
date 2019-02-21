@@ -12,6 +12,7 @@ import static models.Constants.*;
 
 public class CenterPanel extends JPanel {
 
+    public final String[] statusPrefixedLbls;
 
     private JLabel orientationLbl;
     private JLabel[] lbls;
@@ -26,8 +27,10 @@ public class CenterPanel extends JPanel {
     private JButton fastestPathBtn;
     private JButton restartBtn;
     private JLabel title;
+    private JLabel[] statusLbls;
     private JPanel mainPanel;
     private JPanel configPanel;
+    private JPanel statusPanel;
 
 
     public CenterPanel(MyRobot myRobot) {
@@ -37,14 +40,19 @@ public class CenterPanel extends JPanel {
         mainPanel.setLayout(new MigLayout("fillx"));
 
         title = new JLabel("MDP GROUP 2");
-        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 30));
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
         explorationBtn = new JButton("Start Exploration ");
         fastestPathBtn = new JButton("Start Fastest Path");
         restartBtn = new JButton("Restart");
 
+        // Config Panel
         configPanel = new JPanel(new MigLayout("fillx"));
         configPanel.setBorder(new TitledBorder("Robot's Configuration"));
+
+        orientationLbl = new JLabel("Starting orientation:");
+        orientationSelection = new JComboBox<>(orientationList);
+        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
 
         lbls = new JLabel[4];
         lbls[0] = new JLabel("Starting position:");
@@ -58,10 +66,6 @@ public class CenterPanel extends JPanel {
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();
 
-        orientationLbl = new JLabel("Starting orientation:");
-        orientationSelection = new JComboBox<>(orientationList);
-        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
-
         configPanel.add(orientationLbl);
         orientationSelection.setEnabled(false);
         configPanel.add(orientationSelection, "wrap");
@@ -74,6 +78,7 @@ public class CenterPanel extends JPanel {
 
 
         buttonPanel = new JPanel(new MigLayout("fillx, inset 0"));
+        buttonPanel.setBackground(null);
         okBtn = new JButton("Ok");
         okBtn.setEnabled(false);
         cancelBtn = new JButton("Cancel");
@@ -82,15 +87,34 @@ public class CenterPanel extends JPanel {
         buttonPanel.add(okBtn);
         buttonPanel.add(cancelBtn);
         buttonPanel.add(modifyBtn);
+        // Config Panel
+
+        // Status Panel
+        statusPanel = new JPanel(new MigLayout("fillx"));
+        statusPanel.setBorder(new TitledBorder("Status"));
+
+        statusPrefixedLbls = new String[4];
+        statusPrefixedLbls[0] = "Time Elapsed (s): ";
+        statusPrefixedLbls[1] = "Coverage (%): ";
+        statusPrefixedLbls[2] = "Number of Forward: ";
+        statusPrefixedLbls[3] = "Number of Turn: ";
+        statusLbls = new JLabel[4];
+
+        for (int i = 0; i  < statusLbls.length; i++) {
+            statusLbls[i] = new JLabel(statusPrefixedLbls[i] + 0);
+            statusPanel.add(statusLbls[i], "wrap");
+        }
+        // Status Panel
 
         mainPanel.add(title, "alignx center, spanx, wrap");
 
-        configPanel.add(buttonPanel, "gapy 10 0, spanx, pushx, alignx right");
-        mainPanel.add(configPanel, "pushx, growx, gapy 10 0, wrap");
+        mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, wrap, alignx center");
+        mainPanel.add(fastestPathBtn, "gapy 10 0, growx, wrap, alignx center");
+        mainPanel.add(restartBtn, "gapy 10 0, growx, wrap, alignx center");
 
-        mainPanel.add(explorationBtn, "gapy 50 0, wrap, alignx center");
-        mainPanel.add(fastestPathBtn, "gapy 10 0, wrap, alignx center");
-        mainPanel.add(restartBtn, "gapy 10 0, wrap, alignx center");
+        configPanel.add(buttonPanel, "gapy 10 0, spanx, pushx, alignx right");
+        mainPanel.add(configPanel, "pushx, growx, gapy 30 0, wrap");
+        mainPanel.add(statusPanel, "pushx, growx, gapy 30 0, wrap");
 
         add(mainPanel);
     }
@@ -98,6 +122,11 @@ public class CenterPanel extends JPanel {
 
 
     // utils
+    public void reinitStatusPanelTxt(){
+        for (int i = 0; i  < statusLbls.length; i++) {
+            statusLbls[i].setText(statusPrefixedLbls[i] + 0);
+        }
+    }
     public String orientationEnumToString(Orientation o) {
         if (o == Orientation.N) {
             return "North";
@@ -150,11 +179,31 @@ public class CenterPanel extends JPanel {
         return okBtn;
     }
 
+    public JButton getExplorationBtn() {
+        return explorationBtn;
+    }
+
+    public JButton getFastestPathBtn() {
+        return fastestPathBtn;
+    }
+
+    public JButton getRestartBtn() {
+        return restartBtn;
+    }
+
     public JLabel[] getLbls() {
         return lbls;
     }
 
     public JTextField[] getFields() {
         return fields;
+    }
+
+    public JLabel[] getStatusLbls() {
+        return statusLbls;
+    }
+
+    public void setStatusLbls(JLabel[] statusLbls) {
+        this.statusLbls = statusLbls;
     }
 }

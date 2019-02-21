@@ -11,6 +11,8 @@ import views.EastPanel;
 import views.WestPanel;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 
@@ -21,19 +23,22 @@ public class SimulatorController {
     private MyRobot myRobot;
     private int turningSpeedMs;
     private int fwdSpeedMs;
+    private Timer timer;
+    public static int numFwd;
+    public static int numTurn;
 
 
-    SwingWorker<Void, Void> explorationWorker;
+    SwingWorker<Boolean, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
     }
 
-    public SimulatorController(CenterPanel centerPanel, MyRobot myRobot, Arena arena){
+    public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
         centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
-        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));
-        centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot, arena));
-        centerPanel.addExplorationBtnListener(e -> exploration(myRobot, arena));
+        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot));
+        centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot));
+        centerPanel.addExplorationBtnListener(e -> exploration(centerPanel, myRobot));
 
     }
 
@@ -62,7 +67,7 @@ public class SimulatorController {
         centerPanel.getOrientationSelection().setEnabled(false);
     }
 
-    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
+    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
@@ -78,19 +83,23 @@ public class SimulatorController {
 
         disableConfigurations(centerPanel);
 
-        arena.reinitializeArena();
+        myRobot.getArena().reinitializeArena();
         myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 
-        arena.setHasExploredBasedOnOccupiedGrid(myRobot);
+        myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
 
         // TODO stop thread
     }
 
-    private void restart(CenterPanel centerPanel, MyRobot myRobot, Arena arena) {
-       saveConfigurations(centerPanel, myRobot, arena);
-       if (explorationWorker != null) {
-           explorationWorker.cancel(true);
-       }
+    private void restart(CenterPanel centerPanel, MyRobot myRobot) {
+        timer.stop();
+        saveConfigurations(centerPanel, myRobot);
+        centerPanel.getExplorationBtn().setEnabled(true);
+        centerPanel.getFastestPathBtn().setEnabled(true);
+        centerPanel.reinitStatusPanelTxt();
+        if (explorationWorker != null) {
+            explorationWorker.cancel(true);
+        }
     }
 
     private void saveMap(EastPanel eastPanel) {
@@ -134,17 +143,38 @@ public class SimulatorController {
     }
 
 
-    private void exploration(MyRobot myRobot, Arena arena){
+
+    private void exploration(CenterPanel centerPanel, MyRobot myRobot){
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
         this.myRobot = myRobot;
-        this.arena = arena;
+        this.arena = myRobot.getArena();
 
-        explorationWorker = new SwingWorker<Void, Void>() {
+        centerPanel.getExplorationBtn().setEnabled(false);
+        centerPanel.getFastestPathBtn().setEnabled(false);
+
+        JLabel[] statusLbls = centerPanel.getStatusLbls();
+
+        timer = new Timer(1000, new ActionListener() {
+            int timeElapsed = 0;
+            public void actionPerformed(ActionEvent evt) {
+                timeElapsed++;
+                statusLbls[0].setText(centerPanel.statusPrefixedLbls[0] + timeElapsed);
+            }
+        });
+
+
+        explorationWorker = new SwingWorker<Boolean, Void>() {
 
             @Override
-            protected Void doInBackground() throws Exception {
-                while (true) {
+            protected Boolean doInBackground() throws Exception {
+                boolean hasFoundGoalZoneFlag = false;
+                boolean explorationCompletedFlag = false;
+                numTurn = 0;
+                numFwd = 0;
+                statusLbls[0].setText(centerPanel.statusPrefixedLbls[0] + 0);
+                timer.start();
+                while (!explorationCompletedFlag) {
                     if (myRobot.hasObstacleToItsImmediateRight() || rightBlindSpotHasObstacle()) {
                         if (!myRobot.hasObstacleRightInFront()) {
                             forward();
@@ -158,9 +188,27 @@ public class SimulatorController {
                         right();
                         forward();
                     }
-                }
 
+                    if (robotIsAtGoalZone()) {
+                        hasFoundGoalZoneFlag = true;
+                    }
+
+                    if (hasFoundGoalZoneFlag && robotIsAtStartZone()) {
+                        explorationCompletedFlag = true;
+                        timer.stop();
+                    }
+                }
+                return true;
             }
+
+            private boolean robotIsAtGoalZone() {
+                return (myRobot.getCurRow() == 1 && myRobot.getCurCol() == 13);
+            }
+
+            private boolean robotIsAtStartZone() {
+                return (myRobot.getCurRow() == 18 && myRobot.getCurCol() == 1);
+            }
+
         };
         explorationWorker.execute();
     }
@@ -168,17 +216,23 @@ public class SimulatorController {
 
 
     private void forward() throws InterruptedException {
-        myRobot.move(My_Robot_Instruction.FORWARD);
         Thread.sleep(fwdSpeedMs);
+        numFwd++;
+        myRobot.move(My_Robot_Instruction.FORWARD);
     }
+
     private void right() throws InterruptedException {
+        Thread.sleep(turningSpeedMs);
+        numTurn++;
         myRobot.move(My_Robot_Instruction.TURN_RIGHT);
-        Thread.sleep(turningSpeedMs);
     }
+
     private void left() throws InterruptedException {
-        myRobot.move(My_Robot_Instruction.TURN_LEFT);
         Thread.sleep(turningSpeedMs);
+        numTurn++;
+        myRobot.move(My_Robot_Instruction.TURN_LEFT);
     }
+
     private boolean rightBlindSpotHasObstacle() {
         int curRow = myRobot.getCurRow();
         int curCol = myRobot.getCurCol();
