@@ -138,7 +138,7 @@ public class SimulatorController {
 
     private void untoggleObstacle(JButton arenaGrids) {
         if (arenaGrids.getBackground() == OBSTACLE_COLOR) {
-            arenaGrids.setBackground(MAP_COLOR);
+            arenaGrids.setBackground(EXPLORED_COLOR);
         }
     }
 

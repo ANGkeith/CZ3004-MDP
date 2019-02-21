@@ -22,10 +22,10 @@ public class ToggleButtonController implements ActionListener
     }
 
     private void toggleButtonColor(JButton arenaGrid) {
-        if (arenaGrid.getBackground() == MAP_COLOR) {
+        if (arenaGrid.getBackground() == EXPLORED_COLOR) {
             arenaGrid.setBackground(OBSTACLE_COLOR);
         } else {
-            arenaGrid.setBackground(MAP_COLOR);
+            arenaGrid.setBackground(EXPLORED_COLOR);
         }
         grid.toggleObstacle();
     }
