@@ -42,6 +42,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
         int numOfSensibleGrid;
         int curRow;
         int curCol;
+        Grid curGrid;
         Sensor[][] frontRightLeftSensors;
 
         frontRightLeftSensors = myRobot.getAllSensor();
@@ -49,7 +50,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
         for (Sensor[] sensors: frontRightLeftSensors) {
             for (Sensor sensor: sensors) {
                 numOfSensibleGrid = sensor.getSimulatedSensorReading();
-                if (sensor.getSimulatedSensorReading() == 0) {
+                if (sensor.getSimulatedSensorReading() == sensor.NO_OBSTACLE) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {
@@ -71,11 +72,11 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                             curCol = sensor.getSensorAbsoluteCol() - i;
                             break;
                     }
-                    if (Arena.isValidRowCol(curRow, curCol)) {
-                        grid = arena.getGrid(curRow, curCol);
-                        grid.setHasBeenExplored(true);
+                    curGrid = arena.getGrid(curRow, curCol);
+                    if (curGrid != null) {
+                        curGrid.setHasBeenExplored(true);
                         if (i == sensor.getSimulatedSensorReading()) {
-                            grid.setHasObstacle(true);
+                            curGrid.setHasObstacle(true);
                         }
                     }
                 }

@@ -8,6 +8,7 @@ public class Sensor
 
     private int sensorRange;
 
+    public final int NO_OBSTACLE = 0;
     private int relativeRow;
     private int relativeCol;
     private Sensor_Position sensor_position;
@@ -85,7 +86,7 @@ public class Sensor
                 break;
             case W:
                 for (int i = 1; i <= sensorRange; i++) {
-                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() - 1)) {
+                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() - i)) {
                         return i;
                     }
                 }
