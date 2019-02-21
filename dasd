@@ -1,0 +1,166 @@
+[1mdiff --git a/src/controllers/SimulatorController.java b/src/controllers/SimulatorController.java[m
+[1mindex 0c263ef..30f3d5e 100644[m
+[1m--- a/src/controllers/SimulatorController.java[m
+[1m+++ b/src/controllers/SimulatorController.java[m
+[36m@@ -3,6 +3,7 @@[m [mpackage controllers;[m
+ import static models.Constants.*;[m
+ [m
+ import models.Arena;[m
+[32m+[m[32mimport models.Grid;[m
+ import models.MyRobot;[m
+ import utils.FileReaderWriter;[m
+ import views.CenterPanel;[m
+[36m@@ -16,6 +17,12 @@[m [mimport java.nio.file.FileSystems;[m
+ import static models.Constants.ARENA_DESCRIPTOR_PATH;[m
+ [m
+ public class SimulatorController {[m
+[32m+[m[32m    private Arena arena;[m
+[32m+[m[32m    private MyRobot myRobot;[m
+[32m+[m[32m    public int turningSpeedMs;[m
+[32m+[m[32m    private int fwdSpeedMs;[m
+[32m+[m
+[32m+[m
+     SwingWorker<Void, Void> explorationWorker;[m
+     public SimulatorController(WestPanel westPanel) {[m
+         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());[m
+[36m@@ -26,7 +33,7 @@[m [mpublic class SimulatorController {[m
+         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));[m
+         centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot, arena));[m
+         centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot, arena));[m
+[31m-        centerPanel.addExplorationBtnListener(e -> exploration(myRobot));[m
+[32m+[m[32m        centerPanel.addExplorationBtnListener(e -> exploration(myRobot, arena));[m
+ [m
+     }[m
+ [m
+[36m@@ -127,15 +134,18 @@[m [mpublic class SimulatorController {[m
+     }[m
+ [m
+ [m
+[31m-    private void exploration(MyRobot myRobot){[m
+[32m+[m[32m    private void exploration(MyRobot myRobot, Arena arena){[m
+[32m+[m[32m        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);[m
+[32m+[m[32m        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);[m
+[32m+[m[32m        this.myRobot = myRobot;[m
+[32m+[m[32m        this.arena = arena;[m
+[32m+[m
+         explorationWorker = new SwingWorker<Void, Void>() {[m
+[31m-            int turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);[m
+[31m-            int fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);[m
+ [m
+             @Override[m
+             protected Void doInBackground() throws Exception {[m
+                 while (true) {[m
+[31m-                    if (myRobot.hasObstacleToItsImmediateRight()) {[m
+[32m+[m[32m                    if (myRobot.hasObstacleToItsImmediateRight() || rightBlindSpotHasObstacle()) {[m
+                         if (!myRobot.hasObstacleRightInFront()) {[m
+                             forward();[m
+                         } else if (!myRobot.hasObstacleToItsImmediateLeft()) {[m
+[36m@@ -143,43 +153,69 @@[m [mpublic class SimulatorController {[m
+                         } else if (myRobot.hasObstacleToItsImmediateLeft()) {[m
+                             right();[m
+                             right();[m
+[31m-                            while(myRobot.hasObstacleToItsImmediateRight()) {[m
+[31m-                                forward();[m
+[31m-                            }[m
+[31m-                            right();[m
+[31m-                            forward();[m
+[31m-                            forward();[m
+[31m-                            forward();[m
+                         }[m
+                     } else {[m
+                         right();[m
+                         forward();[m
+[31m-                        if (myRobot.hasObstacleRightInFront()) {[m
+[31m-                            left();[m
+[31m-                            forward();[m
+[31m-                        }[m
+                     }[m
+                 }[m
+ [m
+             }[m
+[31m-            private void forward() throws InterruptedException {[m
+[31m-                myRobot.move(My_Robot_Instruction.FORWARD);[m
+[31m-                Thread.sleep(fwdSpeedMs);[m
+[31m-            }[m
+[31m-            private void right() throws InterruptedException {[m
+[31m-                myRobot.move(My_Robot_Instruction.TURN_RIGHT);[m
+[31m-                Thread.sleep(turningSpeedMs);[m
+[31m-            }[m
+[31m-            private void left() throws InterruptedException {[m
+[31m-                myRobot.move(My_Robot_Instruction.TURN_LEFT);[m
+[31m-                Thread.sleep(turningSpeedMs);[m
+[31m-            }[m
+         };[m
+[31m-[m
+         explorationWorker.execute();[m
+[31m-[m
+     }[m
+ [m
+ [m
+ [m
+[32m+[m[32m    private void forward() throws InterruptedException {[m
+[32m+[m[32m        myRobot.move(My_Robot_Instruction.FORWARD);[m
+[32m+[m[32m        Thread.sleep(fwdSpeedMs);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    private void right() throws InterruptedException {[m
+[32m+[m[32m        myRobot.move(My_Robot_Instruction.TURN_RIGHT);[m
+[32m+[m[32m        Thread.sleep(turningSpeedMs);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    private void left() throws InterruptedException {[m
+[32m+[m[32m        myRobot.move(My_Robot_Instruction.TURN_LEFT);[m
+[32m+[m[32m        Thread.sleep(turningSpeedMs);[m
+[32m+[m[32m    }[m
+[32m+[m[32m    private boolean rightBlindSpotHasObstacle() {[m
+[32m+[m[32m        int curRow = myRobot.getCurRow();[m
+[32m+[m[32m        int curCol = myRobot.getCurCol();[m
+[32m+[m[32m        Orientation curOrientation = myRobot.getCurOrientation();[m
+[32m+[m
+[32m+[m[32m        int blindSpotRow;[m
+[32m+[m[32m        int blindSpotCol;[m
+[32m+[m[32m        Grid blindSpotGrid;[m
+[32m+[m
+[32m+[m[32m        switch(curOrientation) {[m
+[32m+[m[32m            case N:[m
+[32m+[m[32m                blindSpotCol = curCol + 2;[m
+[32m+[m[32m                blindSpotRow = curRow;[m
+[32m+[m[32m                break;[m
+[32m+[m[32m            case E:[m
+[32m+[m[32m                blindSpotCol = curCol;[m
+[32m+[m[32m                blindSpotRow = curRow + 2;[m
+[32m+[m[32m                break;[m
+[32m+[m[32m            case S:[m
+[32m+[m[32m                blindSpotCol = curCol - 2;[m
+[32m+[m[32m                blindSpotRow = curRow;[m
+[32m+[m[32m                break;[m
+[32m+[m[32m            default:[m
+[32m+[m[32m                blindSpotCol = curCol;[m
+[32m+[m[32m                blindSpotRow = curRow - 2;[m
+[32m+[m[32m                break;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);[m
+[32m+[m[32m        if (blindSpotGrid != null) {[m
+[32m+[m[32m            if (blindSpotGrid.hasBeenExplored()) {[m
+[32m+[m[32m                return blindSpotGrid.hasObstacle();[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m                System.out.println("BLIND SPOT NOT EXPLORED");[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return true;[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/models/Arena.java b/src/models/Arena.java[m
+[1mindex 12e9d4a..4d945ae 100644[m
+[1m--- a/src/models/Arena.java[m
+[1m+++ b/src/models/Arena.java[m
+[36m@@ -112,6 +112,9 @@[m [mpublic class Arena {[m
+ [m
+     // ============================== getters & setters[m
+     public Grid getGrid(int row, int col) {[m
+[32m+[m[32m        if (!isValidRowCol(row, col)) {[m
+[32m+[m[32m            return null;[m
+[32m+[m[32m        }[m
+         return this.grids[row][col];[m
+     }[m
+ [m

@@ -112,6 +112,9 @@ public class Arena {
 
     // ============================== getters & setters
     public Grid getGrid(int row, int col) {
+        if (!isValidRowCol(row, col)) {
+            return null;
+        }
         return this.grids[row][col];
     }
 
