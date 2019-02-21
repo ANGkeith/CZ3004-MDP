@@ -21,7 +21,7 @@ public class Constants {
     public static final Color START_ZONE_COLOR = new Color(50, 226, 36);
     public static final Color ORIENTATION_MARKER_COLOR = Color.WHITE;
     public static final Color SENSOR_RANGE_COLOR = new Color(212, 255, 46, 100);
-    public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/wasapia/local_storage/mock_arena.txt";
+    public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/local_storage/mock_arena.txt";
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
