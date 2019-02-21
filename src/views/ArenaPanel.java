@@ -16,7 +16,6 @@ public class ArenaPanel extends JPanel {
     private MyRobot myRobot;
     private Arena arena;
     private Grid grid;
-    //hghnghg
 
     Sensor[][] frontRightLeftSensors;
 
