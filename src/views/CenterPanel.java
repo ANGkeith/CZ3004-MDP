@@ -62,8 +62,8 @@ public class CenterPanel extends JPanel {
 
         lbls = new JLabel[6];
         lbls[0] = new JLabel("Starting position:");
-        lbls[1] = new JLabel("Forward Speed (s):");
-        lbls[2] = new JLabel("90 degree turn Speed (s):");
+        lbls[1] = new JLabel("Time taken to move a grid (s):");
+        lbls[2] = new JLabel("Time taken to make a turn (s):");
         lbls[3] = new JLabel("Way point:");
         lbls[4] = new JLabel("Coverage-limit (%):");
         lbls[5] = new JLabel("Exploration time-limit (m : s):");

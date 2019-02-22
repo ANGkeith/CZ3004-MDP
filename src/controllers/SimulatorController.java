@@ -99,7 +99,6 @@ public class SimulatorController {
 
         myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
 
-        // TODO stop thread
     }
 
     private void restart(CenterPanel centerPanel, MyRobot myRobot) {
@@ -226,10 +225,8 @@ public class SimulatorController {
                     }
                 }
                 timer.stop();
-                centerPanel.setExplorationAndFastestPathBtns(true);
-                System.out.println(myRobot.getArena().generateMapDescriptorP1());
-                System.out.println(myRobot.getArena().generateMapDescriptorP2());
-
+                System.out.println("P1: " + myRobot.getArena().generateMapDescriptorP1());
+                System.out.println("P2: " + myRobot.getArena().generateMapDescriptorP2());
                 return true;
             }
 
