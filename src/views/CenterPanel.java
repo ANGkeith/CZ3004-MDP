@@ -28,6 +28,8 @@ public class CenterPanel extends JPanel {
     private JButton coverageLimitedExplorationBtn;
     private JButton fastestPathBtn;
     private JButton restartBtn;
+    private JButton mapDescriptorP1;
+    private JButton mapDescriptorP2;
     private JLabel title;
     private JLabel[] statusLbls;
     private JPanel mainPanel;
@@ -112,6 +114,15 @@ public class CenterPanel extends JPanel {
             statusLbls[i] = new JLabel(statusPrefixedLbls[i] + 0);
             statusPanel.add(statusLbls[i], "wrap");
         }
+
+        mapDescriptorP1 = new JButton("P1");
+        mapDescriptorP1.setToolTipText("Copy to system clipboard");
+        mapDescriptorP2 = new JButton("P2");
+        mapDescriptorP2.setToolTipText("Copy to system clipboard");
+
+        statusPanel.add(mapDescriptorP1, "split2, growx");
+        statusPanel.add(mapDescriptorP2, "growx");
+
         // Status Panel
 
         mainPanel.add(title, "alignx center, spanx, wrap");
@@ -184,7 +195,13 @@ public class CenterPanel extends JPanel {
         restartBtn.addActionListener(a);
     }
 
+    public void addMapDescriptorP1Listener(ActionListener a) {
+        mapDescriptorP1.addActionListener(a);
+    }
 
+    public void addMapDescriptorP2Listener(ActionListener a) {
+        mapDescriptorP2.addActionListener(a);
+    }
     // getter & setters
     public JComboBox<String> getOrientationSelection() {
         return orientationSelection;

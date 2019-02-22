@@ -11,6 +11,9 @@ import views.EastPanel;
 import views.WestPanel;
 
 import javax.swing.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -43,6 +46,8 @@ public class SimulatorController {
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
         centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
         centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
+        centerPanel.addMapDescriptorP1Listener(e -> copyP1ToClipBoard(centerPanel, myRobot));
+        centerPanel.addMapDescriptorP2Listener(e -> copyP2ToClipBoard(centerPanel, myRobot));
 
     }
 
@@ -156,6 +161,18 @@ public class SimulatorController {
         }
     }
 
+    private void copyP1ToClipBoard(CenterPanel centerPanel, MyRobot myRobot) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection contentToBeCopied = new StringSelection(myRobot.getArena().generateMapDescriptorP1());
+        clipboard.setContents(contentToBeCopied, contentToBeCopied);
+    }
+
+    private void copyP2ToClipBoard(CenterPanel centerPanel, MyRobot myRobot) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection contentToBeCopied = new StringSelection(myRobot.getArena().generateMapDescriptorP2());
+        clipboard.setContents(contentToBeCopied, contentToBeCopied);
+    }
+
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
@@ -211,6 +228,9 @@ public class SimulatorController {
                 }
                 timer.stop();
                 centerPanel.setExplorationAndFastestPathBtns(true);
+                System.out.println(myRobot.getArena().generateMapDescriptorP1());
+                System.out.println(myRobot.getArena().generateMapDescriptorP2());
+
                 return true;
             }
 
