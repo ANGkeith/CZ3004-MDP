@@ -69,7 +69,7 @@ public class CenterPanel extends JPanel {
         lbls[5] = new JLabel("Exploration time-limit (m : s):");
 
         fields = new JTextField[6];
-        fields[0] = new JTextField((myRobot.getCurRow()+1) + ", " + (myRobot.getCurCol()+1));
+        fields[0] = new JTextField((myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();

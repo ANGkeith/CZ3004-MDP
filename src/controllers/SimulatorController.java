@@ -82,11 +82,10 @@ public class SimulatorController {
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
         // Have to plus 1 because the row and col starts from 0;
-        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10) - 1);
-        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
+        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10));
+        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10));
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
-        String curUserInput = centerPanel.getFields()[4].getText();
         myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
         myRobot.setExplorationTimeLimit(parseInputToSecs(centerPanel.getFields()[5].getText()));
 

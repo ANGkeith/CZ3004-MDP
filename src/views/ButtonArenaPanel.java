@@ -27,7 +27,7 @@ public class ButtonArenaPanel extends JPanel {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
                 arenaGrids[r][c] = new JButton();
-                arenaGrids[r][c].setToolTipText((r+1) +", " + (c+1));
+                arenaGrids[r][c].setToolTipText((r) +", " + (c));
 
                 // Show tool tips immediately
                 ToolTipManager.sharedInstance().setInitialDelay(0);
