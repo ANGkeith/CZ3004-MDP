@@ -61,6 +61,7 @@ public class App extends JFrame {
         // Models
         referenceArena = new Arena();
         arena = new Arena();
+
         try {
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             referenceArena.binStringToArena(fileReader.read());
