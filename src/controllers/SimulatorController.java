@@ -24,6 +24,7 @@ public class SimulatorController {
     private int turningSpeedMs;
     private int fwdSpeedMs;
     private Timer timer;
+    private final int[] timeElapsed = new int[1];
     public static int numFwd;
     public static int numTurn;
 
@@ -38,7 +39,10 @@ public class SimulatorController {
         centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
         centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot));
         centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot));
-        centerPanel.addExplorationBtnListener(e -> exploration(centerPanel, myRobot));
+        centerPanel.addExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.NORMAL));
+        centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
+        centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
+        centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
 
     }
 
@@ -77,6 +81,9 @@ public class SimulatorController {
         myRobot.setCurCol(Integer.parseInt(rowCol[1], 10) - 1);
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
+        String curUserInput = centerPanel.getFields()[4].getText();
+        myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
+        myRobot.setExplorationTimeLimit(parseInputToSecs(centerPanel.getFields()[5].getText()));
 
         Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
         myRobot.setCurOrientation(selectedOrientation);
@@ -94,8 +101,7 @@ public class SimulatorController {
     private void restart(CenterPanel centerPanel, MyRobot myRobot) {
         timer.stop();
         saveConfigurations(centerPanel, myRobot);
-        centerPanel.getExplorationBtn().setEnabled(true);
-        centerPanel.getFastestPathBtn().setEnabled(true);
+        centerPanel.setExplorationAndFastestPathBtns(true);
         centerPanel.reinitStatusPanelTxt();
         if (explorationWorker != null) {
             explorationWorker.cancel(true);
@@ -122,8 +128,16 @@ public class SimulatorController {
 
     // utils
     private String[] parseInputToRowColArr(String s) {
-        return s.split(",\\s*");
+        return s.split("\\s*,\\s*");
     }
+
+    private int parseInputToSecs(String s) {
+        String[] stringArr = s.split("\\s*:\\s*");
+        int min = Integer.parseInt(stringArr[0], 10);
+        int sec = Integer.parseInt(stringArr[1], 10);
+        return min * 60 + sec;
+    }
+
 
     public Orientation orientationStringToEnum(String s) {
         if (s == "North") {
@@ -142,39 +156,37 @@ public class SimulatorController {
         }
     }
 
-
-
-    private void exploration(CenterPanel centerPanel, MyRobot myRobot){
+    private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
         this.myRobot = myRobot;
         this.arena = myRobot.getArena();
 
-        centerPanel.getExplorationBtn().setEnabled(false);
-        centerPanel.getFastestPathBtn().setEnabled(false);
+        timeElapsed[0] = 0;
+        centerPanel.setExplorationAndFastestPathBtns(false);
 
         JLabel[] statusLbls = centerPanel.getStatusLbls();
 
         timer = new Timer(1000, new ActionListener() {
-            int timeElapsed = 0;
             public void actionPerformed(ActionEvent evt) {
-                timeElapsed++;
-                statusLbls[0].setText(centerPanel.statusPrefixedLbls[0] + timeElapsed);
+                timeElapsed[0]++;
+                statusLbls[0].setText(centerPanel.statusPrefixedLbls[0] + timeElapsed[0]);
             }
         });
 
 
         explorationWorker = new SwingWorker<Boolean, Void>() {
 
+            boolean explorationCompletedFlag;
+            boolean hasFoundGoalZoneFlag;
             @Override
             protected Boolean doInBackground() throws Exception {
-                boolean hasFoundGoalZoneFlag = false;
-                boolean explorationCompletedFlag = false;
+                hasFoundGoalZoneFlag = false;
+                explorationCompletedFlag = false;
                 numTurn = 0;
                 numFwd = 0;
-                statusLbls[0].setText(centerPanel.statusPrefixedLbls[0] + 0);
                 timer.start();
-                while (!explorationCompletedFlag) {
+                while (!explorationCompletedFlag && stoppingConditions(explorationType)) {
                     if (myRobot.hasObstacleToItsImmediateRight() || rightBlindSpotHasObstacle()) {
                         if (!myRobot.hasObstacleRightInFront()) {
                             forward();
@@ -195,9 +207,10 @@ public class SimulatorController {
 
                     if (hasFoundGoalZoneFlag && robotIsAtStartZone()) {
                         explorationCompletedFlag = true;
-                        timer.stop();
                     }
                 }
+                timer.stop();
+                centerPanel.setExplorationAndFastestPathBtns(true);
                 return true;
             }
 
@@ -209,10 +222,28 @@ public class SimulatorController {
                 return (myRobot.getCurRow() == 18 && myRobot.getCurCol() == 1);
             }
 
+            private boolean stoppingConditions(ExplorationType explorationType) {
+                if (explorationType == ExplorationType.NORMAL) {
+                    return true;
+                } else if (explorationType == ExplorationType.COVERAGE_LIMITED) {
+                    if (myRobot.getExplorationCoverageLimit() > 0) {
+                        return (myRobot.getExplorationCoverageLimit() > myRobot.getArena().getCoveragePercentage());
+                    }
+
+                } else if (explorationType == ExplorationType.TIME_LIMITED) {
+                    if (myRobot.getExplorationTimeLimitInSeconds() > 0) {
+                        return (myRobot.getExplorationTimeLimitInSeconds() > timeElapsed[0]);
+                    }
+                }
+                return true;
+            }
         };
         explorationWorker.execute();
     }
 
+    // ToDO
+    private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
+    }
 
 
     private void forward() throws InterruptedException {

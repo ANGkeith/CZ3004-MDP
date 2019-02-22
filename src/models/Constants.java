@@ -12,7 +12,6 @@ public class Constants {
     public static final Color EXPLORED_COLOR = Color.white;
     public static final Color UNEXPLORED_COLOR = Color.black;
     public static final Color OBSTACLE_COLOR = Color.RED;
-    public static final Color MAP_COLOR = Color.lightGray;
     public static final Color ROBOT_COLOR = Color.black;
     public static final Color ARENA_DIVIDER_LINE_COLOR = Color.BLUE;
     public static final int ARENA_DIVIDER_LINE_THICKNESS = 4;
@@ -25,6 +24,9 @@ public class Constants {
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
+    public static final int DEFAULT_COVERAGE_LIMIT = 100;
+    public static final int DEFAULT_TIME_LIMIT = 120;
+
     public enum My_Robot_Instruction {
         FORWARD,
         TURN_LEFT,
@@ -36,6 +38,12 @@ public class Constants {
         E,
         S,
         W,
+    }
+
+    public enum ExplorationType {
+        NORMAL,
+        TIME_LIMITED,
+        COVERAGE_LIMITED,
     }
 
     // this position is relative to the orientation of the robot

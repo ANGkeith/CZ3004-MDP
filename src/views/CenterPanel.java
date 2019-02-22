@@ -24,6 +24,8 @@ public class CenterPanel extends JPanel {
     private JButton okBtn;
     private JPanel buttonPanel;
     private JButton explorationBtn;
+    private JButton timeLimitedExplorationBtn;
+    private JButton coverageLimitedExplorationBtn;
     private JButton fastestPathBtn;
     private JButton restartBtn;
     private JLabel title;
@@ -42,8 +44,10 @@ public class CenterPanel extends JPanel {
         title = new JLabel("MDP GROUP 2");
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
-        explorationBtn = new JButton("Start Exploration ");
-        fastestPathBtn = new JButton("Start Fastest Path");
+        explorationBtn = new JButton( "Exploration");
+        fastestPathBtn = new JButton("Fastest Path");
+        coverageLimitedExplorationBtn = new JButton("Coverage-Limited Exploration ");
+        timeLimitedExplorationBtn = new JButton("Time-Limited Exploration");
         restartBtn = new JButton("Restart");
 
         // Config Panel
@@ -54,17 +58,21 @@ public class CenterPanel extends JPanel {
         orientationSelection = new JComboBox<>(orientationList);
         orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
 
-        lbls = new JLabel[4];
+        lbls = new JLabel[6];
         lbls[0] = new JLabel("Starting position:");
         lbls[1] = new JLabel("Forward Speed (s):");
         lbls[2] = new JLabel("90 degree turn Speed (s):");
-        lbls[3] = new JLabel("Enter way point:");
+        lbls[3] = new JLabel("Way point:");
+        lbls[4] = new JLabel("Coverage-limit (%):");
+        lbls[5] = new JLabel("Exploration time-limit (m : s):");
 
-        fields = new JTextField[4];
+        fields = new JTextField[6];
         fields[0] = new JTextField((myRobot.getCurRow()+1) + ", " + (myRobot.getCurCol()+1));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();
+        fields[4] = new JTextField(Double.toString(myRobot.getExplorationCoverageLimit()));
+        fields[5] = new JTextField(myRobot.getExplorationTimeLimitFormatted());
 
         configPanel.add(orientationLbl);
         orientationSelection.setEnabled(false);
@@ -108,13 +116,15 @@ public class CenterPanel extends JPanel {
 
         mainPanel.add(title, "alignx center, spanx, wrap");
 
-        mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, wrap, alignx center");
+        mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, alignx center");
         mainPanel.add(fastestPathBtn, "gapy 10 0, growx, wrap, alignx center");
+        mainPanel.add(coverageLimitedExplorationBtn, "gapy 10 0, growx, wrap, alignx center");
+        mainPanel.add(timeLimitedExplorationBtn, "gapy 10 0, growx, wrap, alignx center");
         mainPanel.add(restartBtn, "gapy 10 0, growx, wrap, alignx center");
 
         configPanel.add(buttonPanel, "gapy 10 0, spanx, pushx, alignx right");
-        mainPanel.add(configPanel, "pushx, growx, gapy 30 0, wrap");
-        mainPanel.add(statusPanel, "pushx, growx, gapy 30 0, wrap");
+        mainPanel.add(configPanel, "pushx, growx, gapy 10 0, wrap");
+        mainPanel.add(statusPanel, "pushx, growx, gapy 10 0, wrap");
 
         add(mainPanel);
     }
@@ -138,12 +148,25 @@ public class CenterPanel extends JPanel {
         return "West";
     }
 
+    public void setExplorationAndFastestPathBtns(Boolean isEnable) {
+        explorationBtn.setEnabled(isEnable);
+        fastestPathBtn.setEnabled(isEnable);
+        timeLimitedExplorationBtn.setEnabled(isEnable);
+        coverageLimitedExplorationBtn.setEnabled(isEnable);
+    }
+
     // Listener
     public void addExplorationBtnListener(ActionListener a) {
         explorationBtn.addActionListener(a);
     }
     public void addFastestPathBtnListener(ActionListener a) {
         fastestPathBtn.addActionListener(a);
+    }
+    public void addCoverageLimitedExplorationBtnListener(ActionListener a) {
+        coverageLimitedExplorationBtn.addActionListener(a);
+    }
+    public void addTimeLimitedExplorationBtnListener(ActionListener a) {
+        timeLimitedExplorationBtn.addActionListener(a);
     }
     public void addOkBtnListener(ActionListener a) {
         okBtn.addActionListener(a);
@@ -179,18 +202,6 @@ public class CenterPanel extends JPanel {
         return okBtn;
     }
 
-    public JButton getExplorationBtn() {
-        return explorationBtn;
-    }
-
-    public JButton getFastestPathBtn() {
-        return fastestPathBtn;
-    }
-
-    public JButton getRestartBtn() {
-        return restartBtn;
-    }
-
     public JLabel[] getLbls() {
         return lbls;
     }
@@ -201,9 +212,5 @@ public class CenterPanel extends JPanel {
 
     public JLabel[] getStatusLbls() {
         return statusLbls;
-    }
-
-    public void setStatusLbls(JLabel[] statusLbls) {
-        this.statusLbls = statusLbls;
     }
 }

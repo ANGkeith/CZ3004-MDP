@@ -13,13 +13,14 @@ public class MyRobot {
     private Orientation curOrientation;
     private Arena referenceArena;
     private Arena arena;
+    private double explorationCoverageLimit = DEFAULT_COVERAGE_LIMIT;
+    private int explorationTimeLimit = DEFAULT_TIME_LIMIT;
     private Sensor[] frontSensor;
     private Sensor[] rightSensor;
     private Sensor[] leftSensor;
     private Sensor[][] allSensor;
     private double forwardSpeed;
     private double turningSpeed;
-    private boolean foundGoalZone;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena arena, Arena referenceArena) {
@@ -141,6 +142,14 @@ public class MyRobot {
         return false;
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    private boolean hasChangeInValue(int oldValue, int newValue) {
+        return oldValue != newValue;
+    }
+
     public Sensor[] getFrontSensor() {
         return frontSensor;
     }
@@ -209,20 +218,29 @@ public class MyRobot {
         this.turningSpeed = turningSpeed;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
-    }
-
-    private boolean hasChangeInValue(int oldValue, int newValue) {
-        return oldValue != newValue;
-    }
-
     public Arena getArena() {
         return arena;
     }
 
+    public double getExplorationCoverageLimit() {
+        return explorationCoverageLimit;
+    }
+
+    public void setExplorationCoverageLimit(double explorationCoverageLimit) {
+        this.explorationCoverageLimit = explorationCoverageLimit;
+    }
+
+    public int getExplorationTimeLimitInSeconds() {
+        return explorationTimeLimit;
+    }
+
+    public String getExplorationTimeLimitFormatted() {
+        int secs = explorationTimeLimit % 60;
+        int mins = explorationTimeLimit / 60;
+        return mins + " : " + secs;
+    }
+
+    public void setExplorationTimeLimit(int explorationTimeLimit) {
+        this.explorationTimeLimit = explorationTimeLimit;
+    }
 }
