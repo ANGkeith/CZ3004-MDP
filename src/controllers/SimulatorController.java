@@ -2,7 +2,6 @@ package controllers;
 
 import static models.Constants.*;
 
-import models.Arena;
 import models.MyRobot;
 import utils.Algorithm;
 import utils.FileReaderWriter;
@@ -39,9 +38,24 @@ public class SimulatorController {
     }
 
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
-        centerPanel.addModifyBtnListener(e -> enableConfigurations(centerPanel));
-        centerPanel.addCancelBtnListener(e -> disableConfigurations(centerPanel));
-        centerPanel.addOkBtnListener(e -> saveConfigurations(centerPanel, myRobot));
+        centerPanel.addModifyBtnListener(e -> {
+            enableConfigurations(centerPanel);
+            centerPanel.setExplorationAndFastestPathBtns(false);
+            centerPanel.getRestartBtn().setEnabled(false);
+        });
+        centerPanel.addCancelBtnListener(e -> {
+            enableConfigurations(centerPanel);
+            disableConfigurations(centerPanel);
+            resetConfigurations(centerPanel, myRobot);
+            centerPanel.setExplorationAndFastestPathBtns(true);
+            centerPanel.getRestartBtn().setEnabled(true);
+
+        });
+        centerPanel.addOkBtnListener(e -> {
+            saveConfigurations(centerPanel, myRobot);
+            centerPanel.setExplorationAndFastestPathBtns(true);
+            centerPanel.getRestartBtn().setEnabled(true);
+        }   );
         centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot));
         centerPanel.addExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.NORMAL));
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
@@ -76,6 +90,15 @@ public class SimulatorController {
         centerPanel.getModifyBtn().setEnabled(true);
         centerPanel.getOrientationSelection().setEnabled(false);
     }
+    private void resetConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
+        JTextField[] fields = centerPanel.getFields();
+        fields[0].setText((myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
+        fields[1].setText((Double.toString(myRobot.getForwardSpeed())));
+        fields[2].setText((Double.toString(myRobot.getTurningSpeed())));
+        fields[4].setText((Double.toString(myRobot.getExplorationCoverageLimit())));
+        fields[5].setText((myRobot.getExplorationTimeLimitFormatted()));
+
+    }
 
     private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
@@ -103,7 +126,9 @@ public class SimulatorController {
     }
 
     private void restart(CenterPanel centerPanel, MyRobot myRobot) {
-        timer.stop();
+        if (timer != null) {
+            timer.stop();
+        }
         saveConfigurations(centerPanel, myRobot);
         centerPanel.setExplorationAndFastestPathBtns(true);
         centerPanel.reinitStatusPanelTxt();

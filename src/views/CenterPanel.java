@@ -215,6 +215,10 @@ public class CenterPanel extends JPanel {
         return modifyBtn;
     }
 
+    public JButton getRestartBtn() {
+        return restartBtn;
+    }
+
     public JButton getOkBtn() {
         return okBtn;
     }
