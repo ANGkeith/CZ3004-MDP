@@ -10,6 +10,7 @@ public class MyRobot {
 
     private int curRow;
     private int curCol;
+    private int temp;
     private Orientation curOrientation;
     private Arena referenceArena;
     private Arena arena;
@@ -34,49 +35,46 @@ public class MyRobot {
         initSensor();
     }
 
-    public void move(My_Robot_Instruction myRobotInstruction) {
-        int temp;
-        if (myRobotInstruction == My_Robot_Instruction.FORWARD) {
-            if (true) {
-                if (!hasObstacleRightInFront()) {
-                    if (curOrientation == Orientation.N) {
-                        temp = curRow - 1;
-                        setCurRow(temp);
-                    } else if (curOrientation == Orientation.E) {
-                        temp = curCol + 1;
-                        setCurCol(temp);
-                    } else if (curOrientation == Orientation.S) {
-                        temp = curRow + 1;
-                        setCurRow(temp);
-                    } else if (curOrientation == Orientation.W) {
-                        temp = curCol - 1;
-                        setCurCol(temp);
-                    }
-                }
-            }
-        } else if (myRobotInstruction == My_Robot_Instruction.TURN_RIGHT) {
+    public void forward() {
+        if (!hasObstacleRightInFront()) {
             if (curOrientation == Orientation.N) {
-                setCurOrientation(Orientation.E);
+                temp = curRow - 1;
+                setCurRow(temp);
             } else if (curOrientation == Orientation.E) {
-                setCurOrientation(Orientation.S);
+                temp = curCol + 1;
+                setCurCol(temp);
             } else if (curOrientation == Orientation.S) {
-                setCurOrientation(Orientation.W);
+                temp = curRow + 1;
+                setCurRow(temp);
             } else if (curOrientation == Orientation.W) {
-                setCurOrientation(Orientation.N);
-            }
-        } else if (myRobotInstruction == My_Robot_Instruction.TURN_LEFT) {
-            if (curOrientation == Orientation.N) {
-                setCurOrientation(Orientation.W);
-            } else if (curOrientation == Orientation.E) {
-                setCurOrientation(Orientation.N);
-            } else if (curOrientation == Orientation.S) {
-                setCurOrientation(Orientation.E);
-            } else if (curOrientation == Orientation.W) {
-                setCurOrientation(Orientation.S);
+                temp = curCol - 1;
+                setCurCol(temp);
             }
         }
     }
+    public void turnRight() {
+        if (curOrientation == Orientation.N) {
+            setCurOrientation(Orientation.E);
+        } else if (curOrientation == Orientation.E) {
+            setCurOrientation(Orientation.S);
+        } else if (curOrientation == Orientation.S) {
+            setCurOrientation(Orientation.W);
+        } else if (curOrientation == Orientation.W) {
+            setCurOrientation(Orientation.N);
+        }
+    }
 
+    public void turnLeft() {
+        if (curOrientation == Orientation.N) {
+            setCurOrientation(Orientation.W);
+        } else if (curOrientation == Orientation.E) {
+            setCurOrientation(Orientation.N);
+        } else if (curOrientation == Orientation.S) {
+            setCurOrientation(Orientation.E);
+        } else if (curOrientation == Orientation.W) {
+            setCurOrientation(Orientation.S);
+        }
+    }
 
     private void initSensor() {
         /*

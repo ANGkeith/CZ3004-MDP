@@ -265,19 +265,19 @@ public class SimulatorController {
     private void forward() throws InterruptedException {
         Thread.sleep(fwdSpeedMs);
         numFwd++;
-        myRobot.move(My_Robot_Instruction.FORWARD);
+        myRobot.forward();
     }
 
     private void right() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         numTurn++;
-        myRobot.move(My_Robot_Instruction.TURN_RIGHT);
+        myRobot.turnRight();
     }
 
     private void left() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         numTurn++;
-        myRobot.move(My_Robot_Instruction.TURN_LEFT);
+        myRobot.turnLeft();
     }
 
     private boolean rightBlindSpotHasObstacle() {

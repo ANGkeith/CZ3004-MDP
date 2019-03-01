@@ -40,13 +40,6 @@ public class Constants {
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
     
     
-    public enum My_Robot_Instruction {
-        FORWARD,
-        TURN_LEFT,
-        TURN_RIGHT,
-    }
-    
-
     public enum Orientation {
         N,
         E,
