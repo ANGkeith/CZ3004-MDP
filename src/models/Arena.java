@@ -47,6 +47,58 @@ public class Arena {
         }
     }
 
+    public String generateMapDescriptorP1() {
+        String txt = "";
+        String fourChar = "11";
+
+        for (int r = ARENA_HEIGHT - 1; r > -1; r--) {
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                if(getGrid(r, c).hasBeenExplored())
+                    fourChar += 1;
+                else
+                    fourChar += 0;
+
+                if(fourChar.length() == 4) {
+                    txt += Integer.toHexString(Integer.parseInt(fourChar, 2));
+                    fourChar = "";
+                }
+            }
+        }
+        if(fourChar.length() == 3) {
+            fourChar += "1";
+            txt += Integer.toHexString(Integer.parseInt(fourChar, 2));
+            fourChar = "";
+            txt += Integer.toHexString(Integer.parseInt(fourChar, 2)); }
+        else {
+            fourChar += "11";
+            txt += Integer.toHexString(Integer.parseInt(fourChar, 2)); }
+        return txt;
+    }
+
+    public String generateMapDescriptorP2() {
+        String txt = "";
+        String fourChar = "";
+
+        for (int r = ARENA_HEIGHT - 1; r > -1; r--) {
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                if(getGrid(r, c).hasBeenExplored()) {
+                    if(getGrid(r,c).hasObstacle())
+                        fourChar += 1;
+                    else
+                        fourChar += 0;
+                    if(fourChar.length() == 4) {
+                        txt += Integer.toHexString(Integer.parseInt(fourChar, 2));
+                        fourChar = "";
+                    }
+                }
+            }
+        }
+
+        if(fourChar.length() > 0)
+            txt += Integer.toHexString(Integer.parseInt(fourChar, 2));
+        return txt;
+    }
+
     // generate a binary representation of the obstacles
     public String obstacleToString() {
         String descriptor = "";

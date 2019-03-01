@@ -64,7 +64,10 @@ public class App extends JFrame {
         try {
         	System.out.println(ARENA_DESCRIPTOR_PATH);
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
-            referenceArena.binStringToArena(fileReader.read());
+            String fileContent = fileReader.read();
+            if (!fileContent.equals("")) {
+                referenceArena.binStringToArena(fileReader.read());
+            }
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }

@@ -55,7 +55,7 @@ public class LabelDecoratorPanel extends JPanel {
     }
 
     private JLabel generateLabel(int index) {
-        JLabel label = new JLabel(Integer.toString(index + 1), SwingConstants.HORIZONTAL);
+        JLabel label = new JLabel(Integer.toString(index), SwingConstants.HORIZONTAL);
         label.setForeground(ARENA_LABEL_COLOR);
         return label;
 
