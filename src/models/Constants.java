@@ -18,10 +18,10 @@ public class Constants {
     public static final int ARENA_DIVIDER_LINE_THICKNESS = 4;
     public static final Color ARENA_GRID_LINE_COLOR = Color.darkGray;
     public static final Color GOAL_ZONE_COLOR = Color.MAGENTA;
-    public static final Color START_ZONE_COLOR = new Color(50, 226, 36);
+    public static final Color START_ZONE_COLOR = new Color (50, 226, 36);
     public static final Color ORIENTATION_MARKER_COLOR = Color.WHITE;
     public static final Color SENSOR_RANGE_COLOR = new Color(212, 255, 46, 100);
-    public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/wasapia/local_storage/mock_arena.txt";
+    public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/local_storage/mock_arena.txt";
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
