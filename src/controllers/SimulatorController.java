@@ -3,8 +3,8 @@ package controllers;
 import static models.Constants.*;
 
 import models.Arena;
-import models.Grid;
 import models.MyRobot;
+import utils.Algorithm;
 import utils.FileReaderWriter;
 import views.CenterPanel;
 import views.EastPanel;
@@ -22,14 +22,15 @@ import java.nio.file.FileSystems;
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
 public class SimulatorController {
-    private Arena arena;
     private MyRobot myRobot;
     private int turningSpeedMs;
     private int fwdSpeedMs;
     private Timer timer;
-    private final int[] timeElapsed = new int[1];
+    public final int[] timeElapsed = new int[1];
     public static int numFwd;
     public static int numTurn;
+    private JLabel[] statusLbls;
+    private Algorithm algo;
 
 
     SwingWorker<Boolean, Void> explorationWorker;
@@ -172,16 +173,16 @@ public class SimulatorController {
     }
 
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
+        this.myRobot = myRobot;
+        algo = new Algorithm(myRobot, getInstance(), explorationType);
+
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
-        this.myRobot = myRobot;
-        this.arena = myRobot.getArena();
 
         timeElapsed[0] = 0;
         centerPanel.setExplorationAndFastestPathBtns(false);
 
-        JLabel[] statusLbls = centerPanel.getStatusLbls();
-
+        statusLbls = centerPanel.getStatusLbls();
         timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 timeElapsed[0]++;
@@ -189,68 +190,17 @@ public class SimulatorController {
             }
         });
 
-
         explorationWorker = new SwingWorker<Boolean, Void>() {
-
-            boolean explorationCompletedFlag;
-            boolean hasFoundGoalZoneFlag;
             @Override
             protected Boolean doInBackground() throws Exception {
-                hasFoundGoalZoneFlag = false;
-                explorationCompletedFlag = false;
+                myRobot.setHasFoundGoalZoneFlag(false);
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                while (!explorationCompletedFlag && stoppingConditions(explorationType)) {
-                    if (myRobot.hasObstacleToItsImmediateRight() || rightBlindSpotHasObstacle()) {
-                        if (!myRobot.hasObstacleRightInFront()) {
-                            forward();
-                        } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
-                            left();
-                        } else if (myRobot.hasObstacleToItsImmediateLeft()) {
-                            right();
-                            right();
-                        }
-                    } else {
-                        right();
-                        forward();
-                    }
-
-                    if (robotIsAtGoalZone()) {
-                        hasFoundGoalZoneFlag = true;
-                    }
-
-                    if (hasFoundGoalZoneFlag && robotIsAtStartZone()) {
-                        explorationCompletedFlag = true;
-                    }
-                }
+                algo.explorationLogic();
                 timer.stop();
                 System.out.println("P1: " + myRobot.getArena().generateMapDescriptorP1());
                 System.out.println("P2: " + myRobot.getArena().generateMapDescriptorP2());
-                return true;
-            }
-
-            private boolean robotIsAtGoalZone() {
-                return (myRobot.getCurRow() == 1 && myRobot.getCurCol() == 13);
-            }
-
-            private boolean robotIsAtStartZone() {
-                return (myRobot.getCurRow() == 18 && myRobot.getCurCol() == 1);
-            }
-
-            private boolean stoppingConditions(ExplorationType explorationType) {
-                if (explorationType == ExplorationType.NORMAL) {
-                    return true;
-                } else if (explorationType == ExplorationType.COVERAGE_LIMITED) {
-                    if (myRobot.getExplorationCoverageLimit() > 0) {
-                        return (myRobot.getExplorationCoverageLimit() > myRobot.getArena().getCoveragePercentage());
-                    }
-
-                } else if (explorationType == ExplorationType.TIME_LIMITED) {
-                    if (myRobot.getExplorationTimeLimitInSeconds() > 0) {
-                        return (myRobot.getExplorationTimeLimitInSeconds() > timeElapsed[0]);
-                    }
-                }
                 return true;
             }
         };
@@ -259,64 +209,46 @@ public class SimulatorController {
 
     // ToDO
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
+        this.myRobot = myRobot;
+        algo = new Algorithm(myRobot, getInstance());
+
+        timeElapsed[0] = 0;
+        centerPanel.setExplorationAndFastestPathBtns(false);
+
+        statusLbls = centerPanel.getStatusLbls();
+
+        explorationWorker = new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                timer.start();
+                algo.fastestPathLogic();
+                timer.stop();
+                return true;
+            }
+        };
+        explorationWorker.execute();
     }
 
 
-    private void forward() throws InterruptedException {
+    public void forward() throws InterruptedException {
         Thread.sleep(fwdSpeedMs);
         numFwd++;
         myRobot.forward();
     }
 
-    private void right() throws InterruptedException {
+    public void right() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         numTurn++;
         myRobot.turnRight();
     }
 
-    private void left() throws InterruptedException {
+    public void left() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         numTurn++;
         myRobot.turnLeft();
     }
 
-    private boolean rightBlindSpotHasObstacle() {
-        int curRow = myRobot.getCurRow();
-        int curCol = myRobot.getCurCol();
-        Orientation curOrientation = myRobot.getCurOrientation();
-
-        int blindSpotRow;
-        int blindSpotCol;
-        Grid blindSpotGrid;
-
-        switch(curOrientation) {
-            case N:
-                blindSpotCol = curCol + 2;
-                blindSpotRow = curRow;
-                break;
-            case E:
-                blindSpotCol = curCol;
-                blindSpotRow = curRow + 2;
-                break;
-            case S:
-                blindSpotCol = curCol - 2;
-                blindSpotRow = curRow;
-                break;
-            default:
-                blindSpotCol = curCol;
-                blindSpotRow = curRow - 2;
-                break;
-        }
-
-        blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
-        if (blindSpotGrid != null) {
-            if (blindSpotGrid.hasBeenExplored()) {
-                return blindSpotGrid.hasObstacle();
-            } else {
-                System.out.println("BLIND SPOT NOT EXPLORED");
-                return false;
-            }
-        }
-        return true;
+    public SimulatorController getInstance() {
+        return this;
     }
 }

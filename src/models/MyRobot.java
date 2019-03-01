@@ -22,6 +22,7 @@ public class MyRobot {
     private Sensor[][] allSensor;
     private double forwardSpeed;
     private double turningSpeed;
+    private boolean hasFoundGoalZoneFlag;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena arena, Arena referenceArena) {
@@ -32,6 +33,7 @@ public class MyRobot {
         this.referenceArena = referenceArena;
         this.forwardSpeed = 1.0;
         this.turningSpeed = 0.5;
+        this.hasFoundGoalZoneFlag = false;
         initSensor();
     }
 
@@ -140,12 +142,28 @@ public class MyRobot {
         return false;
     }
 
+    public boolean isAtGoalZone() {
+        return (getCurRow() == GOAL_ZONE_ROW && getCurCol() == GOAL_ZONE_COL);
+    }
+
+    public boolean isAtStartZone() {
+        return (getCurRow() == START_ZONE_ROW && getCurCol() == START_ZONE_COL);
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
     }
 
     private boolean hasChangeInValue(int oldValue, int newValue) {
         return oldValue != newValue;
+    }
+
+    public boolean getHasFoundGoalZoneFlag() {
+        return hasFoundGoalZoneFlag;
+    }
+
+    public void setHasFoundGoalZoneFlag(boolean hasFoundGoalZoneFlag) {
+        this.hasFoundGoalZoneFlag = hasFoundGoalZoneFlag;
     }
 
     public Sensor[] getFrontSensor() {
@@ -164,6 +182,47 @@ public class MyRobot {
         allSensor[1] = getRightSensor();
         allSensor[2] = getLeftSensor();
         return allSensor;
+    }
+
+
+    public boolean rightBlindSpotHasObstacle() {
+        int curRow = getCurRow();
+        int curCol = getCurCol();
+        Orientation curOrientation = getCurOrientation();
+
+        int blindSpotRow;
+        int blindSpotCol;
+        Grid blindSpotGrid;
+
+        switch(curOrientation) {
+            case N:
+                blindSpotCol = curCol + 2;
+                blindSpotRow = curRow;
+                break;
+            case E:
+                blindSpotCol = curCol;
+                blindSpotRow = curRow + 2;
+                break;
+            case S:
+                blindSpotCol = curCol - 2;
+                blindSpotRow = curRow;
+                break;
+            default:
+                blindSpotCol = curCol;
+                blindSpotRow = curRow - 2;
+                break;
+        }
+
+        blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+        if (blindSpotGrid != null) {
+            if (blindSpotGrid.hasBeenExplored()) {
+                return blindSpotGrid.hasObstacle();
+            } else {
+                System.out.println("BLIND SPOT NOT EXPLORED");
+                return false;
+            }
+        }
+        return true;
     }
 
     public int getCurCol() {

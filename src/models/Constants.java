@@ -38,7 +38,12 @@ public class Constants {
 	public static final String START_SHORTEST = "short";
 	public static final String CALIBRATE = "C";
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
-    
+
+	public static final int GOAL_ZONE_ROW = 1;
+    public static final int GOAL_ZONE_COL = 13;
+    public static final int START_ZONE_ROW = 18;
+    public static final int START_ZONE_COL = 1;
+
     
     public enum Orientation {
         N,
