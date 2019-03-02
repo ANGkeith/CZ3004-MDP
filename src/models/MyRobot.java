@@ -31,8 +31,8 @@ public class MyRobot {
         this.curCol = curCol;
         this.curOrientation = curOrientation;
         this.referenceArena = referenceArena;
-        this.forwardSpeed = 1.0;
-        this.turningSpeed = 0.5;
+        this.forwardSpeed = 0;
+        this.turningSpeed = 0;
         this.hasFoundGoalZoneFlag = false;
         initSensor();
     }

@@ -43,7 +43,9 @@ public class Constants {
     public static final int GOAL_ZONE_COL = 13;
     public static final int START_ZONE_ROW = 18;
     public static final int START_ZONE_COL = 1;
-
+    public static final int MOVE_COST = 1;
+    public static final int TURN_COST = 1;
+    public static final int INFINITY = 999;
     
     public enum Orientation {
         N,

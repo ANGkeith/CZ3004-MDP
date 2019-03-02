@@ -219,6 +219,10 @@ public class CenterPanel extends JPanel {
         return restartBtn;
     }
 
+    public JButton getFastestPathBtn () {
+        return fastestPathBtn;
+    }
+
     public JButton getOkBtn() {
         return okBtn;
     }

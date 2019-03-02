@@ -3,7 +3,8 @@ package controllers;
 import static models.Constants.*;
 
 import models.MyRobot;
-import utils.Algorithm;
+import utils.ExplorationAlgorithm;
+import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
 import views.CenterPanel;
 import views.EastPanel;
@@ -29,7 +30,8 @@ public class SimulatorController {
     public static int numFwd;
     public static int numTurn;
     private JLabel[] statusLbls;
-    private Algorithm algo;
+    private ExplorationAlgorithm explorationAlgo;
+    private FastestPathAlgorithm fastestPathAlgo;
 
 
     SwingWorker<Boolean, Void> explorationWorker;
@@ -199,7 +201,7 @@ public class SimulatorController {
 
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
-        algo = new Algorithm(myRobot, getInstance(), explorationType);
+        explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
@@ -222,10 +224,11 @@ public class SimulatorController {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                algo.explorationLogic();
+                explorationAlgo.explorationLogic();
                 timer.stop();
                 System.out.println("P1: " + myRobot.getArena().generateMapDescriptorP1());
                 System.out.println("P2: " + myRobot.getArena().generateMapDescriptorP2());
+                centerPanel.getFastestPathBtn().setEnabled(true);
                 return true;
             }
         };
@@ -235,7 +238,7 @@ public class SimulatorController {
     // ToDO
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
         this.myRobot = myRobot;
-        algo = new Algorithm(myRobot, getInstance());
+        fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
 
         timeElapsed[0] = 0;
         centerPanel.setExplorationAndFastestPathBtns(false);
@@ -245,8 +248,10 @@ public class SimulatorController {
         explorationWorker = new SwingWorker<Boolean, Void>() {
             @Override
             protected Boolean doInBackground() throws Exception {
+                numTurn = 0;
+                numFwd = 0;
                 timer.start();
-                algo.fastestPathLogic();
+                fastestPathAlgo.A_Star(myRobot.getCurRow(), myRobot.getCurCol());
                 timer.stop();
                 return true;
             }

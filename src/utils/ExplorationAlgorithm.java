@@ -4,22 +4,18 @@ import controllers.SimulatorController;
 import models.MyRobot;
 import static models.Constants.*;
 
-public class Algorithm {
+public class ExplorationAlgorithm {
 
     private MyRobot myRobot;
     private ExplorationType explorationType;
     private SimulatorController sim;
 
-    public Algorithm(MyRobot myRobot, SimulatorController sim, ExplorationType explorationType) {
+    public ExplorationAlgorithm(MyRobot myRobot, SimulatorController sim, ExplorationType explorationType) {
         this.myRobot = myRobot;
         this.sim = sim;
         this.explorationType = explorationType;
     }
 
-    public Algorithm(MyRobot myRobot, SimulatorController sim) {
-        this.myRobot = myRobot;
-        this.sim = sim;
-    }
 
     public void explorationLogic() throws Exception {
         boolean explorationCompletedFlag = false;
@@ -61,9 +57,5 @@ public class Algorithm {
             }
         }
         return true;
-    }
-
-    public void fastestPathLogic() throws Exception {
-
     }
 }
