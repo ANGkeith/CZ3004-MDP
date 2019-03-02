@@ -27,6 +27,13 @@ public class Grid {
         cameFrom = null;
     }
 
+    public void reinitizalizeGridCost() {
+        f = INFINITY;
+        g = INFINITY;
+        h = INFINITY;
+        cameFrom = null;
+    }
+
     public Grid getCameFrom() {
         return cameFrom;
     }

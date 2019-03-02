@@ -26,7 +26,7 @@ public class SimulatorController {
     private int turningSpeedMs;
     private int fwdSpeedMs;
     private Timer timer;
-    public final int[] timeElapsed = new int[1];
+    public static final int[] timeElapsed = new int[1];
     public static int numFwd;
     public static int numTurn;
     private JLabel[] statusLbls;
@@ -131,12 +131,19 @@ public class SimulatorController {
         if (timer != null) {
             timer.stop();
         }
+        myRobot.resetPathTaken();
         saveConfigurations(centerPanel, myRobot);
         centerPanel.setExplorationAndFastestPathBtns(true);
+        reinitStatusPanelVariables();
         centerPanel.reinitStatusPanelTxt();
         if (explorationWorker != null) {
             explorationWorker.cancel(true);
         }
+    }
+    private void reinitStatusPanelVariables() {
+        timeElapsed[0] = 0;
+        numTurn = 0;
+        numFwd = 0;
     }
 
     private void saveMap(EastPanel eastPanel) {
@@ -238,6 +245,7 @@ public class SimulatorController {
     // ToDO
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
         this.myRobot = myRobot;
+        myRobot.resetPathTaken();
         fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
 
         timeElapsed[0] = 0;
@@ -262,19 +270,17 @@ public class SimulatorController {
 
     public void forward() throws InterruptedException {
         Thread.sleep(fwdSpeedMs);
-        numFwd++;
         myRobot.forward();
+        myRobot.addCurGridToPathTaken();
     }
 
     public void right() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
-        numTurn++;
         myRobot.turnRight();
     }
 
     public void left() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
-        numTurn++;
         myRobot.turnLeft();
     }
 

@@ -1,5 +1,6 @@
 package views;
 
+import controllers.SimulatorController;
 import models.MyRobot;
 import net.miginfocom.swing.MigLayout;
 
@@ -147,6 +148,9 @@ public class CenterPanel extends JPanel {
         for (int i = 0; i  < statusLbls.length; i++) {
             statusLbls[i].setText(statusPrefixedLbls[i] + 0);
         }
+        SimulatorController.timeElapsed[0] = 0;
+        SimulatorController.numTurn = 0;
+        SimulatorController.numFwd = 0;
     }
     public String orientationEnumToString(Orientation o) {
         if (o == Orientation.N) {

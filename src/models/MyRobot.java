@@ -1,7 +1,11 @@
 package models;
 
+import controllers.SimulatorController;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static models.Constants.*;
 
@@ -23,6 +27,7 @@ public class MyRobot {
     private double forwardSpeed;
     private double turningSpeed;
     private boolean hasFoundGoalZoneFlag;
+    private Queue<Grid> pathTaken;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena arena, Arena referenceArena) {
@@ -34,11 +39,17 @@ public class MyRobot {
         this.forwardSpeed = 0;
         this.turningSpeed = 0;
         this.hasFoundGoalZoneFlag = false;
+        this.pathTaken = new ConcurrentLinkedQueue<>();
         initSensor();
+    }
+
+    public void resetPathTaken() {
+        pathTaken.clear();
     }
 
     public void forward() {
         if (!hasObstacleRightInFront()) {
+            SimulatorController.numFwd++;
             if (curOrientation == Orientation.N) {
                 temp = curRow - 1;
                 setCurRow(temp);
@@ -55,6 +66,7 @@ public class MyRobot {
         }
     }
     public void turnRight() {
+        SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.E);
         } else if (curOrientation == Orientation.E) {
@@ -67,6 +79,7 @@ public class MyRobot {
     }
 
     public void turnLeft() {
+        SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.W);
         } else if (curOrientation == Orientation.E) {
@@ -299,5 +312,13 @@ public class MyRobot {
 
     public void setExplorationTimeLimit(int explorationTimeLimit) {
         this.explorationTimeLimit = explorationTimeLimit;
+    }
+
+    public void addCurGridToPathTaken() {
+        pathTaken.add(getArena().getGrid(curRow, curCol));
+    }
+
+    public Queue<Grid> getPathTaken() {
+        return pathTaken;
     }
 }

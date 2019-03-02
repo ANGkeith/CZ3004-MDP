@@ -150,6 +150,7 @@ public class Arena {
                     this.grids[r][c].setHasObstacle(false);
                     this.grids[r][c].setHasBeenExplored(true);
                 }
+                this.grids[r][c].reinitizalizeGridCost();
             }
         }
     }

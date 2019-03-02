@@ -86,7 +86,6 @@ public class FastestPathAlgorithm {
     }
 
     private ArrayList<Grid> getNeighbouringGrids(int row, int col) {
-
         ArrayList<Grid> neighbourArrList = new ArrayList<>();
         if (canBeVisited(row - 1, col)) {
             neighbourArrList.add(myRobot.getArena().getGrid(row - 1, col));
@@ -145,22 +144,23 @@ public class FastestPathAlgorithm {
         Stack<Grid> path = new Stack();
         Grid curGrid = myRobot.getArena().getGrid(GOAL_ZONE_ROW, GOAL_ZONE_COL);
         Grid prevGrid;
-
         path.push(curGrid);
         while (curGrid.getCameFrom() != null) {
             prevGrid = curGrid.getCameFrom();
             path.push(prevGrid);
             curGrid = curGrid.getCameFrom();
         }
+        // pop away the starting grid
+        path.pop();
         return path;
     }
 
     private void executeFastestPath(Stack<Grid> s) throws  Exception{
-        Grid curGrid;
+        Grid targetGrid;
         Orientation orientationNeeded;
         while (!s.empty()) {
-            curGrid = s.pop();
-            orientationNeeded = getTargetOrientationRespectiveToRobot(myRobot.getCurRow(), myRobot.getCurCol(), curGrid.getRow(), curGrid.getCol());
+            targetGrid = s.pop();
+            orientationNeeded = getTargetOrientationRespectiveToRobot(myRobot.getCurRow(), myRobot.getCurCol(), targetGrid.getRow(), targetGrid.getCol());
             setRobotOrientation(orientationNeeded);
             sim.forward();
         }
