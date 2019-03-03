@@ -27,9 +27,7 @@ public class FastestPathAlgorithm {
     }
 
     public void A_Star() throws Exception{
-        myRobot.setCurRow(DEFAULT_START_ROW);
-        myRobot.setCurCol(DEFAULT_START_COL);
-        myRobot.setCurOrientation(DEFAULT_START_ORIENTATION);
+        myRobot.goToStart();
 
         Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
         closedSet = new ArrayList<>();

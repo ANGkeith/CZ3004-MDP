@@ -54,7 +54,7 @@ public class SimulatorController {
 
         });
         centerPanel.addOkBtnListener(e -> {
-            saveConfigurations(centerPanel, myRobot);
+            setConfigurations(centerPanel, myRobot, false);
             centerPanel.setExplorationAndFastestPathBtns(true);
             centerPanel.getRestartBtn().setEnabled(true);
         }   );
@@ -102,7 +102,7 @@ public class SimulatorController {
 
     }
 
-    private void saveConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
+    private void setConfigurations(CenterPanel centerPanel, MyRobot myRobot, Boolean resetMap) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
@@ -120,7 +120,9 @@ public class SimulatorController {
 
         disableConfigurations(centerPanel);
 
-        myRobot.getArena().reinitializeArena();
+        if (resetMap) {
+            myRobot.getArena().reinitializeArena();
+        }
         myRobot.resetPathTaken();
         myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 
@@ -132,7 +134,7 @@ public class SimulatorController {
         if (timer != null) {
             timer.stop();
         }
-        saveConfigurations(centerPanel, myRobot);
+        setConfigurations(centerPanel, myRobot, true);
         centerPanel.setExplorationAndFastestPathBtns(true);
         centerPanel.getFastestPathBtn().setEnabled(false);
         reinitStatusPanelVariables();
