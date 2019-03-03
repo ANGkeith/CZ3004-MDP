@@ -110,7 +110,6 @@ public class SimulatorController {
         Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
         myRobot.setStartOrientation(selectedOrientation);
 
-        // Have to plus 1 because the row and col starts from 0;
         myRobot.setStartRow(Integer.parseInt(rowCol[0], 10));
         myRobot.setStartCol(Integer.parseInt(rowCol[1], 10));
         myRobot.goToStart();
@@ -249,6 +248,8 @@ public class SimulatorController {
         this.myRobot = myRobot;
         myRobot.resetPathTaken();
         fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
+        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
+        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
 
         timeElapsed[0] = 0;
         centerPanel.setExplorationAndFastestPathBtns(false);

@@ -192,7 +192,7 @@ public class FastestPathAlgorithm {
         while (!s.empty()) {
             targetGrid = s.pop();
             orientationNeeded = getRespectiveOrientationToTarget(myRobot.getCurRow(), myRobot.getCurCol(), targetGrid.getRow(), targetGrid.getCol());
-            setRobotOrientation(orientationNeeded);
+            turnRobot(orientationNeeded);
             sim.forward();
         }
     }
@@ -210,52 +210,25 @@ public class FastestPathAlgorithm {
         return null;
     }
 
-    private void setRobotOrientation(Orientation o) throws Exception {
+    // turn myRobot to targetOrientation
+    private void turnRobot(Orientation targetOrientation) throws Exception {
         Orientation curOrientation = myRobot.getCurOrientation();
-        if (o == Orientation.N) {
-            if (curOrientation == Orientation.N) {
-            } else if (curOrientation == Orientation.E) {
-                sim.left();
-            } else if (curOrientation == Orientation.S) {
-                System.out.println("THIS SHOULD'NT HAPPEN");
-                sim.right();
-                sim.right();
-            } else if (curOrientation == Orientation.W) {
-                sim.right();
-            }
-        } else if (o == Orientation.E) {
-            if (curOrientation == Orientation.N) {
-                sim.right();
-            } else if (curOrientation == Orientation.E) {
-            } else if (curOrientation == Orientation.S) {
-                sim.left();
-            } else if (curOrientation == Orientation.W) {
-                System.out.println("THIS SHOULD'NT HAPPEN");
-                sim.right();
-                sim.right();
-            }
-        } else if (o == Orientation.S) {
-            if (curOrientation == Orientation.N) {
-                System.out.println("THIS SHOULD'NT HAPPEN");
-                sim.right();
-                sim.right();
-            } else if (curOrientation == Orientation.E) {
-                sim.right();
-            } else if (curOrientation == Orientation.S) {
-            } else if (curOrientation == Orientation.W) {
-                sim.left();
-            }
-        } else if (o == Orientation.W) {
-            if (curOrientation == Orientation.N) {
-                sim.left();
-            } else if (curOrientation == Orientation.E) {
-                System.out.println("THIS SHOULD'NT HAPPEN");
-                sim.right();
-                sim.right();
-            } else if (curOrientation == Orientation.S) {
-                sim.right();
-            } else if (curOrientation == Orientation.W) {
-            }
+
+        int modulus;
+        modulus = (targetOrientation.ordinal() - curOrientation.ordinal()) % 4;
+        if (modulus < 0) {
+            modulus += 4;
+        }
+
+        if (targetOrientation == curOrientation) {
+            return;
+        } else if (modulus == 1) {
+            sim.right();
+        } else if (modulus == 3) {
+            sim.left();
+        } else {
+            sim.right();
+            sim.right();
         }
     }
 }
