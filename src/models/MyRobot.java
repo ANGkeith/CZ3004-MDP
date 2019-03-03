@@ -50,6 +50,22 @@ public class MyRobot {
         pathTaken.clear();
     }
 
+    public boolean possibleStartingPosition(int row, int col) {
+        Grid curGrid;
+        for (int r = -1; r < 2; r++) {
+            for (int c = -1; c < 2; c++) {
+                curGrid = referenceArena.getGrid(row + r, col + c);
+                if (curGrid == null) {
+                    return false;
+                } else if(curGrid.hasObstacle()) {
+                    return false;
+                }
+
+            }
+        }
+        return true;
+    }
+
     public void forward() {
         if (!hasObstacleRightInFront()) {
             SimulatorController.numFwd++;
@@ -68,6 +84,7 @@ public class MyRobot {
             }
         }
     }
+
     public void turnRight() {
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
@@ -94,11 +111,12 @@ public class MyRobot {
         }
     }
 
-    public void goToStart() {
+    public void setToStart() {
         setCurRow(startRow);
         setCurCol(startCol);
         setCurOrientation(startOrientation);
     }
+
     private void initSensor() {
         /*
             Front Sensor:
@@ -239,7 +257,6 @@ public class MyRobot {
             if (blindSpotGrid.hasBeenExplored()) {
                 return blindSpotGrid.hasObstacle();
             } else {
-                System.out.println("BLIND SPOT NOT EXPLORED");
                 return false;
             }
         }

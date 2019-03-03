@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import static models.Constants.*;
 
@@ -48,6 +49,7 @@ public class CenterPanel extends JPanel {
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
         explorationBtn = new JButton( "Exploration");
+        explorationBtn.setToolTipText("Right Click to find Best Starting Position");
         fastestPathBtn = new JButton("Fastest Path");
         fastestPathBtn.setEnabled(false);
         coverageLimitedExplorationBtn = new JButton("Coverage-Limited Exploration ");
@@ -174,6 +176,9 @@ public class CenterPanel extends JPanel {
     // Listener
     public void addExplorationBtnListener(ActionListener a) {
         explorationBtn.addActionListener(a);
+    }
+    public void addExplorationRightClickListener(MouseListener m) {
+        explorationBtn.addMouseListener(m);
     }
     public void addFastestPathBtnListener(ActionListener a) {
         fastestPathBtn.addActionListener(a);

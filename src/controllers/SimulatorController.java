@@ -3,6 +3,7 @@ package controllers;
 import static models.Constants.*;
 
 import models.MyRobot;
+import models.Result;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
@@ -16,12 +17,17 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
-public class SimulatorController {
+public class SimulatorController implements MouseListener {
     private MyRobot myRobot;
     private int turningSpeedMs;
     private int fwdSpeedMs;
@@ -32,7 +38,7 @@ public class SimulatorController {
     private JLabel[] statusLbls;
     private ExplorationAlgorithm explorationAlgo;
     private FastestPathAlgorithm fastestPathAlgo;
-
+    private CenterPanel centerPanel;
 
     SwingWorker<Boolean, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
@@ -40,6 +46,8 @@ public class SimulatorController {
     }
 
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
+        this.centerPanel = centerPanel;
+        this.myRobot = myRobot;
         centerPanel.addModifyBtnListener(e -> {
             enableConfigurations(centerPanel);
             centerPanel.setExplorationAndFastestPathBtns(false);
@@ -59,7 +67,10 @@ public class SimulatorController {
             centerPanel.getRestartBtn().setEnabled(true);
         }   );
         centerPanel.addRestartBtnListener(e -> restart(centerPanel, myRobot));
-        centerPanel.addExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.NORMAL));
+        centerPanel.addExplorationBtnListener(e -> {
+            exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+        });
+        centerPanel.addExplorationRightClickListener(this);
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
         centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
         centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
@@ -112,7 +123,7 @@ public class SimulatorController {
 
         myRobot.setStartRow(Integer.parseInt(rowCol[0], 10));
         myRobot.setStartCol(Integer.parseInt(rowCol[1], 10));
-        myRobot.goToStart();
+        myRobot.setToStart();
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
         myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
@@ -211,6 +222,8 @@ public class SimulatorController {
 
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
+        myRobot.setToStart();
+
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
@@ -234,7 +247,7 @@ public class SimulatorController {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                explorationAlgo.explorationLogic();
+                explorationAlgo.explorationLogic(false);
                 timer.stop();
                 System.out.println("P1: " + myRobot.getArena().generateMapDescriptorP1());
                 System.out.println("P2: " + myRobot.getArena().generateMapDescriptorP2());
@@ -245,11 +258,65 @@ public class SimulatorController {
         explorationWorker.execute();
     }
 
-    // ToDO
+    // used for finding out the best starting position
+    private void bruteForceAllPossibleStartingPosition(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType) {
+        this.myRobot = myRobot;
+
+        explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
+
+        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
+        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
+
+        centerPanel.setExplorationAndFastestPathBtns(false);
+
+        explorationWorker = new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                ArrayList<Result> results = new ArrayList<>();
+                Result result;
+                for (int r = ARENA_HEIGHT/2 + 1; r <= ARENA_HEIGHT; r++) {
+                    for (int c = 1; c < ARENA_WIDTH - 1; c++) {
+                        for (int o = 0; o < 4; o++) {
+                            if (myRobot.possibleStartingPosition(r, c)) {
+                                myRobot.setHasFoundGoalZoneFlag(false);
+                                numTurn = 0;
+                                numFwd = 0;
+                                myRobot.setStartRow(r);
+                                myRobot.setStartCol(c);
+                                myRobot.setStartOrientation(Orientation.values()[o]);
+                                myRobot.setToStart();
+                                myRobot.getArena().reinitializeArena();
+                                myRobot.resetPathTaken();
+                                myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
+                                myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
+                                explorationAlgo.explorationLogic(true);
+
+                                if (numFwd < 200 && myRobot.getArena().getCoveragePercentage() == 100.0) {
+                                    result = new Result(r, c, Orientation.values()[o], numFwd, numTurn, numFwd+numTurn);
+                                    results.add(result);
+                                }
+                            }
+                        }
+                    }
+                }
+                Collections.sort(results);
+                System.out.println("This is the top 5 best starting position");
+                for (int i = 0; i < 5; i++) {
+                    System.out.println(results.get(i).toString());
+                }
+                return true;
+            }
+        };
+        explorationWorker.execute();
+    }
+
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
         this.myRobot = myRobot;
+        myRobot.setToStart();
         myRobot.resetPathTaken();
+
         fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
+
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
         fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
 
@@ -291,5 +358,32 @@ public class SimulatorController {
 
     public SimulatorController getInstance() {
         return this;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == 3) {
+            bruteForceAllPossibleStartingPosition(centerPanel, myRobot, ExplorationType.NORMAL);
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }

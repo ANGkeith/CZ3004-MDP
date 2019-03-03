@@ -2,6 +2,9 @@ package utils;
 
 import controllers.SimulatorController;
 import models.MyRobot;
+
+import static controllers.SimulatorController.numFwd;
+import static controllers.SimulatorController.numTurn;
 import static models.Constants.*;
 
 public class ExplorationAlgorithm {
@@ -16,8 +19,7 @@ public class ExplorationAlgorithm {
         this.explorationType = explorationType;
     }
 
-
-    public void explorationLogic() throws Exception {
+    public void explorationLogic(boolean isBruteForcing) throws Exception {
         boolean explorationCompletedFlag = false;
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
             if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
@@ -39,6 +41,13 @@ public class ExplorationAlgorithm {
 
             if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
                 explorationCompletedFlag = true;
+            }
+
+            if (isBruteForcing) {
+                // shortcircuit if estimated to be in an infinite loop
+                if (((numFwd + numTurn * 2)> 50 && myRobot.getArena().getCoveragePercentage() < 30.0) || numFwd > 200) {
+                    explorationCompletedFlag = true;
+                }
             }
         }
     }
