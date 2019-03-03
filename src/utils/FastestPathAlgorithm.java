@@ -26,25 +26,27 @@ public class FastestPathAlgorithm {
         this.sim = sim;
     }
 
-    public void A_Star(int startRow, int startCol) throws Exception{
-        Grid startingGrid = myRobot.getArena().getGrid(startRow, startCol);
+    public void A_Star() throws Exception{
+        myRobot.setCurRow(DEFAULT_START_ROW);
+        myRobot.setCurCol(DEFAULT_START_COL);
+        myRobot.setCurOrientation(DEFAULT_START_ORIENTATION);
+
+        Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
         closedSet = new ArrayList<>();
         openSet = new ArrayList<>();
         openSet.add(startingGrid);
 
         startingGrid.setG(0);
+        startingGrid.setH(calculateHeuristic(startingGrid));
+        startingGrid.setO(myRobot.getCurOrientation());
         boolean searchCompletedFlag = false;
         Grid curGrid;
         ArrayList<Grid> curNeighbouringGridArrList;
 
         while (openSet.size() > 0 && !searchCompletedFlag) {
-            int indexOfNodeWithLowestF = 0;
+            int indexOfNodeWithLowestF;
 
-            for (i = 0; i < openSet.size(); i++) {
-                if (openSet.get(i).getF() < openSet.get(indexOfNodeWithLowestF).getF()) {
-                     indexOfNodeWithLowestF = i;
-                }
-            }
+            indexOfNodeWithLowestF = pickLowestF(openSet);
 
             curGrid = openSet.get(indexOfNodeWithLowestF);
 
@@ -59,20 +61,27 @@ public class FastestPathAlgorithm {
 
             Grid curNeighbour;
             int tempG;
+            Orientation tempO;
             for (i = 0; i < curNeighbouringGridArrList.size(); i++) {
                 curNeighbour = curNeighbouringGridArrList.get(i);
                 if (!closedSet.contains(curNeighbour)) {
-                    tempG = curGrid.getG() + 1;
+                    tempO = getRespectiveOrientationToTarget(curGrid.getRow(), curGrid.getCol(),
+                            curNeighbour.getRow(), curNeighbour.getCol());
+                    tempG = curGrid.getG() + calculateG(curGrid.getO(), tempO);
                     if (openSet.contains(curNeighbour)) {
                         if (tempG < curNeighbour.getG()) {
                             curNeighbour.setG(tempG);
+                            curNeighbour.setO(tempO);
+                            curNeighbour.setH(calculateHeuristic(curNeighbour));
+                            curNeighbour.setCameFrom(curGrid);
                         }
                     } else {
                         curNeighbour.setG(tempG);
+                        curNeighbour.setO(tempO);
                         openSet.add(curNeighbour);
+                        curNeighbour.setH(calculateHeuristic(curNeighbour));
+                        curNeighbour.setCameFrom(curGrid);
                     }
-                    curNeighbour.setH(calculateHeuristic(curNeighbour));
-                    curNeighbour.setCameFrom(curGrid);
                 }
             }
         }
@@ -80,6 +89,24 @@ public class FastestPathAlgorithm {
         executeFastestPath(path);
     }
 
+    private int pickLowestF(ArrayList<Grid> openSet) {
+        int temp = 0;
+        for (i = 0; i < openSet.size(); i++) {
+            if (openSet.get(i).getF() < openSet.get(temp).getF()) {
+                temp = i;
+            }
+        }
+        return temp;
+    }
+
+    private int calculateG(Orientation curOrientation, Orientation respectiveOrientation) {
+            return MOVE_COST + getNumberOfTurnRequired(curOrientation, respectiveOrientation) * TURN_COST;
+    }
+
+    private int getNumberOfTurnRequired(Orientation curOrientation, Orientation respectiveOrientation) {
+        int numOfTurn = Math.abs(curOrientation.ordinal() - respectiveOrientation.ordinal());
+        return numOfTurn % 2;
+    }
 
     private boolean isGoalNode(Grid grid) {
         return (grid.getRow() == GOAL_ZONE_ROW && grid.getCol() == GOAL_ZONE_COL);
@@ -87,15 +114,19 @@ public class FastestPathAlgorithm {
 
     private ArrayList<Grid> getNeighbouringGrids(int row, int col) {
         ArrayList<Grid> neighbourArrList = new ArrayList<>();
+        // northNeighbour
         if (canBeVisited(row - 1, col)) {
             neighbourArrList.add(myRobot.getArena().getGrid(row - 1, col));
         }
+        // SouthNeighbour
         if (canBeVisited(row + 1, col)) {
             neighbourArrList.add(myRobot.getArena().getGrid(row + 1, col));
         }
+        // WestNeighbour
         if (canBeVisited(row, col - 1)) {
             neighbourArrList.add(myRobot.getArena().getGrid(row, col - 1));
         }
+        // EastNeighbour
         if (canBeVisited(row, col + 1)) {
             neighbourArrList.add(myRobot.getArena().getGrid(row, col + 1));
         }
@@ -160,13 +191,13 @@ public class FastestPathAlgorithm {
         Orientation orientationNeeded;
         while (!s.empty()) {
             targetGrid = s.pop();
-            orientationNeeded = getTargetOrientationRespectiveToRobot(myRobot.getCurRow(), myRobot.getCurCol(), targetGrid.getRow(), targetGrid.getCol());
+            orientationNeeded = getRespectiveOrientationToTarget(myRobot.getCurRow(), myRobot.getCurCol(), targetGrid.getRow(), targetGrid.getCol());
             setRobotOrientation(orientationNeeded);
             sim.forward();
         }
     }
 
-    private Orientation getTargetOrientationRespectiveToRobot(int curR, int curC, int targetR, int targetC) {
+    private Orientation getRespectiveOrientationToTarget(int curR, int curC, int targetR, int targetC) {
         if (curR == targetR && targetC > curC) {
             return Orientation.E;
         } else if (curR == targetR && targetC < curC) {

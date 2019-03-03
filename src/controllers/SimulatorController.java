@@ -107,20 +107,22 @@ public class SimulatorController {
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
+        Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
+        myRobot.setStartOrientation(selectedOrientation);
+
         // Have to plus 1 because the row and col starts from 0;
-        myRobot.setCurRow(Integer.parseInt(rowCol[0], 10));
-        myRobot.setCurCol(Integer.parseInt(rowCol[1], 10));
+        myRobot.setStartRow(Integer.parseInt(rowCol[0], 10));
+        myRobot.setStartCol(Integer.parseInt(rowCol[1], 10));
+        myRobot.goToStart();
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
         myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
         myRobot.setExplorationTimeLimit(parseInputToSecs(centerPanel.getFields()[5].getText()));
 
-        Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
-        myRobot.setCurOrientation(selectedOrientation);
-
         disableConfigurations(centerPanel);
 
         myRobot.getArena().reinitializeArena();
+        myRobot.resetPathTaken();
         myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 
         myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
@@ -131,9 +133,9 @@ public class SimulatorController {
         if (timer != null) {
             timer.stop();
         }
-        myRobot.resetPathTaken();
         saveConfigurations(centerPanel, myRobot);
         centerPanel.setExplorationAndFastestPathBtns(true);
+        centerPanel.getFastestPathBtn().setEnabled(false);
         reinitStatusPanelVariables();
         centerPanel.reinitStatusPanelTxt();
         if (explorationWorker != null) {
@@ -259,7 +261,7 @@ public class SimulatorController {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                fastestPathAlgo.A_Star(myRobot.getCurRow(), myRobot.getCurCol());
+                fastestPathAlgo.A_Star();
                 timer.stop();
                 return true;
             }

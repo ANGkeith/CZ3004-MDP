@@ -49,6 +49,7 @@ public class CenterPanel extends JPanel {
 
         explorationBtn = new JButton( "Exploration");
         fastestPathBtn = new JButton("Fastest Path");
+        fastestPathBtn.setEnabled(false);
         coverageLimitedExplorationBtn = new JButton("Coverage-Limited Exploration ");
         timeLimitedExplorationBtn = new JButton("Time-Limited Exploration");
         restartBtn = new JButton("Restart");
@@ -59,7 +60,7 @@ public class CenterPanel extends JPanel {
 
         orientationLbl = new JLabel("Starting orientation:");
         orientationSelection = new JComboBox<>(orientationList);
-        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
+        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getStartOrientation()));
 
         lbls = new JLabel[6];
         lbls[0] = new JLabel("Starting position:");
@@ -70,7 +71,7 @@ public class CenterPanel extends JPanel {
         lbls[5] = new JLabel("Exploration time-limit (m : s):");
 
         fields = new JTextField[6];
-        fields[0] = new JTextField((myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
+        fields[0] = new JTextField((myRobot.getStartRow()) + ", " + (myRobot.getStartCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();

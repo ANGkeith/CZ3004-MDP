@@ -70,7 +70,7 @@ public class App extends JFrame {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        myRobot = new MyRobot(18, 1, Orientation.N, arena, referenceArena);
+        myRobot = new MyRobot(arena, referenceArena);
 
         // Views
         contentPane = new JPanel();

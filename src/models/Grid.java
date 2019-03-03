@@ -1,6 +1,6 @@
 package models;
 
-import static models.Constants.INFINITY;
+import static models.Constants.*;
 
 public class Grid {
     private boolean hasObstacle;
@@ -12,6 +12,7 @@ public class Grid {
     private int f;
     private int g;
     private int h;
+    private Orientation o;
     private Grid cameFrom;
 
     public Grid(int row, int col) {
@@ -97,4 +98,11 @@ public class Grid {
         this.hasBeenExplored = hasBeenExplored;
     }
 
+    public Orientation getO() {
+        return o;
+    }
+
+    public void setO(Orientation o) {
+        this.o = o;
+    }
 }

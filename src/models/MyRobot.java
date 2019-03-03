@@ -14,6 +14,9 @@ public class MyRobot {
 
     private int curRow;
     private int curCol;
+    private int startRow = DEFAULT_START_ROW;
+    private int startCol = DEFAULT_START_COL;
+    private Orientation startOrientation = DEFAULT_START_ORIENTATION;
     private int temp;
     private Orientation curOrientation;
     private Arena referenceArena;
@@ -30,11 +33,11 @@ public class MyRobot {
     private Queue<Grid> pathTaken;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public MyRobot(int curRow, int curCol, Orientation curOrientation, Arena arena, Arena referenceArena) {
+    public MyRobot(Arena arena, Arena referenceArena) {
         this.arena = arena;
-        this.curRow = curRow;
-        this.curCol = curCol;
-        this.curOrientation = curOrientation;
+        this.curRow = startRow;
+        this.curCol = startCol;
+        this.curOrientation = startOrientation;
         this.referenceArena = referenceArena;
         this.forwardSpeed = 0;
         this.turningSpeed = 0;
@@ -91,6 +94,11 @@ public class MyRobot {
         }
     }
 
+    public void goToStart() {
+        setCurRow(startRow);
+        setCurCol(startCol);
+        setCurOrientation(startOrientation);
+    }
     private void initSensor() {
         /*
             Front Sensor:
@@ -320,5 +328,29 @@ public class MyRobot {
 
     public Queue<Grid> getPathTaken() {
         return pathTaken;
+    }
+
+    public int getStartRow() {
+        return startRow;
+    }
+
+    public void setStartRow(int startRow) {
+        this.startRow = startRow;
+    }
+
+    public int getStartCol() {
+        return startCol;
+    }
+
+    public void setStartCol(int startCol) {
+        this.startCol = startCol;
+    }
+
+    public Orientation getStartOrientation() {
+        return startOrientation;
+    }
+
+    public void setStartOrientation(Orientation startOrientation) {
+        this.startOrientation = startOrientation;
     }
 }
