@@ -5,6 +5,7 @@ import controllers.SimulatorController;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.security.spec.ECField;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -35,7 +36,8 @@ public class MyRobot {
     private boolean hasFoundGoalZoneFlag;
     private Queue<Grid> pathTaken;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-   public SimulatorController controller;
+    private TCPConn tcpConn;
+    private boolean isRealRun = false;
 
     public MyRobot(Arena arena, Arena referenceArena) {
         this.arena = arena;
@@ -52,6 +54,11 @@ public class MyRobot {
 
     public void resetPathTaken() {
         pathTaken.clear();
+    }
+
+    public void getConnection(TCPConn tcpConn) {
+        this.isRealRun = true;
+        this.tcpConn = tcpConn;
     }
 
     public boolean possibleStartingPosition(int row, int col) {
@@ -71,10 +78,21 @@ public class MyRobot {
     }
 
     public void forward() {
-
     	
     	if (!hasObstacleRightInFront()) {
-        	
+
+            if (isRealRun) {
+                try {
+                    tcpConn.sendMessage(FORWARD);
+                    String feedback = tcpConn.readMessage();
+                    while (!feedback.equals(DONE)) {
+                        feedback = tcpConn.readMessage();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
     		SimulatorController.numFwd++;                   
                 
             if (curOrientation == Orientation.N) {
@@ -94,8 +112,19 @@ public class MyRobot {
     }
 
     public void turnRight() {
-    
-    
+
+        if (isRealRun) {
+            try {
+                tcpConn.sendMessage(TURN_RIGHT);
+                String feedback = tcpConn.readMessage();
+                while (!feedback.equals(DONE)) {
+                    feedback = tcpConn.readMessage();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.E);
@@ -110,7 +139,17 @@ public class MyRobot {
 
     public void turnLeft() {
     	
-//    	SimulatorController controller = SimulatorController.getInstance();
+        if (isRealRun) {
+            try {
+                tcpConn.sendMessage(TURN_LEFT);
+                String feedback = tcpConn.readMessage();
+                while (!feedback.equals(DONE)) {
+                    feedback = tcpConn.readMessage();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     	
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {

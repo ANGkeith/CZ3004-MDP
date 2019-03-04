@@ -43,16 +43,11 @@ public class SimulatorController implements MouseListener {
     private FastestPathAlgorithm fastestPathAlgo;
     private static CenterPanel centerPanel;
     
-    private static  SimulatorController _instance;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
-    }
-    
-    public TCPConn getTCPConn() {
-    	return tcpConn;
     }
     
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
@@ -65,6 +60,7 @@ public class SimulatorController implements MouseListener {
         		System.out.println("Waiting for connection");
 				tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
 				System.out.println("Successfully Connected!");
+				myRobot.getConnection(tcpConn);
 			} catch (UnknownHostException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
