@@ -26,13 +26,12 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
 public class SimulatorController implements MouseListener {
-    private MyRobot myRobot;
+    private static MyRobot myRobot;
     private int turningSpeedMs;
     private int fwdSpeedMs;
     private Timer timer;
@@ -42,9 +41,9 @@ public class SimulatorController implements MouseListener {
     private JLabel[] statusLbls;
     private ExplorationAlgorithm explorationAlgo;
     private FastestPathAlgorithm fastestPathAlgo;
-    private CenterPanel centerPanel;
+    private static CenterPanel centerPanel;
     
-    private SimulatorController _instance;
+    private static  SimulatorController _instance;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> explorationWorker;
@@ -59,6 +58,23 @@ public class SimulatorController implements MouseListener {
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
         this.centerPanel = centerPanel;
         this.myRobot = myRobot;
+        
+        centerPanel.addRPIBtnListener(e -> {
+        	tcpConn = TCPConn.getInstance();
+        	try {
+        		System.out.println("Waiting for connection");
+				tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
+				System.out.println("Successfully Connected!");
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        	
+        });
+        
         centerPanel.addModifyBtnListener(e -> {
             enableConfigurations(centerPanel);
             centerPanel.setExplorationAndFastestPathBtns(false);
@@ -235,6 +251,7 @@ public class SimulatorController implements MouseListener {
         this.myRobot = myRobot;
         myRobot.setToStart();
         
+        System.out.println("SimulatorController: " + getInstance());
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
@@ -368,6 +385,8 @@ public class SimulatorController implements MouseListener {
     }
 
     public SimulatorController getInstance() {
+    	//if(_instance == null)
+    	//	_instance = new SimulatorController(centerPanel, myRobot);
     	return this;
     }
 

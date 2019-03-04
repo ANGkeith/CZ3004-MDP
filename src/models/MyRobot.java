@@ -35,6 +35,7 @@ public class MyRobot {
     private boolean hasFoundGoalZoneFlag;
     private Queue<Grid> pathTaken;
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+   public SimulatorController controller;
 
     public MyRobot(Arena arena, Arena referenceArena) {
         this.arena = arena;
@@ -71,19 +72,13 @@ public class MyRobot {
 
     public void forward() {
     	
-       if (!hasObstacleRightInFront()) {
-//        	
-//        	try {
-//				tcpConn.sendMessage(Constants.FORWARD + Constants.SEPARATOR);
-//				String feedback = tcpConn.readMessage();
-//				while(!feedback.equals(Constants.DONE))
-//					feedback = tcpConn.readMessage();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+ //   	SimulatorController controller = SimulatorController.getInstance();
+ //   	System.out.println("MyRobot: " + controller);
+//    	TCPConn tcpConn = controller.getTCPConn();
+    	
+    	if (!hasObstacleRightInFront()) {
         	
-            SimulatorController.numFwd++;                   
+    		SimulatorController.numFwd++;                   
                 
             if (curOrientation == Orientation.N) {
                 temp = curRow - 1;
@@ -103,17 +98,7 @@ public class MyRobot {
 
     public void turnRight() {
     
-    	
-//    	try {
-//			tcpConn.sendMessage(Constants.TURN_RIGHT + Constants.SEPARATOR);
-//			String feedback = tcpConn.readMessage();
-//			while(!feedback.equals(Constants.DONE))
-//				feedback = tcpConn.readMessage();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-    	
+    
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.E);
@@ -128,15 +113,7 @@ public class MyRobot {
 
     public void turnLeft() {
     	
-//    	try {
-//			tcpConn.sendMessage(Constants.TURN_LEFT + Constants.SEPARATOR);
-//			String feedback = tcpConn.readMessage();
-//			while(!feedback.equals(Constants.DONE))
-//				feedback = tcpConn.readMessage();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+//    	SimulatorController controller = SimulatorController.getInstance();
     	
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
