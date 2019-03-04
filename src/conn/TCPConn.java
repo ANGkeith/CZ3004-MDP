@@ -10,8 +10,8 @@ import models.Constants;
 
 public class TCPConn {
 	
-	public static final String RPI_IP = "";
-	public static final int RPI_PORT = 1234;
+	public static final String RPI_IP = "192.168.2.1";
+	public static final int RPI_PORT = 45000;
 	
 	private static TCPConn mInstance;
 	private Socket mSocket;
