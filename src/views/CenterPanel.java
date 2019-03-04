@@ -43,7 +43,7 @@ public class CenterPanel extends JPanel {
     public CenterPanel(MyRobot myRobot) {
         mainPanel = new JPanel();
         mainPanel.setBackground(null);
-        mainPanel.setPreferredSize(new Dimension(300, 650));
+        mainPanel.setPreferredSize(new Dimension(300, 700));
         mainPanel.setLayout(new MigLayout("fillx"));
 
         title = new JLabel("MDP GROUP 2");
