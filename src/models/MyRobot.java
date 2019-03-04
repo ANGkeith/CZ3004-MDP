@@ -4,8 +4,11 @@ import controllers.SimulatorController;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import conn.TCPConn;
 
 import static models.Constants.*;
 
@@ -67,8 +70,21 @@ public class MyRobot {
     }
 
     public void forward() {
-        if (!hasObstacleRightInFront()) {
-            SimulatorController.numFwd++;
+    	
+       if (!hasObstacleRightInFront()) {
+//        	
+//        	try {
+//				tcpConn.sendMessage(Constants.FORWARD + Constants.SEPARATOR);
+//				String feedback = tcpConn.readMessage();
+//				while(!feedback.equals(Constants.DONE))
+//					feedback = tcpConn.readMessage();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+        	
+            SimulatorController.numFwd++;                   
+                
             if (curOrientation == Orientation.N) {
                 temp = curRow - 1;
                 setCurRow(temp);
@@ -86,6 +102,18 @@ public class MyRobot {
     }
 
     public void turnRight() {
+    
+    	
+//    	try {
+//			tcpConn.sendMessage(Constants.TURN_RIGHT + Constants.SEPARATOR);
+//			String feedback = tcpConn.readMessage();
+//			while(!feedback.equals(Constants.DONE))
+//				feedback = tcpConn.readMessage();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.E);
@@ -99,6 +127,17 @@ public class MyRobot {
     }
 
     public void turnLeft() {
+    	
+//    	try {
+//			tcpConn.sendMessage(Constants.TURN_LEFT + Constants.SEPARATOR);
+//			String feedback = tcpConn.readMessage();
+//			while(!feedback.equals(Constants.DONE))
+//				feedback = tcpConn.readMessage();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	
         SimulatorController.numTurn++;
         if (curOrientation == Orientation.N) {
             setCurOrientation(Orientation.W);

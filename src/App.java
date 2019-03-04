@@ -26,9 +26,6 @@ public class App extends JFrame {
     private Arena referenceArena;
     private MyRobot myRobot;
     
-    // Conn
-    private TCPConn tcpConn;
-    
     //Controller
     private SimulatorController westPanelController;
     private SimulatorController centerPanelController;
@@ -67,20 +64,6 @@ public class App extends JFrame {
         // Models
         referenceArena = new Arena();
         arena = new Arena();
-        tcpConn = TCPConn.getInstance();
-        try {
-        	System.out.println("Waiting for connection...");
-			tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
-			tcpConn.sendMessage("Test");
-			System.out.println("Connected to RPI");
-			
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
         try {
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             String fileContent = fileReader.read();

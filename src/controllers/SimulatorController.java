@@ -12,6 +12,9 @@ import views.EastPanel;
 import views.WestPanel;
 
 import javax.swing.*;
+
+import conn.TCPConn;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -20,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,12 +43,19 @@ public class SimulatorController implements MouseListener {
     private ExplorationAlgorithm explorationAlgo;
     private FastestPathAlgorithm fastestPathAlgo;
     private CenterPanel centerPanel;
-
+    
+    private SimulatorController _instance;
+    private TCPConn tcpConn;
+    
     SwingWorker<Boolean, Void> explorationWorker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
     }
-
+    
+    public TCPConn getTCPConn() {
+    	return tcpConn;
+    }
+    
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
         this.centerPanel = centerPanel;
         this.myRobot = myRobot;
@@ -223,7 +234,7 @@ public class SimulatorController implements MouseListener {
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
         myRobot.setToStart();
-
+        
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
@@ -357,7 +368,7 @@ public class SimulatorController implements MouseListener {
     }
 
     public SimulatorController getInstance() {
-        return this;
+    	return this;
     }
 
     @Override
