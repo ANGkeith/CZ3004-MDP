@@ -18,7 +18,7 @@ public class TCPConn {
 	private PrintWriter mWriterToRPI;
 	private Scanner mScannerFromRPI;
 	
-	private TCPConn() {}
+	public TCPConn() {}
 	
 	public static TCPConn getInstance() {
 		if (mInstance == null)
@@ -26,7 +26,7 @@ public class TCPConn {
 		return mInstance;
 	}
 	
-	public static void main(String[] args) throws UnknownHostException, IOException {
+	public static void main(String[] args) throws IOException {
 		TCPConn conn = TCPConn.getInstance();
 		conn.instantiateConnection(RPI_IP, RPI_PORT);
 		System.out.println("Connection Successful!");
@@ -38,7 +38,7 @@ public class TCPConn {
 		}
 	}
 	
-	public void instantiateConnection (String ip, int port) throws UnknownHostException, IOException {
+	public void instantiateConnection (String ip, int port) throws IOException {
 		mSocket = new Socket(RPI_IP, RPI_PORT);
 		mWriterToRPI = new PrintWriter(mSocket.getOutputStream());
 		mScannerFromRPI = new Scanner(mSocket.getInputStream());
@@ -49,16 +49,15 @@ public class TCPConn {
 			mSocket.close();
 	}
 	
-	public void sendMessage(String msg) throws IOException {
+	public void sendMessage(String msg) {
 		mWriterToRPI.print(msg);
 		mWriterToRPI.flush();
 		System.out.println("Message sent: " + msg);
 	}
 
-	public String readMessage() throws IOException {
-		String msgRecieved = mScannerFromRPI.nextLine();
-		System.out.println("Message received: " + msgRecieved);
-		return msgRecieved;
-}
-	
+	public String readMessage() {
+		String msgReceived = mScannerFromRPI.nextLine();
+		System.out.println("Message received: " + msgReceived);
+		return msgReceived;
+	}
 }
