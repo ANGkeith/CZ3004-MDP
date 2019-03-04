@@ -133,7 +133,7 @@ public class CenterPanel extends JPanel {
         // Status Panel
 
         mainPanel.add(title, "alignx center, spanx, wrap");
-
+        
         mainPanel.add(rpiBtn, "gapy 10 0, growx, wrap, alignx center");
         mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, alignx center");
         mainPanel.add(fastestPathBtn, "gapy 10 0, growx, wrap, alignx center");

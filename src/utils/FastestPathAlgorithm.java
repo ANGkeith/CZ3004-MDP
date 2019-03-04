@@ -3,6 +3,7 @@ package utils;
 import controllers.SimulatorController;
 import models.Grid;
 import models.MyRobot;
+import views.CenterPanel;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -20,34 +21,58 @@ public class FastestPathAlgorithm {
     private ArrayList<Grid> closedSet;
     Stack<Grid> path = new Stack();
     private int i;
+    private String[] waypoint;
 
     public FastestPathAlgorithm(MyRobot myRobot, SimulatorController sim) {
+    	
         this.myRobot = myRobot;
         this.sim = sim;
+        waypoint = parseInputToRowColArr(sim.getCenterPanel().getFields()[3].getText());
     }
 
     public void A_Star() throws Exception{
-        Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
+    	calculate(true);
+        path = getFastestPath(true);
+        executeFastestPath(path);
+        
+        myRobot.getArena().resetGridCost();
+        
+    	calculate(false);
+        path = getFastestPath(false);
+        executeFastestPath(path);
+    }
+
+    private void calculate(boolean goingWayPoint) {
+    	Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
+    	
         closedSet = new ArrayList<>();
         openSet = new ArrayList<>();
         openSet.add(startingGrid);
 
         startingGrid.setG(0);
-        startingGrid.setH(calculateHeuristic(startingGrid));
+        startingGrid.setH(calculateHeuristic(startingGrid, goingWayPoint ));
         startingGrid.setO(myRobot.getCurOrientation());
         boolean searchCompletedFlag = false;
         Grid curGrid;
         ArrayList<Grid> curNeighbouringGridArrList;
-
+        
+        
         while (openSet.size() > 0 && !searchCompletedFlag) {
             int indexOfNodeWithLowestF;
 
             indexOfNodeWithLowestF = pickLowestF(openSet);
 
             curGrid = openSet.get(indexOfNodeWithLowestF);
-
-            if (isGoalNode(curGrid)) {
-                searchCompletedFlag = true;
+            
+            if (goingWayPoint){
+	            if (isWayPoint(curGrid)) {
+		                searchCompletedFlag = true;
+		            }
+            }
+            else{
+                if (isGoalNode(curGrid)) {
+                    searchCompletedFlag = true;
+                }
             }
 
             openSet.remove(curGrid);
@@ -68,23 +93,21 @@ public class FastestPathAlgorithm {
                         if (tempG < curNeighbour.getG()) {
                             curNeighbour.setG(tempG);
                             curNeighbour.setO(tempO);
-                            curNeighbour.setH(calculateHeuristic(curNeighbour));
+                            curNeighbour.setH(calculateHeuristic(curNeighbour, goingWayPoint));
                             curNeighbour.setCameFrom(curGrid);
                         }
                     } else {
                         curNeighbour.setG(tempG);
                         curNeighbour.setO(tempO);
                         openSet.add(curNeighbour);
-                        curNeighbour.setH(calculateHeuristic(curNeighbour));
+                        curNeighbour.setH(calculateHeuristic(curNeighbour, goingWayPoint));
                         curNeighbour.setCameFrom(curGrid);
                     }
                 }
             }
         }
-        path = getFastestPath();
-        executeFastestPath(path);
     }
-
+    
     private int pickLowestF(ArrayList<Grid> openSet) {
         int temp = 0;
         for (i = 0; i < openSet.size(); i++) {
@@ -108,6 +131,10 @@ public class FastestPathAlgorithm {
         return (grid.getRow() == GOAL_ZONE_ROW && grid.getCol() == GOAL_ZONE_COL);
     }
 
+    private boolean isWayPoint(Grid grid) {
+        return (grid.getRow() == Integer.parseInt(waypoint[0], 10) && grid.getCol() == Integer.parseInt(waypoint[1], 10));
+    }
+    
     private ArrayList<Grid> getNeighbouringGrids(int row, int col) {
         ArrayList<Grid> neighbourArrList = new ArrayList<>();
         // northNeighbour
@@ -155,21 +182,37 @@ public class FastestPathAlgorithm {
         return true;
     }
 
-    private int calculateHeuristic(Grid grid) {
-        int minNumOfGridAwayFromGoal = Math.abs(GOAL_ZONE_COL - grid.getCol()) + Math.abs(GOAL_ZONE_ROW - grid.getRow());
-        if (gridNotInSameAxisAsGoal(grid)) {
+    private int calculateHeuristic(Grid grid, boolean goingWayPoint) {
+    	int minNumOfGridAwayFromGoal;
+    	
+    	if(goingWayPoint)
+    		minNumOfGridAwayFromGoal = Math.abs(Integer.parseInt(waypoint[1], 10) - grid.getCol()) + Math.abs(Integer.parseInt(waypoint[0], 10) - grid.getRow());
+    	else
+    		minNumOfGridAwayFromGoal = Math.abs(GOAL_ZONE_COL - grid.getCol()) + Math.abs(GOAL_ZONE_ROW - grid.getRow());
+    	
+        if (gridNotInSameAxisAsGoal(grid, goingWayPoint)) {
             return minNumOfGridAwayFromGoal * MOVE_COST + TURN_COST;
         }
         return minNumOfGridAwayFromGoal * MOVE_COST;
     }
 
-    private boolean gridNotInSameAxisAsGoal(Grid grid) {
-        return GOAL_ZONE_COL - grid.getCol() != 0 || GOAL_ZONE_ROW - grid.getRow() != 0;
+    private boolean gridNotInSameAxisAsGoal(Grid grid, boolean goingWayPoint) {
+    	
+    	if (goingWayPoint)
+    		return Integer.parseInt(waypoint[1], 10) - grid.getCol() != 0 || Integer.parseInt(waypoint[0], 10) - grid.getRow() != 0;
+    	else
+    		return GOAL_ZONE_COL - grid.getCol() != 0 || GOAL_ZONE_ROW - grid.getRow() != 0;
     }
 
-    private Stack<Grid> getFastestPath() {
+    private Stack<Grid> getFastestPath(boolean goingWayPoint) {
+    	Grid curGrid;
         Stack<Grid> path = new Stack();
-        Grid curGrid = myRobot.getArena().getGrid(GOAL_ZONE_ROW, GOAL_ZONE_COL);
+        
+        if(goingWayPoint)
+        	 curGrid = myRobot.getArena().getGrid(Integer.parseInt(waypoint[0], 10), Integer.parseInt(waypoint[1], 10));
+        else
+        	 curGrid = myRobot.getArena().getGrid(GOAL_ZONE_ROW, GOAL_ZONE_COL);
+        
         Grid prevGrid;
         path.push(curGrid);
         while (curGrid.getCameFrom() != null) {
@@ -226,5 +269,9 @@ public class FastestPathAlgorithm {
             sim.right();
             sim.right();
         }
+    }
+    
+    private String[] parseInputToRowColArr(String s) {
+        return s.split("\\s*,\\s*");
     }
 }

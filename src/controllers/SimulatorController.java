@@ -370,6 +370,10 @@ public class SimulatorController implements MouseListener {
     public SimulatorController getInstance() {
     	return this;
     }
+    
+    public CenterPanel getCenterPanel() {
+    	return centerPanel;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
