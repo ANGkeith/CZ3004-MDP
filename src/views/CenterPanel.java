@@ -25,6 +25,7 @@ public class CenterPanel extends JPanel {
     private JButton modifyBtn;
     private JButton okBtn;
     private JPanel buttonPanel;
+    private JButton rpiBtn;
     private JButton explorationBtn;
     private JButton timeLimitedExplorationBtn;
     private JButton coverageLimitedExplorationBtn;
@@ -48,6 +49,8 @@ public class CenterPanel extends JPanel {
         title = new JLabel("MDP GROUP 2");
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
+        rpiBtn = new JButton("Connect to RPI");
+        rpiBtn.setToolTipText("Right Click to connect to RPI");
         explorationBtn = new JButton( "Exploration");
         explorationBtn.setToolTipText("Right Click to find Best Starting Position");
         fastestPathBtn = new JButton("Fastest Path");
@@ -131,6 +134,7 @@ public class CenterPanel extends JPanel {
 
         mainPanel.add(title, "alignx center, spanx, wrap");
 
+        mainPanel.add(rpiBtn, "gapy 10 0, growx, wrap, alignx center");
         mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, alignx center");
         mainPanel.add(fastestPathBtn, "gapy 10 0, growx, wrap, alignx center");
         mainPanel.add(coverageLimitedExplorationBtn, "gapy 10 0, growx, wrap, alignx center");
@@ -167,6 +171,7 @@ public class CenterPanel extends JPanel {
     }
 
     public void setExplorationAndFastestPathBtns(Boolean isEnable) {
+    	rpiBtn.setEnabled(isEnable);
         explorationBtn.setEnabled(isEnable);
         fastestPathBtn.setEnabled(isEnable);
         timeLimitedExplorationBtn.setEnabled(isEnable);
@@ -174,6 +179,12 @@ public class CenterPanel extends JPanel {
     }
 
     // Listener
+    public void addRPIBtnListener(ActionListener a) {
+        rpiBtn.addActionListener(a);
+    }
+    public void addRPIRightClickListener(MouseListener m) {
+    	rpiBtn.addMouseListener(m);
+    }
     public void addExplorationBtnListener(ActionListener a) {
         explorationBtn.addActionListener(a);
     }
