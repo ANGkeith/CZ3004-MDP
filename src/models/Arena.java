@@ -11,7 +11,10 @@ public class Arena {
     public Arena() {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
-                this.grids[r][c] = new Grid();
+                this.grids[r][c] = new Grid(r, c);
+                if (isVirtualWall(r, c)) {
+                    this.grids[r][c].setIsVirtualWall(true);
+                }
                 if (isGoalZone(r, c) || isStartZone(r, c)) {
                     this.grids[r][c].setHasObstacle(false);
                     this.grids[r][c].setHasBeenExplored(true);
@@ -147,6 +150,7 @@ public class Arena {
                     this.grids[r][c].setHasObstacle(false);
                     this.grids[r][c].setHasBeenExplored(true);
                 }
+                this.grids[r][c].reinitizalizeGridCost();
             }
         }
     }
@@ -161,6 +165,10 @@ public class Arena {
 
     public static boolean isValidRowCol(int row, int col) {
         return row < ARENA_HEIGHT && row >= 0 && col < ARENA_WIDTH && col >= 0;
+    }
+
+    private boolean isVirtualWall(int row, int col) {
+        return row == 0 || row == ARENA_HEIGHT - 1 || col == 0 || col == ARENA_WIDTH - 1;
     }
 
     // ============================== getters & setters

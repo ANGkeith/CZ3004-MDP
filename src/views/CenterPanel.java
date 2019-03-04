@@ -1,5 +1,6 @@
 package views;
 
+import controllers.SimulatorController;
 import models.MyRobot;
 import net.miginfocom.swing.MigLayout;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import static models.Constants.*;
 
@@ -47,7 +49,9 @@ public class CenterPanel extends JPanel {
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
         explorationBtn = new JButton( "Exploration");
+        explorationBtn.setToolTipText("Right Click to find Best Starting Position");
         fastestPathBtn = new JButton("Fastest Path");
+        fastestPathBtn.setEnabled(false);
         coverageLimitedExplorationBtn = new JButton("Coverage-Limited Exploration ");
         timeLimitedExplorationBtn = new JButton("Time-Limited Exploration");
         restartBtn = new JButton("Restart");
@@ -58,7 +62,7 @@ public class CenterPanel extends JPanel {
 
         orientationLbl = new JLabel("Starting orientation:");
         orientationSelection = new JComboBox<>(orientationList);
-        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getCurOrientation()));
+        orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getStartOrientation()));
 
         lbls = new JLabel[6];
         lbls[0] = new JLabel("Starting position:");
@@ -69,7 +73,7 @@ public class CenterPanel extends JPanel {
         lbls[5] = new JLabel("Exploration time-limit (m : s):");
 
         fields = new JTextField[6];
-        fields[0] = new JTextField((myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
+        fields[0] = new JTextField((myRobot.getStartRow()) + ", " + (myRobot.getStartCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();
@@ -147,6 +151,9 @@ public class CenterPanel extends JPanel {
         for (int i = 0; i  < statusLbls.length; i++) {
             statusLbls[i].setText(statusPrefixedLbls[i] + 0);
         }
+        SimulatorController.timeElapsed[0] = 0;
+        SimulatorController.numTurn = 0;
+        SimulatorController.numFwd = 0;
     }
     public String orientationEnumToString(Orientation o) {
         if (o == Orientation.N) {
@@ -169,6 +176,9 @@ public class CenterPanel extends JPanel {
     // Listener
     public void addExplorationBtnListener(ActionListener a) {
         explorationBtn.addActionListener(a);
+    }
+    public void addExplorationRightClickListener(MouseListener m) {
+        explorationBtn.addMouseListener(m);
     }
     public void addFastestPathBtnListener(ActionListener a) {
         fastestPathBtn.addActionListener(a);
@@ -213,6 +223,14 @@ public class CenterPanel extends JPanel {
 
     public JButton getModifyBtn() {
         return modifyBtn;
+    }
+
+    public JButton getRestartBtn() {
+        return restartBtn;
+    }
+
+    public JButton getFastestPathBtn () {
+        return fastestPathBtn;
     }
 
     public JButton getOkBtn() {

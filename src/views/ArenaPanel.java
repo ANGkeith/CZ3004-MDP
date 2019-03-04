@@ -1,10 +1,10 @@
 package views;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import javax.swing.JPanel;
 import static models.Constants.*;
+import java.util.Queue;
 
 import models.Arena;
 import models.Grid;
@@ -33,6 +33,7 @@ public class ArenaPanel extends JPanel {
     public void paintComponent(Graphics g) {
         // the order of the elements being painted matters
         fillGrids(g);
+        displayPathTaken(g);
         displaySensorRange(g);
 
         drawGridBorder(g);
@@ -105,6 +106,18 @@ public class ArenaPanel extends JPanel {
         }
     }
 
+    private void displayPathTaken(Graphics g) {
+        Queue<Grid> pathTaken = myRobot.getPathTaken();
+        int curR;
+        int curC;
+        Graphics2D g2d = (Graphics2D)g;
+        for(Grid q : pathTaken) {
+            curR = q.getRow();
+            curC = q.getCol();
+            g2d.setColor(PATH_TAKEN_COLOR);
+            g2d.fillRect(curC * GRID_SIZE, curR * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+        }
+    }
     private void drawGridBorder(Graphics g) {
         for (int row = 0; row < ARENA_HEIGHT; row++) {
             for (int col = 0; col < ARENA_WIDTH; col++) {

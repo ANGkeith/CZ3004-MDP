@@ -82,7 +82,6 @@ public class App extends JFrame {
 			e.printStackTrace();
 		}
         try {
-        	System.out.println(ARENA_DESCRIPTOR_PATH);
             FileReaderWriter fileReader = new FileReaderWriter(java.nio.file.FileSystems.getDefault().getPath(ARENA_DESCRIPTOR_PATH, new String[0]));
             String fileContent = fileReader.read();
             if (!fileContent.equals("")) {
@@ -91,7 +90,7 @@ public class App extends JFrame {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        myRobot = new MyRobot(18, 1, Orientation.N, arena, referenceArena);
+        myRobot = new MyRobot(arena, referenceArena);
 
         // Views
         contentPane = new JPanel();

@@ -20,7 +20,6 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
     private CenterPanel centerPanel;
     private MyRobot myRobot;
     private Arena arena;
-    private Grid grid;
     private String coverage;
 
     public ArenaPanelController(ArenaPanel arenaPanel, CenterPanel centerPanel, MyRobot myRobot) {
@@ -97,11 +96,12 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
-            myRobot.move(My_Robot_Instruction.FORWARD);
+            myRobot.forward();
+            myRobot.addCurGridToPathTaken();
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            myRobot.move(My_Robot_Instruction.TURN_RIGHT);
+            myRobot.turnRight();
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            myRobot.move(My_Robot_Instruction.TURN_LEFT);
+            myRobot.turnLeft();
         }
     }
 
