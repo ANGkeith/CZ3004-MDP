@@ -79,6 +79,12 @@ public class SimulatorController implements MouseListener {
             enableConfigurations(centerPanel);
             centerPanel.setExplorationAndFastestPathBtns(false);
             centerPanel.getRestartBtn().setEnabled(false);
+			try {
+				tcpConn.readMessage();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         });
         centerPanel.addCancelBtnListener(e -> {
             enableConfigurations(centerPanel);

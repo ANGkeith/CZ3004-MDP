@@ -71,10 +71,7 @@ public class MyRobot {
     }
 
     public void forward() {
-    	
- //   	SimulatorController controller = SimulatorController.getInstance();
- //   	System.out.println("MyRobot: " + controller);
-//    	TCPConn tcpConn = controller.getTCPConn();
+
     	
     	if (!hasObstacleRightInFront()) {
         	
