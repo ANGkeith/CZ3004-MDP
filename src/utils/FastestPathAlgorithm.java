@@ -31,18 +31,18 @@ public class FastestPathAlgorithm {
     }
 
     public void A_Star() throws Exception{
-    	calculate(true);
+    	buildTree(true);
         path = getFastestPath(true);
         executeFastestPath(path);
         
         myRobot.getArena().resetGridCost();
         
-    	calculate(false);
+        buildTree(false);
         path = getFastestPath(false);
         executeFastestPath(path);
     }
 
-    private void calculate(boolean goingWayPoint) {
+    private void buildTree(boolean goingWayPoint) {
     	Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
     	
         closedSet = new ArrayList<>();
