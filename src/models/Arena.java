@@ -154,6 +154,15 @@ public class Arena {
             }
         }
     }
+    
+    public void resetGridCost() {
+        for (int r = 0; r < ARENA_HEIGHT; r++) {
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                this.grids[r][c].reinitizalizeGridCost();
+            }
+        }
+    }
+    
 
     public static boolean isGoalZone(int row, int col) {
         return (row < ZONE_SIZE) && (col > ARENA_WIDTH - 1 - ZONE_SIZE);

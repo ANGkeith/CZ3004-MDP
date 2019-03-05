@@ -385,6 +385,10 @@ public class SimulatorController implements MouseListener {
     	//	_instance = new SimulatorController(centerPanel, myRobot);
     	return this;
     }
+    
+    public CenterPanel getCenterPanel() {
+    	return centerPanel;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
