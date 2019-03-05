@@ -102,7 +102,7 @@ public class MyRobot {
 		String p1 = arena.generateMapDescriptorP1();
 		String p2 = arena.generateMapDescriptorP2();
 
-		String toAndroid = p0 + SEPARATOR + p1 + SEPARATOR + p2;
+		String toAndroid = "an"+ p0 + SEPARATOR + p1 + SEPARATOR + p2;
 
 		return toAndroid;
 	}
