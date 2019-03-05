@@ -19,7 +19,7 @@ public class Constants {
     public static final Orientation DEFAULT_START_ORIENTATION = Orientation.E;
 
     public static final int MOVE_COST = 1;
-    public static final int TURN_COST = 5;
+    public static final int TURN_COST = 1;
     public static final int INFINITY = 999;
 
     public static final int DEFAULT_COVERAGE_LIMIT = 100;

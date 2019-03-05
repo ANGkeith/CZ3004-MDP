@@ -1,7 +1,9 @@
 /bin/
 /out/
+/local_storage/mock_arena.txt
 .project
 .metadata
+.gitignore
 
 
 .idea/
