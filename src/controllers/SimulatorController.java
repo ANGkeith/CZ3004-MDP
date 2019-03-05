@@ -2,8 +2,10 @@ package controllers;
 
 import static models.Constants.*;
 
+import models.Constants;
 import models.MyRobot;
 import models.Result;
+import models.Sensor;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
@@ -55,19 +57,34 @@ public class SimulatorController implements MouseListener {
         this.myRobot = myRobot;
         
         centerPanel.addRPIBtnListener(e -> {
+        	
         	tcpConn = TCPConn.getInstance();
-        	try {
-        		System.out.println("Waiting for connection");
-				tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
-				System.out.println("Successfully Connected!");
-				myRobot.getConnection(tcpConn);
-			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+        	explorationWorker = new SwingWorker<Boolean, Void>(){
+        		
+        		protected Boolean doInBackground() throws Exception {
+                	try {
+                		System.out.println("Waiting for connection");
+        				tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
+        				System.out.println("Successfully Connected!");
+        				//tcpConn.sendMessage("");
+        				myRobot.getConnection(tcpConn);
+        				
+        				String msgExplore = tcpConn.readMessage();
+        				while(!msgExplore.equals(Constants.START_EXPLORATION))
+        					msgExplore = tcpConn.readMessage();
+        				
+        			} catch (UnknownHostException e1) {
+        				// TODO Auto-generated catch block
+        				e1.printStackTrace();
+        			} catch (IOException e1) {
+        				// TODO Auto-generated catch block
+        				e1.printStackTrace();
+        			}
+                	return true;
+        		}	
+        	};
+        	
+        	explorationWorker.execute();
         	
         });
         
@@ -247,7 +264,6 @@ public class SimulatorController implements MouseListener {
         this.myRobot = myRobot;
         myRobot.setToStart();
         
-        System.out.println("SimulatorController: " + getInstance());
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
