@@ -53,6 +53,7 @@ public class Constants {
 	public static final String START_EXPLORATION = "explore";
 	public static final String START_SHORTEST = "short";
 	public static final String CALIBRATE = "C";
+	public static final String SENSOR_VALUE = "\\d{6}";
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
 
     public enum Orientation {

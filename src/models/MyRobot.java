@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.security.spec.ECField;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import conn.TCPConn;
 
@@ -38,6 +40,7 @@ public class MyRobot {
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private TCPConn tcpConn;
     private boolean isRealRun = false;
+    public Matcher m;
 
     public MyRobot(Arena arena, Arena referenceArena) {
         this.arena = arena;
@@ -77,21 +80,26 @@ public class MyRobot {
         return true;
     }
 
+    public String readsensorvalue() {
+    	boolean messageFound;
+    	String feedback;
+    	try {
+    		feedback = tcpConn.readMessage();
+    		do {
+    			m = Pattern.compile("\\d{6}").matcher(feedback);
+    			messageFound = m.find();
+    		} while (!messageFound);
+    		return feedback;
+    	} catch (IOException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    		return null;
+    	}
+    }
+
     public void forward() {
     	
     	if (!hasObstacleRightInFront()) {
-
-            if (isRealRun) {
-                try {
-                    tcpConn.sendMessage(FORWARD);
-                    String feedback = tcpConn.readMessage();
-                    while (!feedback.equals(DONE)) {
-                        feedback = tcpConn.readMessage();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
     		SimulatorController.numFwd++;                   
                 
@@ -188,7 +196,10 @@ public class MyRobot {
                         [ ][ ][ ]
                         [ ][ ][ ]
 
+        
+         Sensor Value Format = 
          */
+    	
 
         frontSensor = new Sensor[3];
         rightSensor = new Sensor[2];
@@ -207,15 +218,44 @@ public class MyRobot {
     }
 
     public boolean hasObstacleToItsImmediateRight() {
-        for (int i = 0; i < rightSensor.length; i++) {
-            if (rightSensor[i].getSimulatedSensorReading() == 1) {
-                return true;
-            }
-        }
-        return false;
-    }
+
+    	if (isRealRun) {
+    		String sensors = readsensorvalue();
+
+    		boolean hasObstacle = false;
+    		for (int i = 4; i < 5; i++) {
+    			if (sensors.charAt(i) == '1') {
+    				hasObstacle = true;
+    				return hasObstacle;
+    			}
+    		}
+    		return hasObstacle;           
+    	}
+
+	    	for (int i = 0; i < rightSensor.length; i++) {
+	            if (rightSensor[i].getSimulatedSensorReading() == 1) {
+	                return true;
+	            }
+	        }
+	        return false;
+    	}
+
 
     public boolean hasObstacleRightInFront() {
+    	
+        if (isRealRun) {
+            String sensors = readsensorvalue();
+            
+            boolean hasObstacle = false;
+			for (int i = 1; i < 4; i++) {
+				if (sensors.charAt(i) == '1') {
+					hasObstacle = true;
+					return hasObstacle;
+				}
+            }
+			return hasObstacle;           
+        }
+        
         for (int i = 0; i < frontSensor.length; i++) {
             if (frontSensor[i].getSimulatedSensorReading() == 1) {
                 return true;
@@ -225,6 +265,18 @@ public class MyRobot {
     }
 
     public boolean hasObstacleToItsImmediateLeft() {
+    	
+        if (isRealRun) {
+            String sensors = readsensorvalue();
+            
+            boolean hasObstacle = false;
+				if (sensors.charAt(0) == '1') {
+					hasObstacle = true;
+					return hasObstacle;
+				}
+			return hasObstacle;           
+        }
+    	
         for (int i = 0; i < leftSensor.length; i++) {
             if (leftSensor[i].getSimulatedSensorReading() == 1) {
                 return true;

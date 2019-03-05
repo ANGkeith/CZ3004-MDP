@@ -1,11 +1,14 @@
 package models;
 
 import static models.Constants.*;
+
+import conn.TCPConn;
 public class Sensor
 {
     private MyRobot myRobot;
     private Arena referenceArena;
-
+    private TCPConn tcpConn;
+    
     private int sensorRange;
 
     public final int NO_OBSTACLE = 0;
