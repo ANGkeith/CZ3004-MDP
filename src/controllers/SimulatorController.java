@@ -73,6 +73,8 @@ public class SimulatorController implements MouseListener {
         				while(!msgExplore.equals(Constants.START_EXPLORATION))
         					msgExplore = tcpConn.readMessage();
         				
+        				exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+        				
         			} catch (UnknownHostException e1) {
         				// TODO Auto-generated catch block
         				e1.printStackTrace();
