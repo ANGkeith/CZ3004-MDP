@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
@@ -42,7 +43,8 @@ public class SimulatorController implements MouseListener {
     private ExplorationAlgorithm explorationAlgo;
     private FastestPathAlgorithm fastestPathAlgo;
     private static CenterPanel centerPanel;
-    
+
+    public static  boolean test = false;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> explorationWorker;
@@ -53,21 +55,39 @@ public class SimulatorController implements MouseListener {
     public SimulatorController(CenterPanel centerPanel, MyRobot myRobot){
         this.centerPanel = centerPanel;
         this.myRobot = myRobot;
-        
+
         centerPanel.addRPIBtnListener(e -> {
-        	
+
         	tcpConn = TCPConn.getInstance();
         	explorationWorker = new SwingWorker<Boolean, Void>(){
         		
         		protected Boolean doInBackground() throws Exception {
                     try {
-                        System.out.println("Waiting for connection");
-                        tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
-                        System.out.println("Successfully Connected!");
-                        myRobot.getConnection(tcpConn);
-                        myRobot.getArena().reinitializeArena();
-                        //myRobot.updateSensorsWithRealReadings();
-                        //myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
+                        if (test){
+                            myRobot.isRealRun = true;
+                            myRobot.getArena().reinitializeArena();
+                            myRobot.getLeftSensor()[0].setRealReading(0);
+                            myRobot.getRightSensor()[0].setRealReading(1);
+                            myRobot.getRightSensor()[1].setRealReading(1);
+                            myRobot.getFrontSensor()[0].setRealReading(0);
+                            myRobot.getFrontSensor()[1].setRealReading(0);
+                            myRobot.getFrontSensor()[2].setRealReading(0);
+                            myRobot.pcs.firePropertyChange(myRobot.UPDATEGUI, null, null);
+                        } else {
+                            System.out.println("Waiting for connection");
+                            tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
+                            System.out.println("Successfully Connected!");
+                            myRobot.getConnection(tcpConn);
+                            //myRobot.updateSensorsWithRealReadings();
+                            myRobot.getArena().reinitializeArena();
+                            myRobot.getLeftSensor()[0].setRealReading(0);
+                            myRobot.getRightSensor()[0].setRealReading(1);
+                            myRobot.getRightSensor()[1].setRealReading(1);
+                            myRobot.getFrontSensor()[0].setRealReading(0);
+                            myRobot.getFrontSensor()[1].setRealReading(0);
+                            myRobot.getFrontSensor()[2].setRealReading(0);
+                            myRobot.pcs.firePropertyChange(myRobot.UPDATEGUI, null, null);
+                        }
                         exploration(centerPanel, myRobot, ExplorationType.NORMAL);
 
                     } catch (UnknownHostException e1) {

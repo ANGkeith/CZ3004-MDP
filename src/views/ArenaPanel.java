@@ -174,7 +174,7 @@ public class ArenaPanel extends JPanel {
         for (Sensor[] sensors: frontRightLeftSensors) {
             for (Sensor sensor: sensors) {
                 numOfSensibleGrid = sensor.getSensorReading();
-                if (sensor.getSensorReading() == 0) {
+                if (sensor.getSensorReading() == sensor.NO_OBSTACLE) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {

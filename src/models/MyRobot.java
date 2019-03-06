@@ -38,7 +38,7 @@ public class MyRobot {
 	private Queue<Grid> pathTaken;
 	public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private TCPConn tcpConn;
-	private boolean isRealRun = false;
+	public boolean isRealRun = false;
 	public Matcher m;
 
 	public MyRobot(Arena arena, Arena referenceArena) {
@@ -93,12 +93,15 @@ public class MyRobot {
 		if (!hasObstacleRightInFront()) {
 			if (isRealRun) {
 				try {
-					tcpConn.sendMessage(FORWARD);
-					tcpConn.sendMessage(toAndroid());
+					if (!SimulatorController.test) {
+						tcpConn.sendMessage(FORWARD);
+						tcpConn.sendMessage(toAndroid());
+					} else {
+						System.out.println("F");
+					}
 					//while (!feedback.equals(DONE)) {
 					//	feedback = tcpConn.readMessage();
 					//}
-					updateSensorsWithRealReadings();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -120,18 +123,25 @@ public class MyRobot {
 				setCurCol(temp);
 			}
 		}
+		if (isRealRun) {
+			updateSensorsWithRealReadings();
+		}
+		pcs.firePropertyChange(UPDATEGUI, null, null);
 	}
 
 	public void turnRight() {
 
 		if (isRealRun) {
 			try {
-				tcpConn.sendMessage(TURN_RIGHT);
-				tcpConn.sendMessage(toAndroid());
+				if (!SimulatorController.test) {
+					tcpConn.sendMessage(TURN_RIGHT);
+					tcpConn.sendMessage(toAndroid());
+				} else {
+					System.out.println("R");
+				}
 				//while (!feedback.equals(DONE)) {
 				//	feedback = tcpConn.readMessage();
 				//}
-				updateSensorsWithRealReadings();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -147,18 +157,25 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.W) {
 			setCurOrientation(Orientation.N);
 		}
+		if (isRealRun) {
+			updateSensorsWithRealReadings();
+		}
+		pcs.firePropertyChange(UPDATEGUI, null, null);
 	}
 
 	public void turnLeft() {
 
 		if (isRealRun) {
 			try {
-				tcpConn.sendMessage(TURN_LEFT);
-				tcpConn.sendMessage(toAndroid());
+				if (!SimulatorController.test) {
+					tcpConn.sendMessage(TURN_LEFT);
+					tcpConn.sendMessage(toAndroid());
+				} else {
+					System.out.println("L");
+				}
 				//while (!feedback.equals(DONE)) {
 				//	feedback = tcpConn.readMessage();
 				//}
-				updateSensorsWithRealReadings();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -174,6 +191,10 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.W) {
 			setCurOrientation(Orientation.S);
 		}
+		if (isRealRun) {
+			updateSensorsWithRealReadings();
+		}
+		pcs.firePropertyChange(UPDATEGUI, null, null);
 	}
 
 	public void setToStart() {
@@ -253,18 +274,38 @@ public class MyRobot {
 		boolean messageFound;
 		String realReadings;
 		try {
-			realReadings = tcpConn.readMessage();
-			do {
+			if (SimulatorController.test) {
+				System.out.println("Enter a value: ");
+				Scanner sc = new Scanner(System.in);
+				realReadings =  sc.nextLine();
+
+
 				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
-				messageFound = m.find();
-			} while (!messageFound);
+				System.out.println("You have typed " + realReadings);
+
+			} else {
+				realReadings = tcpConn.readMessage();
+				do {
+					m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
+					messageFound = m.find();
+				} while (!messageFound);
+			}
+
+			realReadings = realReadings.substring(2);
+
 
 			leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
+			System.out.println("L " + Character.getNumericValue(realReadings.charAt(0)));
 			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
+			System.out.println("F0 " + Character.getNumericValue(realReadings.charAt(1)));
 			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
+			System.out.println("F1 " + Character.getNumericValue(realReadings.charAt(2)));
 			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
+			System.out.println("F2 " + Character.getNumericValue(realReadings.charAt(3)));
 			rightSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(4)));
+			System.out.println("R0 " + Character.getNumericValue(realReadings.charAt(4)));
 			rightSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(5)));
+			System.out.println("R1 " + Character.getNumericValue(realReadings.charAt(5)));
 
 			pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 		} catch (Exception e) {
@@ -363,7 +404,6 @@ public class MyRobot {
 		int oldValue = this.curCol;
 		if ((curCol != 0) && (curCol != 14) && hasChangeInValue(this.curCol, curCol)) {
 			this.curCol = curCol;
-			pcs.firePropertyChange(UPDATEGUI, oldValue, curCol);
 		}
 	}
 
@@ -375,7 +415,6 @@ public class MyRobot {
 		int oldValue = this.curRow;
 		if ((curRow != 0) && (curRow != 19) && hasChangeInValue(this.curRow, curRow)) {
 			this.curRow = curRow;
-			pcs.firePropertyChange(UPDATEGUI, oldValue, curRow);
 		}
 	}
 
@@ -386,7 +425,6 @@ public class MyRobot {
 	public void setCurOrientation(Orientation curOrientation) {
 		Orientation oldValue = this.curOrientation;
 		this.curOrientation = curOrientation;
-		pcs.firePropertyChange(UPDATEGUI, oldValue, curOrientation);
 	}
 
 	public double getForwardSpeed() {

@@ -61,8 +61,6 @@ public class TCPConn {
 	}
 
 	public String readMessage() {
-	    //Scanner in = new Scanner(System.in);
-	    //String msgReceived = in.nextLine().trim();
 		String msgReceived = mScannerFromRPI.nextLine().trim();
 		mScannerFromRPI.nextLine();
 		System.out.println("Message received: " + msgReceived);
