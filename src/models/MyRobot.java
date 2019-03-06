@@ -5,7 +5,6 @@ import controllers.SimulatorController;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.security.spec.ECField;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
@@ -78,23 +77,6 @@ public class MyRobot {
 			}
 		}
 		return true;
-	}
-
-	public String readsensorvalue() {
-		boolean messageFound;
-		String feedback;
-		try {
-			feedback = tcpConn.readMessage();
-			do {
-				m = Pattern.compile("\\d{6}").matcher(feedback);
-				messageFound = m.find();
-			} while (!messageFound);
-			return feedback;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public String toAndroid() {
@@ -247,7 +229,7 @@ public class MyRobot {
 	public boolean hasObstacleToItsImmediateRight() {
 
 		if (isRealRun) {
-			String sensors = readsensorvalue();
+			String sensors = getRealSensorReading();
 
 			boolean hasObstacle = false;
 			for (int i = 4; i < 5; i++) {
@@ -270,7 +252,7 @@ public class MyRobot {
 	public boolean hasObstacleRightInFront() {
 
 		if (isRealRun) {
-			String sensors = readsensorvalue();
+			String sensors = getRealSensorReading();
 
 			boolean hasObstacle = false;
 			for (int i = 1; i < 4; i++) {
@@ -293,7 +275,7 @@ public class MyRobot {
 	public boolean hasObstacleToItsImmediateLeft() {
 
 		if (isRealRun) {
-			String sensors = readsensorvalue();
+			String sensors = getRealSensorReading();
 
 			boolean hasObstacle = false;
 			if (sensors.charAt(0) == '1') {
@@ -309,6 +291,23 @@ public class MyRobot {
 			}
 		}
 		return false;
+	}
+
+	public String getRealSensorReading() {
+		boolean messageFound;
+		String feedback;
+		try {
+			feedback = tcpConn.readMessage();
+			do {
+				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(feedback);
+				messageFound = m.find();
+			} while (!messageFound);
+			return feedback;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public boolean isAtGoalZone() {
