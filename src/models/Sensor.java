@@ -7,15 +7,14 @@ public class Sensor
 {
     private MyRobot myRobot;
     private Arena referenceArena;
-    private TCPConn tcpConn;
-    
+
     private int sensorRange;
 
     public final int NO_OBSTACLE = 0;
     private int relativeRow;
     private int relativeCol;
     private Sensor_Position sensor_position;
-
+    private int realReading;
 
     // The relative row and col is the relative position of the sensor w.r.t the center of the north-oriented robot
     public Sensor(MyRobot myRobot, Arena referenceArena, int relativeRow, int relativeCol, Sensor_Position sensor_position, int sensorRange) {
@@ -25,7 +24,6 @@ public class Sensor
         this.referenceArena = referenceArena;
         this.sensor_position = sensor_position;
         this.sensorRange = sensorRange;
-
     }
 
     public Orientation getSensorOrientation() {
@@ -64,38 +62,41 @@ public class Sensor
 
         If there are no obstacle detected within the range, a value of 0 is returned
     */
-    public int getSimulatedSensorReading() {
-        switch(getSensorOrientation()) {
-            case N:
-                for (int i = 1; i <= sensorRange; i++) {
-                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() - i, getSensorAbsoluteCol())) {
-                        return i;
+    public int getSensorReading() {
+        if (myRobot.isRealRun()) {
+            return realReading;
+        } else {
+            switch(getSensorOrientation()) {
+                case N:
+                    for (int i = 1; i <= sensorRange; i++) {
+                        if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() - i, getSensorAbsoluteCol())) {
+                            return i;
+                        }
                     }
-                }
-                break;
-            case E:
-                for (int i = 1; i <= sensorRange; i++) {
-                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() + i)) {
-                        return i;
+                    break;
+                case E:
+                    for (int i = 1; i <= sensorRange; i++) {
+                        if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() + i)) {
+                            return i;
+                        }
                     }
-                }
-                break;
-            case S:
-                for (int i = 1; i <= sensorRange; i++) {
-                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() + i, getSensorAbsoluteCol())) {
-                        return i;
+                    break;
+                case S:
+                    for (int i = 1; i <= sensorRange; i++) {
+                        if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow() + i, getSensorAbsoluteCol())) {
+                            return i;
+                        }
                     }
-                }
-                break;
-            case W:
-                for (int i = 1; i <= sensorRange; i++) {
-                    if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() - i)) {
-                        return i;
+                    break;
+                case W:
+                    for (int i = 1; i <= sensorRange; i++) {
+                        if (checkForObstacleAgainstReferenceArena(getSensorAbsoluteRow(), getSensorAbsoluteCol() - i)) {
+                            return i;
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
-        //
         return 0;
     }
 
@@ -138,5 +139,9 @@ public class Sensor
 
     public int getSensorRange() {
         return sensorRange;
+    }
+
+    public void setRealReading(int realReading) {
+        this.realReading = realReading;
     }
 }
