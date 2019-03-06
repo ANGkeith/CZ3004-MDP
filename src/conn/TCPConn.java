@@ -27,6 +27,10 @@ public class TCPConn {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		TCPConn tcpConn = new TCPConn();
+		tcpConn.readMessage();
+
+		/*
 		TCPConn conn = TCPConn.getInstance();
 		conn.instantiateConnection(RPI_IP, RPI_PORT);
 		System.out.println("Connection Successful!");
@@ -36,6 +40,7 @@ public class TCPConn {
 			String msgReceived = conn.readMessage();
 			System.out.println("Message received: "+ msgReceived);
 		}
+		*/
 	}
 	
 	public void instantiateConnection (String ip, int port) throws IOException {
@@ -56,8 +61,12 @@ public class TCPConn {
 	}
 
 	public String readMessage() {
-		String msgReceived = mScannerFromRPI.nextLine();
+	    //Scanner in = new Scanner(System.in);
+	    //String msgReceived = in.nextLine().trim();
+		String msgReceived = mScannerFromRPI.nextLine().trim();
+		mScannerFromRPI.nextLine();
 		System.out.println("Message received: " + msgReceived);
 		return msgReceived;
 	}
+
 }

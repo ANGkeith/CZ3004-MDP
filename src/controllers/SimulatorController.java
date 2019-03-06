@@ -2,10 +2,8 @@ package controllers;
 
 import static models.Constants.*;
 
-import models.Constants;
 import models.MyRobot;
 import models.Result;
-import models.Sensor;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
@@ -62,26 +60,25 @@ public class SimulatorController implements MouseListener {
         	explorationWorker = new SwingWorker<Boolean, Void>(){
         		
         		protected Boolean doInBackground() throws Exception {
-                	try {
-                		System.out.println("Waiting for connection");
-        				tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
-        				System.out.println("Successfully Connected!");
-        				//tcpConn.sendMessage("");
-        				myRobot.getConnection(tcpConn);
-        				
-        				String msgExplore = tcpConn.readMessage();
-        				while(!msgExplore.equals(Constants.START_EXPLORATION))
-        					msgExplore = tcpConn.readMessage();
-        				
-        			} catch (UnknownHostException e1) {
-        				// TODO Auto-generated catch block
-        				e1.printStackTrace();
-        			} catch (IOException e1) {
-        				// TODO Auto-generated catch block
-        				e1.printStackTrace();
-        			}
-                	return true;
-        		}	
+                    try {
+                        System.out.println("Waiting for connection");
+                        tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
+                        System.out.println("Successfully Connected!");
+                        myRobot.getConnection(tcpConn);
+                        myRobot.getArena().reinitializeArena();
+                        //myRobot.updateSensorsWithRealReadings();
+                        //myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
+                        exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+
+                    } catch (UnknownHostException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                        return true;
+                    }
         	};
         	
         	explorationWorker.execute();

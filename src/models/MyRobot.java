@@ -4,8 +4,8 @@ import controllers.SimulatorController;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.IOException;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +73,6 @@ public class MyRobot {
 				} else if (curGrid.hasObstacle()) {
 					return false;
 				}
-
 			}
 		}
 		return true;
@@ -92,16 +91,14 @@ public class MyRobot {
 	public void forward() {
 
 		if (!hasObstacleRightInFront()) {
-
 			if (isRealRun) {
-
 				try {
 					tcpConn.sendMessage(FORWARD);
 					tcpConn.sendMessage(toAndroid());
-					String feedback = tcpConn.readMessage();
-					while (!feedback.equals(DONE)) {
-						feedback = tcpConn.readMessage();
-					}
+					//while (!feedback.equals(DONE)) {
+					//	feedback = tcpConn.readMessage();
+					//}
+					updateSensorsWithRealReadings();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -128,14 +125,13 @@ public class MyRobot {
 	public void turnRight() {
 
 		if (isRealRun) {
-
 			try {
 				tcpConn.sendMessage(TURN_RIGHT);
 				tcpConn.sendMessage(toAndroid());
-				String feedback = tcpConn.readMessage();
-				while (!feedback.equals(DONE)) {
-					feedback = tcpConn.readMessage();
-				}
+				//while (!feedback.equals(DONE)) {
+				//	feedback = tcpConn.readMessage();
+				//}
+				updateSensorsWithRealReadings();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -159,10 +155,10 @@ public class MyRobot {
 			try {
 				tcpConn.sendMessage(TURN_LEFT);
 				tcpConn.sendMessage(toAndroid());
-				String feedback = tcpConn.readMessage();
-				while (!feedback.equals(DONE)) {
-					feedback = tcpConn.readMessage();
-				}
+				//while (!feedback.equals(DONE)) {
+				//	feedback = tcpConn.readMessage();
+				//}
+				updateSensorsWithRealReadings();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -227,22 +223,8 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleToItsImmediateRight() {
-
-		if (isRealRun) {
-			String sensors = getRealSensorReading();
-
-			boolean hasObstacle = false;
-			for (int i = 4; i < 5; i++) {
-				if (sensors.charAt(i) == '1') {
-					hasObstacle = true;
-					return hasObstacle;
-				}
-			}
-			return hasObstacle;
-		}
-
 		for (int i = 0; i < rightSensor.length; i++) {
-			if (rightSensor[i].getSimulatedSensorReading() == 1) {
+			if (rightSensor[i].getSensorReading() == 1) {
 				return true;
 			}
 		}
@@ -250,22 +232,8 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleRightInFront() {
-
-		if (isRealRun) {
-			String sensors = getRealSensorReading();
-
-			boolean hasObstacle = false;
-			for (int i = 1; i < 4; i++) {
-				if (sensors.charAt(i) == '1') {
-					hasObstacle = true;
-					return hasObstacle;
-				}
-			}
-			return hasObstacle;
-		}
-
 		for (int i = 0; i < frontSensor.length; i++) {
-			if (frontSensor[i].getSimulatedSensorReading() == 1) {
+			if (frontSensor[i].getSensorReading() == 1) {
 				return true;
 			}
 		}
@@ -273,40 +241,35 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleToItsImmediateLeft() {
-
-		if (isRealRun) {
-			String sensors = getRealSensorReading();
-
-			boolean hasObstacle = false;
-			if (sensors.charAt(0) == '1') {
-				hasObstacle = true;
-				return hasObstacle;
-			}
-			return hasObstacle;
-		}
-
 		for (int i = 0; i < leftSensor.length; i++) {
-			if (leftSensor[i].getSimulatedSensorReading() == 1) {
+			if (leftSensor[i].getSensorReading() == 1) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public String getRealSensorReading() {
+	public void updateSensorsWithRealReadings() {
 		boolean messageFound;
-		String feedback;
+		String realReadings;
 		try {
-			feedback = tcpConn.readMessage();
+			realReadings = tcpConn.readMessage();
 			do {
-				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(feedback);
+				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
 				messageFound = m.find();
 			} while (!messageFound);
-			return feedback;
+
+			leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
+			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
+			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
+			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
+			rightSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(4)));
+			rightSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(5)));
+
+			pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
 		}
 	}
 
@@ -498,5 +461,9 @@ public class MyRobot {
 
 	public void setStartOrientation(Orientation startOrientation) {
 		this.startOrientation = startOrientation;
+	}
+
+	public boolean isRealRun() {
+		return isRealRun;
 	}
 }

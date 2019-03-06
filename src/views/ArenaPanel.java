@@ -73,8 +73,8 @@ public class ArenaPanel extends JPanel {
 
         for (Sensor[] sensors: frontRightLeftSensors) {
             for (Sensor sensor: sensors) {
-                numOfSensibleGrid = sensor.getSimulatedSensorReading();
-                if (sensor.getSimulatedSensorReading() == 0) {
+                numOfSensibleGrid = sensor.getSensorReading();
+                if (sensor.getSensorReading() == 0) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {
@@ -173,8 +173,8 @@ public class ArenaPanel extends JPanel {
 
         for (Sensor[] sensors: frontRightLeftSensors) {
             for (Sensor sensor: sensors) {
-                numOfSensibleGrid = sensor.getSimulatedSensorReading();
-                if (sensor.getSimulatedSensorReading() == 0) {
+                numOfSensibleGrid = sensor.getSensorReading();
+                if (sensor.getSensorReading() == 0) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {
@@ -199,7 +199,7 @@ public class ArenaPanel extends JPanel {
                     if (Arena.isValidRowCol(curRow, curCol)) {
                         grid = arena.getGrid(curRow, curCol);
                         grid.setHasBeenExplored(true);
-                        if (i == sensor.getSimulatedSensorReading()) {
+                        if (i == sensor.getSensorReading()) {
                             grid.setHasObstacle(true);
                         }
                     }

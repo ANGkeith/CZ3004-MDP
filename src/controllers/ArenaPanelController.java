@@ -7,8 +7,6 @@ import views.ArenaPanel;
 import models.Arena;
 import views.CenterPanel;
 
-import static models.Constants.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
@@ -59,8 +57,8 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
 
         for (Sensor[] sensors: frontRightLeftSensors) {
             for (Sensor sensor: sensors) {
-                numOfSensibleGrid = sensor.getSimulatedSensorReading();
-                if (sensor.getSimulatedSensorReading() == sensor.NO_OBSTACLE) {
+                numOfSensibleGrid = sensor.getSensorReading();
+                if (sensor.getSensorReading() == sensor.NO_OBSTACLE) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {
@@ -85,7 +83,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                     curGrid = arena.getGrid(curRow, curCol);
                     if (curGrid != null) {
                         curGrid.setHasBeenExplored(true);
-                        if (i == sensor.getSimulatedSensorReading()) {
+                        if (i == sensor.getSensorReading()) {
                             curGrid.setHasObstacle(true);
                         }
                     }
