@@ -2,6 +2,7 @@ package controllers;
 
 import static models.Constants.*;
 
+import models.Arena;
 import models.MyRobot;
 import models.Result;
 import utils.ExplorationAlgorithm;
@@ -78,14 +79,8 @@ public class SimulatorController implements MouseListener {
                             tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
                             System.out.println("Successfully Connected!");
                             myRobot.getConnection(tcpConn);
-                            //myRobot.updateSensorsWithRealReadings();
                             myRobot.getArena().reinitializeArena();
-                            myRobot.getLeftSensor()[0].setRealReading(0);
-                            myRobot.getRightSensor()[0].setRealReading(1);
-                            myRobot.getRightSensor()[1].setRealReading(1);
-                            myRobot.getFrontSensor()[0].setRealReading(0);
-                            myRobot.getFrontSensor()[1].setRealReading(0);
-                            myRobot.getFrontSensor()[2].setRealReading(0);
+                            myRobot.updateSensorsWithRealReadings();
                             myRobot.pcs.firePropertyChange(myRobot.UPDATEGUI, null, null);
                         }
                         exploration(centerPanel, myRobot, ExplorationType.NORMAL);
@@ -178,7 +173,7 @@ public class SimulatorController implements MouseListener {
         Orientation selectedOrientation = orientationStringToEnum((String) centerPanel.getOrientationSelection().getSelectedItem());
         myRobot.setStartOrientation(selectedOrientation);
 
-        myRobot.setStartRow(Integer.parseInt(rowCol[0], 10));
+        myRobot.setStartRow(Arena.getRowFromActualRow(Integer.parseInt(rowCol[0], 10)));
         myRobot.setStartCol(Integer.parseInt(rowCol[1], 10));
         myRobot.setToStart();
         myRobot.setForwardSpeed(forwardSpeed);

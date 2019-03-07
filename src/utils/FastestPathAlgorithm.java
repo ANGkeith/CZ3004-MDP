@@ -1,9 +1,9 @@
 package utils;
 
 import controllers.SimulatorController;
+import models.Arena;
 import models.Grid;
 import models.MyRobot;
-import views.CenterPanel;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -132,7 +132,8 @@ public class FastestPathAlgorithm {
     }
 
     private boolean isWayPoint(Grid grid) {
-        return (grid.getRow() == Integer.parseInt(waypoint[0], 10) && grid.getCol() == Integer.parseInt(waypoint[1], 10));
+        return (grid.getRow() == Arena.getActualRowFromRow(Integer.parseInt(waypoint[0], 10))
+                && grid.getCol() == Integer.parseInt(waypoint[1], 10));
     }
     
     private ArrayList<Grid> getNeighbouringGrids(int row, int col) {
@@ -186,7 +187,8 @@ public class FastestPathAlgorithm {
     	int minNumOfGridAwayFromGoal;
     	
     	if(goingWayPoint)
-    		minNumOfGridAwayFromGoal = Math.abs(Integer.parseInt(waypoint[1], 10) - grid.getCol()) + Math.abs(Integer.parseInt(waypoint[0], 10) - grid.getRow());
+    		minNumOfGridAwayFromGoal = Math.abs(Integer.parseInt(waypoint[1], 10) - grid.getCol()) +
+                    Math.abs(Arena.getRowFromActualRow(Integer.parseInt(waypoint[0], 10)) - grid.getRow());
     	else
     		minNumOfGridAwayFromGoal = Math.abs(GOAL_ZONE_COL - grid.getCol()) + Math.abs(GOAL_ZONE_ROW - grid.getRow());
     	
@@ -199,7 +201,7 @@ public class FastestPathAlgorithm {
     private boolean gridNotInSameAxisAsGoal(Grid grid, boolean goingWayPoint) {
     	
     	if (goingWayPoint)
-    		return Integer.parseInt(waypoint[1], 10) - grid.getCol() != 0 || Integer.parseInt(waypoint[0], 10) - grid.getRow() != 0;
+    		return Integer.parseInt(waypoint[1], 10) - grid.getCol() != 0 || Arena.getRowFromActualRow(Integer.parseInt(waypoint[0], 10)) - grid.getRow() != 0;
     	else
     		return GOAL_ZONE_COL - grid.getCol() != 0 || GOAL_ZONE_ROW - grid.getRow() != 0;
     }
@@ -209,7 +211,7 @@ public class FastestPathAlgorithm {
         Stack<Grid> path = new Stack();
         
         if(goingWayPoint)
-        	 curGrid = myRobot.getArena().getGrid(Integer.parseInt(waypoint[0], 10), Integer.parseInt(waypoint[1], 10));
+        	 curGrid = myRobot.getArena().getGrid(Arena.getRowFromActualRow(Integer.parseInt(waypoint[0], 10)), Integer.parseInt(waypoint[1], 10));
         else
         	 curGrid = myRobot.getArena().getGrid(GOAL_ZONE_ROW, GOAL_ZONE_COL);
         

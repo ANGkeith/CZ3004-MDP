@@ -1,6 +1,7 @@
 package views;
 
 import controllers.SimulatorController;
+import models.Arena;
 import models.MyRobot;
 import net.miginfocom.swing.MigLayout;
 
@@ -76,7 +77,7 @@ public class CenterPanel extends JPanel {
         lbls[5] = new JLabel("Exploration time-limit (m : s):");
 
         fields = new JTextField[6];
-        fields[0] = new JTextField((myRobot.getStartRow()) + ", " + (myRobot.getStartCol()));
+        fields[0] = new JTextField((Arena.getActualRowFromRow(myRobot.getStartRow())) + ", " + (myRobot.getStartCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
         fields[3] = new JTextField();

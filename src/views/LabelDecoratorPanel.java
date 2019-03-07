@@ -19,6 +19,25 @@ public class LabelDecoratorPanel extends JPanel {
         mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
         mainPane.setBackground(null);
 
+        bottomPane = new JPanel();
+        bottomPane.setBackground(null);
+        bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.X_AXIS));
+        bottomPane.setPreferredSize(new Dimension((ARENA_WIDTH + 1) * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
+
+
+        rowPane = new JPanel();
+        rowPane.setBackground(null);
+        rowPane.setLayout(new GridLayout(ARENA_HEIGHT, 1));
+        rowPane.setPreferredSize(new Dimension(GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
+        for (int r = ARENA_HEIGHT - 1; r >= 0; r--) {
+            rowLabel = generateLabel(r);
+            rowPane.add(rowLabel);
+        }
+        bottomPane.add(rowPane);
+
+        bottomPane.add(arenaBoard);
+
+        mainPane.add(bottomPane);
 
         colPane = new JPanel();
         colPane.setBackground(null);
@@ -32,25 +51,6 @@ public class LabelDecoratorPanel extends JPanel {
         }
         mainPane.add(colPane);
 
-        bottomPane = new JPanel();
-        bottomPane.setBackground(null);
-        bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.X_AXIS));
-        bottomPane.setPreferredSize(new Dimension((ARENA_WIDTH + 1) * GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
-
-
-        rowPane = new JPanel();
-        rowPane.setBackground(null);
-        rowPane.setLayout(new GridLayout(ARENA_HEIGHT, 1));
-        rowPane.setPreferredSize(new Dimension(GRID_SIZE, ARENA_HEIGHT * GRID_SIZE));
-        for (int c = 0; c < ARENA_HEIGHT; c++) {
-            rowLabel = generateLabel(c);
-            rowPane.add(rowLabel);
-        }
-        bottomPane.add(rowPane);
-
-        bottomPane.add(arenaBoard);
-
-        mainPane.add(bottomPane);
         add(mainPane);
     }
 

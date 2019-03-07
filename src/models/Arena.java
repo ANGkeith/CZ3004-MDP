@@ -25,6 +25,14 @@ public class Arena {
 
     // ============================== utils
 
+    public static int getRowFromActualRow(int actualRow) {
+        return 19 - actualRow;
+    }
+
+    public static int getActualRowFromRow(int row) {
+        return 19 - row;
+    }
+
     public double getCoveragePercentage() {
         int exploredGrids = 0;
         int totalGrids = ARENA_HEIGHT * ARENA_WIDTH;
