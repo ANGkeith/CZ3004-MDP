@@ -31,4 +31,22 @@ public class AndroidApi {
         }
         return message;
     }
+
+    public static String constructPathForArduino(String instructions) {
+
+        String formattedInstructions = "";
+        int count = 0;
+        for (int i = 0; i < instructions.length(); i++) {
+            if (instructions.charAt(i) == 'W') {
+                count++;
+            } else {
+                if (count != 0) {
+                    formattedInstructions += count;
+                }
+                formattedInstructions += instructions.charAt(i);
+                count = 0;
+            }
+        }
+        return "ad" + formattedInstructions;
+    }
 }

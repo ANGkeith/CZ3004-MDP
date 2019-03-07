@@ -31,20 +31,50 @@ public class FastestPathAlgorithm {
     }
 
     public void A_Star() throws Exception{
+        String instructions = "";
     	buildTree(true);
         path = getFastestPath(true);
+        instructions += getInstructionsFromPath(path);
         executeFastestPath(path);
-        
+
         myRobot.getArena().resetGridCost();
         
         buildTree(false);
         path = getFastestPath(false);
+        instructions += getInstructionsFromPath(path);
         executeFastestPath(path);
+
+        System.out.println(AndroidApi.constructPathForArduino(instructions));
+
     }
 
+    public String getInstructionsFromPath(Stack<Grid> s) {
+        Stack<Grid> path = (Stack)s.clone();
+        Grid targetGrid;
+        Orientation orientationNeeded;
+
+        String instructions = "";
+        Grid prevGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
+        while (!path.empty()) {
+            targetGrid = path.pop();
+            orientationNeeded = getRespectiveOrientationToTarget(prevGrid.getRow(), prevGrid.getCol(), targetGrid.getRow(), targetGrid.getCol());
+            instructions += instructionToTurnToTarget(prevGrid.getO(), orientationNeeded);
+            instructions += "W";
+            prevGrid = targetGrid;
+        }
+        return instructions;
+    }
+
+
     private void buildTree(boolean goingWayPoint) {
-    	Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
-    	
+        Grid startingGrid;
+        if (goingWayPoint) {
+            startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
+        } else {
+            startingGrid = myRobot.getArena().getGrid(Arena.getRowFromActualRow(Integer.parseInt(waypoint[0], 10))
+                    , Integer.parseInt(waypoint[1]));
+        }
+
         closedSet = new ArrayList<>();
         openSet = new ArrayList<>();
         openSet.add(startingGrid);
@@ -272,7 +302,26 @@ public class FastestPathAlgorithm {
             sim.right();
         }
     }
-    
+
+    private String instructionToTurnToTarget(Orientation curOrientation, Orientation targetOrientation) {
+
+        int modulus;
+        modulus = (targetOrientation.ordinal() - curOrientation.ordinal()) % 4;
+        if (modulus < 0) {
+            modulus += 4;
+        }
+
+        if (targetOrientation == curOrientation) {
+            return "";
+        } else if (modulus == 1) {
+            return "D";
+        } else if (modulus == 3) {
+            return "A";
+        } else {
+            return "DD";
+        }
+    }
+
     private String[] parseInputToRowColArr(String s) {
         return s.split("\\s*,\\s*");
     }
