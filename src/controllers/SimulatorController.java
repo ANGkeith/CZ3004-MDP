@@ -5,6 +5,7 @@ import static models.Constants.*;
 import models.Arena;
 import models.MyRobot;
 import models.Result;
+import utils.AndroidApi;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
@@ -28,7 +29,6 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 
@@ -45,7 +45,7 @@ public class SimulatorController implements MouseListener {
     private FastestPathAlgorithm fastestPathAlgo;
     private static CenterPanel centerPanel;
 
-    public static  boolean test = false;
+    public static  boolean test = true;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> explorationWorker;
@@ -66,22 +66,32 @@ public class SimulatorController implements MouseListener {
                     try {
                         if (test){
                             myRobot.isRealRun = true;
-                            myRobot.getArena().reinitializeArena();
-                            myRobot.getLeftSensor()[0].setRealReading(0);
-                            myRobot.getRightSensor()[0].setRealReading(1);
-                            myRobot.getRightSensor()[1].setRealReading(1);
-                            myRobot.getFrontSensor()[0].setRealReading(0);
-                            myRobot.getFrontSensor()[1].setRealReading(0);
-                            myRobot.getFrontSensor()[2].setRealReading(0);
-                            myRobot.pcs.firePropertyChange(myRobot.UPDATEGUI, null, null);
+
+                            // simulate start signal from android
+                            String message = "explore:10,5,N";
+                            while(!message.contains(START_EXPLORATION)) {
+                                System.out.println("something wrong");
+                            }
+
+                            myRobot.setStartRowColOri(AndroidApi.getRow(message),
+                                    AndroidApi.getCol(message),
+                                    AndroidApi.getOrientation(message)
+                            );
                         } else {
                             System.out.println("Waiting for connection");
                             tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
                             System.out.println("Successfully Connected!");
                             myRobot.getConnection(tcpConn);
-                            myRobot.getArena().reinitializeArena();
-                            myRobot.updateSensorsWithRealReadings();
-                            myRobot.pcs.firePropertyChange(myRobot.UPDATEGUI, null, null);
+                            String message = tcpConn.readMessage();
+
+                            while(!message.contains(START_EXPLORATION)) {
+                                message = tcpConn.readMessage();
+                            }
+
+                            myRobot.setStartRowColOri(AndroidApi.getRow(message),
+                                    AndroidApi.getCol(message),
+                                    AndroidApi.getOrientation(message)
+                            );
                         }
                         exploration(centerPanel, myRobot, ExplorationType.NORMAL);
 
@@ -175,7 +185,7 @@ public class SimulatorController implements MouseListener {
 
         myRobot.setStartRow(Arena.getRowFromActualRow(Integer.parseInt(rowCol[0], 10)));
         myRobot.setStartCol(Integer.parseInt(rowCol[1], 10));
-        myRobot.setToStart();
+        myRobot.setCurPositionToStart();
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
         myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
@@ -184,10 +194,10 @@ public class SimulatorController implements MouseListener {
         disableConfigurations(centerPanel);
 
         if (resetMap) {
-            myRobot.getArena().reinitializeArena();
+            myRobot.getArena().reinitializeArena(myRobot);
         }
         myRobot.resetPathTaken();
-        myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
+        myRobot.pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
         myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
 
@@ -274,8 +284,16 @@ public class SimulatorController implements MouseListener {
 
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
-        myRobot.setToStart();
-        
+        myRobot.setCurPositionToStart();
+        myRobot.getArena().reinitializeArena(myRobot);
+
+        myRobot.pcs.firePropertyChange(myRobot.REPAINT, null, null);
+        if (myRobot.isRealRun) {
+            myRobot.updateSensorsWithRealReadings();
+        }
+        myRobot.pcs.firePropertyChange(myRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
+
+
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
         turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
@@ -336,10 +354,10 @@ public class SimulatorController implements MouseListener {
                                 myRobot.setStartRow(r);
                                 myRobot.setStartCol(c);
                                 myRobot.setStartOrientation(Orientation.values()[o]);
-                                myRobot.setToStart();
-                                myRobot.getArena().reinitializeArena();
+                                myRobot.setCurPositionToStart();
+                                myRobot.getArena().reinitializeArena(myRobot);
                                 myRobot.resetPathTaken();
-                                myRobot.pcs.firePropertyChange(MyRobot.UPDATEGUI, null, null);
+                                myRobot.pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
                                 myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
                                 explorationAlgo.explorationLogic(true);
 
@@ -364,7 +382,7 @@ public class SimulatorController implements MouseListener {
 
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
         this.myRobot = myRobot;
-        myRobot.setToStart();
+        myRobot.setCurPositionToStart();
         myRobot.resetPathTaken();
 
         fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());

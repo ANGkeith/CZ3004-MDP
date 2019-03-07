@@ -33,7 +33,10 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (MyRobot.UPDATEGUI.equals(evt.getPropertyName())) {
+        if (MyRobot.REPAINT.equals(evt.getPropertyName())) {
+            arenaPanel.repaint();
+        }
+        if (MyRobot.UPDATE_GUI_BASED_ON_SENSOR.equals(evt.getPropertyName())) {
             updateArenaBasedOnSensorReadings();
 
             coverage = String.format("%.2f", arena.getCoveragePercentage());

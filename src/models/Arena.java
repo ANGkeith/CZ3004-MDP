@@ -148,7 +148,7 @@ public class Arena {
         }
     }
 
-    public void reinitializeArena() {
+    public void reinitializeArena(MyRobot myRobot) {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
                 this.grids[r][c].setHasObstacle(false);
@@ -161,6 +161,8 @@ public class Arena {
                 this.grids[r][c].reinitizalizeGridCost();
             }
         }
+        setHasExploredBasedOnOccupiedGrid(myRobot);
+        myRobot.resetPathTaken();
     }
     
     public void resetGridCost() {

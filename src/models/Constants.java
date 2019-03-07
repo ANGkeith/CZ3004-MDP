@@ -43,9 +43,9 @@ public class Constants {
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
-    public static final String FORWARD = "arW";
-    public static final String TURN_LEFT = "arA";
-    public static final String TURN_RIGHT = "arD";
+    public static final String FORWARD_INSTRUCTION_TO_ARDUINO = "arW";
+    public static final String TURN_LEFT_INSTRUCTION_TO_ARDUINO = "arA";
+    public static final String TURN_RIGHT_INSTRUCTION_TO_ARDUINO = "arD";
 	public static final String EXPLORE_DONE = "F";
 	public static final String SEPARATOR = "|";
 	public static final String READ_SENSOR_VALUES = "E";
@@ -55,6 +55,8 @@ public class Constants {
 	public static final String CALIBRATE = "C";
 	public static final String SENSOR_READING_PATTERN = "\\d{6}";
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
+
+	public static final String RPI_IDENTIFIER = "rpi";
 
     public enum Orientation {
         N,

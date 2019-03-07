@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import static models.Constants.*;
 import java.util.Queue;
 
+import controllers.SimulatorController;
 import models.Arena;
 import models.Grid;
 import models.MyRobot;
@@ -75,6 +76,9 @@ public class ArenaPanel extends JPanel {
             for (Sensor sensor: sensors) {
                 numOfSensibleGrid = sensor.getSensorReading();
                 if (sensor.getSensorReading() == 0) {
+                    numOfSensibleGrid = sensor.getSensorRange();
+                }
+                if (SimulatorController.test) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {
