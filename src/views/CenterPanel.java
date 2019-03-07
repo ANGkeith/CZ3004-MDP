@@ -79,7 +79,7 @@ public class CenterPanel extends JPanel {
         fields[0] = new JTextField((myRobot.getStartRow()) + ", " + (myRobot.getStartCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
-        fields[3] = new JTextField();
+        fields[3] = new JTextField(GOAL_ZONE_ROW + "," + GOAL_ZONE_COL);
         fields[4] = new JTextField(Double.toString(myRobot.getExplorationCoverageLimit()));
         fields[5] = new JTextField(myRobot.getExplorationTimeLimitFormatted());
 
