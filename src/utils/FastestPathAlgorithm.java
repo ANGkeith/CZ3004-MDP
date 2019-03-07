@@ -23,6 +23,7 @@ public class FastestPathAlgorithm {
     private int i;
     private String[] waypoint;
     private String instruction = "";
+    int numberOfForward=0;
 
     public FastestPathAlgorithm(MyRobot myRobot, SimulatorController sim) {
     	
@@ -32,23 +33,37 @@ public class FastestPathAlgorithm {
     }
 
     public void A_Star() throws Exception{
-
-    	buildTree(true);
-    	path = getFastestPath(true);
-    	myRobot.getArena().resetGridCost();
+    	int col = Integer.parseInt(waypoint[1], 10);
+    	int row = Integer.parseInt(waypoint[0], 10);
     	
-    	buildTree(false);
-    	path = getFastestPath(false);
+    	buildTree(col, row);
+    	path = getFastestPath(col ,row);
     	
 //    	if(myRobot.isRealRun()) {
-    		instruction(path);
-            System.out.println("The Instruction is :" + instruction);
+        	instruction(path, false);
+//    	}
+//    	else
+//    		executeFastestPath(path);
+
+    	myRobot.getArena().resetGridCost();
+    	
+    	buildTree(GOAL_ZONE_COL, GOAL_ZONE_ROW);
+    	path = getFastestPath(GOAL_ZONE_COL, GOAL_ZONE_ROW);
+    	
+    	
+//    	if(myRobot.isRealRun()) {
+        	instruction(path, true);
+        	System.out.println("The Instruction is :" + instruction);
+        	
+            myRobot.setCurCol(myRobot.getStartCol());
+            myRobot.setCurRow(myRobot.getStartRow());
+            myRobot.setCurOrientation(myRobot.getStartOrientation());
 //    	}
 //    	else
 //    		executeFastestPath(path);
     }
 
-    private void buildTree(boolean wayPoint) {
+    private void buildTree(int col , int row) {
     	Grid startingGrid = myRobot.getArena().getGrid(myRobot.getCurRow(), myRobot.getCurCol());
     	
         closedSet = new ArrayList<>();
@@ -56,7 +71,7 @@ public class FastestPathAlgorithm {
         openSet.add(startingGrid);
 
         startingGrid.setG(0);
-        startingGrid.setH(calculateHeuristic(startingGrid, true ));
+        startingGrid.setH(calculateHeuristic(startingGrid, col, row));
         startingGrid.setO(myRobot.getCurOrientation());
         boolean searchCompletedFlag = false;
         Grid curGrid;
@@ -70,15 +85,16 @@ public class FastestPathAlgorithm {
 
             curGrid = openSet.get(indexOfNodeWithLowestF);
             
-            if(wayPoint) {
+            if(col != GOAL_ZONE_COL && row!=GOAL_ZONE_ROW){
 	            if (isWayPoint(curGrid)) {
 		                searchCompletedFlag = true;
 		            }
             }
-            else
+            else {
 	            if (isGoalNode(curGrid)) {
 	                searchCompletedFlag = true;
 	            }
+            }
             	
 
             openSet.remove(curGrid);
@@ -99,14 +115,14 @@ public class FastestPathAlgorithm {
                         if (tempG < curNeighbour.getG()) {
                             curNeighbour.setG(tempG);
                             curNeighbour.setO(tempO);
-                            curNeighbour.setH(calculateHeuristic(curNeighbour, wayPoint));
+                            curNeighbour.setH(calculateHeuristic(curNeighbour, col, row));
                             curNeighbour.setCameFrom(curGrid);
                         }
                     } else {
                         curNeighbour.setG(tempG);
                         curNeighbour.setO(tempO);
                         openSet.add(curNeighbour);
-                        curNeighbour.setH(calculateHeuristic(curNeighbour, wayPoint));
+                        curNeighbour.setH(calculateHeuristic(curNeighbour, col, row));
                         curNeighbour.setCameFrom(curGrid);
                     }
                 }
@@ -188,36 +204,26 @@ public class FastestPathAlgorithm {
         return true;
     }
 
-    private int calculateHeuristic(Grid grid, boolean goingWayPoint) {
+    private int calculateHeuristic(Grid grid, int col, int row) {
     	int minNumOfGridAwayFromGoal;
     	
-    	if(goingWayPoint)
-    		minNumOfGridAwayFromGoal = Math.abs(Integer.parseInt(waypoint[1], 10) - grid.getCol()) + Math.abs(Integer.parseInt(waypoint[0], 10) - grid.getRow());
-    	else
-    		minNumOfGridAwayFromGoal = Math.abs(GOAL_ZONE_COL - grid.getCol()) + Math.abs(GOAL_ZONE_ROW - grid.getRow());
+    	minNumOfGridAwayFromGoal = Math.abs(col - grid.getCol()) + Math.abs(row - grid.getRow());
     	
-        if (gridNotInSameAxisAsGoal(grid, goingWayPoint)) {
+        if (gridNotInSameAxisAsGoal(grid, col ,row)) {
             return minNumOfGridAwayFromGoal * MOVE_COST + TURN_COST;
         }
         return minNumOfGridAwayFromGoal * MOVE_COST;
     }
 
-    private boolean gridNotInSameAxisAsGoal(Grid grid, boolean goingWayPoint) {
-    	
-    	if (goingWayPoint)
-    		return Integer.parseInt(waypoint[1], 10) - grid.getCol() != 0 || Integer.parseInt(waypoint[0], 10) - grid.getRow() != 0;
-    	else
-    		return GOAL_ZONE_COL - grid.getCol() != 0 || GOAL_ZONE_ROW - grid.getRow() != 0;
+    private boolean gridNotInSameAxisAsGoal(Grid grid, int col, int row) {
+    		return col - grid.getCol() != 0 || row - grid.getRow() != 0;
     }
 
-    private Stack<Grid> getFastestPath(boolean goingWayPoint) {
+    private Stack<Grid> getFastestPath(int col, int row) {
     	Grid curGrid;
         Stack<Grid> path = new Stack();
-        
-        if(goingWayPoint)
-        	 curGrid = myRobot.getArena().getGrid(Integer.parseInt(waypoint[0], 10), Integer.parseInt(waypoint[1], 10));
-        else
-        	 curGrid = myRobot.getArena().getGrid(GOAL_ZONE_ROW, GOAL_ZONE_COL);
+       
+        curGrid = myRobot.getArena().getGrid(row, col);
         
         Grid prevGrid;
         path.push(curGrid);
@@ -242,8 +248,8 @@ public class FastestPathAlgorithm {
         }
     }
     
-    private void instruction(Stack<Grid> s) throws  Exception{
-    	int numberOfForward=0;
+    private void instruction(Stack<Grid> s , boolean stop) throws  Exception{
+    	//int numberOfForward=0;
         int modulus=0;
         Grid targetGrid;
         Orientation orientationNeeded;
@@ -270,15 +276,13 @@ public class FastestPathAlgorithm {
             	numberOfForward = 1;
             }
             sim.virtualForward();
-          if(s.isEmpty() || numberOfForward == 9) {
-        	instruction += numberOfForward;
-        	numberOfForward = 0;
+            if(numberOfForward == 9) {
+	        	instruction += numberOfForward;
+	        	numberOfForward = 0;
           }
         }
-        
-        myRobot.setCurCol(myRobot.getStartCol());
-        myRobot.setCurRow(myRobot.getStartRow());
-        myRobot.setCurOrientation(myRobot.getStartOrientation());
+        if(stop && numberOfForward != 0)
+        	instruction += numberOfForward;;
         
     }
 
