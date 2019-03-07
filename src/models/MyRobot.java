@@ -175,6 +175,56 @@ public class MyRobot {
 			setCurOrientation(Orientation.S);
 		}
 	}
+	
+	public void virtualForward() {
+
+		if (!hasObstacleRightInFront()) {
+
+			SimulatorController.numFwd++;
+
+			if (curOrientation == Orientation.N) {
+				temp = curRow - 1;
+				setCurRow(temp);
+			} else if (curOrientation == Orientation.E) {
+				temp = curCol + 1;
+				setCurCol(temp);
+			} else if (curOrientation == Orientation.S) {
+				temp = curRow + 1;
+				setCurRow(temp);
+			} else if (curOrientation == Orientation.W) {
+				temp = curCol - 1;
+				setCurCol(temp);
+			}
+		}
+	}
+	
+	public void virtualTurnRight() {
+
+		SimulatorController.numTurn++;
+		if (curOrientation == Orientation.N) {
+			setCurOrientation(Orientation.E);
+		} else if (curOrientation == Orientation.E) {
+			setCurOrientation(Orientation.S);
+		} else if (curOrientation == Orientation.S) {
+			setCurOrientation(Orientation.W);
+		} else if (curOrientation == Orientation.W) {
+			setCurOrientation(Orientation.N);
+		}
+	}
+
+	public void virtualTurnLeft() {
+
+		SimulatorController.numTurn++;
+		if (curOrientation == Orientation.N) {
+			setCurOrientation(Orientation.W);
+		} else if (curOrientation == Orientation.E) {
+			setCurOrientation(Orientation.N);
+		} else if (curOrientation == Orientation.S) {
+			setCurOrientation(Orientation.E);
+		} else if (curOrientation == Orientation.W) {
+			setCurOrientation(Orientation.S);
+		}
+	}
 
 	public void setToStart() {
 		setCurRow(startRow);

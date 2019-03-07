@@ -393,6 +393,22 @@ public class SimulatorController implements MouseListener {
         Thread.sleep(turningSpeedMs);
         myRobot.turnLeft();
     }
+    
+    public void virtualForward() throws InterruptedException {
+        Thread.sleep(fwdSpeedMs);
+        myRobot.virtualForward();
+        myRobot.addCurGridToPathTaken();
+    }
+
+    public void virtualRight() throws InterruptedException {
+        Thread.sleep(turningSpeedMs);
+        myRobot.virtualTurnRight();
+    }
+
+    public void virtualLeft() throws InterruptedException {
+        Thread.sleep(turningSpeedMs);
+        myRobot.virtualTurnLeft();
+    }
 
     public SimulatorController getInstance() {
     	//if(_instance == null)

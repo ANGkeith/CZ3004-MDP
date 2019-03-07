@@ -30,7 +30,7 @@ public class ExplorationAlgorithm {
                 } else if (myRobot.hasObstacleToItsImmediateLeft()) {
                     sim.right();
                     sim.right();
-                }
+                }	
             } else {
                 sim.right();
                 sim.forward();
