@@ -79,11 +79,11 @@ public class MyRobot {
 	}
 
 	public String toAndroid() {
-		String p0 = getCurCol() + "," + getCurRow() + "," + getCurOrientation().toString();
+		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
 		String p1 = arena.generateMapDescriptorP1();
 		String p2 = arena.generateMapDescriptorP2();
 
-		String toAndroid = "an"+ p0 + SEPARATOR + p1 + SEPARATOR + p2;
+		String toAndroid = "an"+ p0 + "," + p1 + "," + p2 + ",";
 
 		return toAndroid;
 	}
