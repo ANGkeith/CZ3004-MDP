@@ -40,12 +40,12 @@ public class FastestPathAlgorithm {
     	buildTree(false);
     	path = getFastestPath(false);
     	
-    	if(myRobot.isRealRun()) {
+//    	if(myRobot.isRealRun()) {
     		instruction(path);
             System.out.println("The Instruction is :" + instruction);
-    	}
-    	else
-    		executeFastestPath(path);
+//    	}
+//    	else
+//    		executeFastestPath(path);
     }
 
     private void buildTree(boolean wayPoint) {
@@ -257,21 +257,22 @@ public class FastestPathAlgorithm {
             	numberOfForward++;
             } else if (modulus == 1) {
             	sim.virtualRight();
-            	instruction += numberOfForward + "F," + "R,";
+            	instruction += numberOfForward + "R";
             	numberOfForward = 1;
             } else if (modulus == 3) {
             	sim.virtualLeft();
-            	instruction += numberOfForward + "F," + "L,";
+            	instruction += numberOfForward + "L";
             	numberOfForward = 1;
             } else {
             	sim.virtualRight();
             	sim.virtualRight();
-            	instruction += numberOfForward + "F," + "2R,";
+            	instruction += numberOfForward + "2R";
             	numberOfForward = 1;
             }
             sim.virtualForward();
-          if(s.isEmpty()) {
-        	instruction += numberOfForward + "F";
+          if(s.isEmpty() || numberOfForward == 9) {
+        	instruction += numberOfForward;
+        	numberOfForward = 0;
           }
         }
         
