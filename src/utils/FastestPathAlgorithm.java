@@ -30,22 +30,27 @@ public class FastestPathAlgorithm {
         waypoint = parseInputToRowColArr(sim.getCenterPanel().getFields()[3].getText());
     }
 
-    public void A_Star() throws Exception{
+    public String A_Star() throws Exception{
         String instructions = "";
     	buildTree(true);
         path = getFastestPath(true);
 
         instructions += getInstructionsFromPath(path);
-        executeFastestPath(path);
+
+        if (!MyRobot.isRealRun) {
+            executeFastestPath(path);
+        }
 
         myRobot.getArena().resetGridCost();
         
         buildTree(false);
         path = getFastestPath(false);
         instructions += getInstructionsFromPath(path);
-        executeFastestPath(path);
+        if (!MyRobot.isRealRun) {
+            executeFastestPath(path);
+        }
 
-        System.out.println(AndroidApi.constructPathForArduino(instructions));
+        return AndroidApi.constructPathForArduino(instructions);
     }
 
     public String getInstructionsFromPath(Stack<Grid> s) {

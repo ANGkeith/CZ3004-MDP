@@ -66,7 +66,7 @@ public class SimulatorController implements MouseListener {
         		    String message;
                     try {
                         if (test){
-                            myRobot.isRealRun = true;
+                            MyRobot.isRealRun = true;
 
                             // simulate start signal from android
                             message = "explore:10,5,N";
@@ -383,6 +383,7 @@ public class SimulatorController implements MouseListener {
 
     private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
         this.myRobot = myRobot;
+        // TODO send optimal orientation to android
         myRobot.setCurPositionToStart();
         myRobot.resetPathTaken();
 
@@ -402,7 +403,15 @@ public class SimulatorController implements MouseListener {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                fastestPathAlgo.A_Star();
+                String instructions = fastestPathAlgo.A_Star();
+
+                if (MyRobot.isRealRun) {
+                    String startFastestPathSignal = tcpConn.readMessage();
+                    while(!startFastestPathSignal.contains(START_FASTEST)) {
+                        startFastestPathSignal = tcpConn.readMessage();
+                    }
+                    tcpConn.sendMessage(AndroidApi.constructPathForArduino(instructions));
+                }
                 timer.stop();
                 return true;
             }

@@ -39,7 +39,7 @@ public class MyRobot {
 	private Queue<Grid> pathTaken;
 	public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	private TCPConn tcpConn;
-	public boolean isRealRun = false;
+	public static boolean isRealRun = false;
 	public Matcher m;
 
 	public MyRobot(Arena arena, Arena referenceArena) {

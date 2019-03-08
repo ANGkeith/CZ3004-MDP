@@ -51,7 +51,7 @@ public class Constants {
 	public static final String READ_SENSOR_VALUES = "E";
 	public static final String DONE = "Y";
 	public static final String START_EXPLORATION = "explore";
-	public static final String START_SHORTEST = "short";
+	public static final String START_FASTEST = "fastest";
 	public static final String CALIBRATE = "C";
 	public static final String SENSOR_READING_PATTERN = "\\d{6}";
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
