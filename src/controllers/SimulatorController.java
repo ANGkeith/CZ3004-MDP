@@ -45,7 +45,7 @@ public class SimulatorController implements MouseListener {
     private FastestPathAlgorithm fastestPathAlgo;
     private static CenterPanel centerPanel;
 
-    public static  boolean test = true;
+    public static  boolean test = false;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> explorationWorker;
@@ -63,12 +63,13 @@ public class SimulatorController implements MouseListener {
         	explorationWorker = new SwingWorker<Boolean, Void>(){
         		
         		protected Boolean doInBackground() throws Exception {
+        		    String message;
                     try {
                         if (test){
                             myRobot.isRealRun = true;
 
                             // simulate start signal from android
-                            String message = "explore:10,5,N";
+                            message = "explore:10,5,N";
                             while(!message.contains(START_EXPLORATION)) {
                                 System.out.println("something wrong");
                             }
@@ -82,7 +83,7 @@ public class SimulatorController implements MouseListener {
                             tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
                             System.out.println("Successfully Connected!");
                             myRobot.getConnection(tcpConn);
-                            String message = tcpConn.readMessage();
+                            message = tcpConn.readMessage();
 
                             while(!message.contains(START_EXPLORATION)) {
                                 message = tcpConn.readMessage();

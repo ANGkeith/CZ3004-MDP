@@ -97,6 +97,7 @@ public class MyRobot {
 		nextRow = getCurRow();
 		nextCol = getCurCol();
 		nextOrientation = getCurOrientation();
+
 		if (instruction.equals(FORWARD_INSTRUCTION_TO_ARDUINO)) {
 			if (curOrientation == Orientation.N) {
 				nextRow = curRow - 1;
@@ -106,6 +107,8 @@ public class MyRobot {
 				nextRow = curRow + 1;
 			} else if (curOrientation == Orientation.W) {
 				nextCol = curCol - 1;
+			} else {
+				System.out.println("errF");
 			}
 		} else if (instruction.equals(TURN_RIGHT_INSTRUCTION_TO_ARDUINO)) {
 			if (curOrientation == Orientation.N) {
@@ -116,6 +119,8 @@ public class MyRobot {
 				nextOrientation = Orientation.W;
 			} else if (curOrientation == Orientation.W) {
 				nextOrientation = Orientation.N;
+			} else {
+				System.out.println("errR");
 			}
 		} else if (instruction.equals(TURN_LEFT_INSTRUCTION_TO_ARDUINO)) {
 			if (curOrientation == Orientation.N) {
@@ -126,6 +131,8 @@ public class MyRobot {
 				nextOrientation = Orientation.E;
 			} else if (curOrientation == Orientation.W) {
 				nextOrientation = Orientation.S;
+			} else {
+				System.out.println("errL");
 			}
 		}
 		String myPosition = nextCol + "," + Arena.getRowFromActualRow(nextRow) + "," + nextOrientation.toString();
@@ -328,17 +335,20 @@ public class MyRobot {
 
 				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
 			} else {
-				realReadings = tcpConn.readMessage();
+				realReadings = tcpConn.readMessageArduino();
 				do {
 					m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
 					messageFound = m.find();
 				} while (!messageFound);
 			}
 
+			String[] readingsArr = realReadings.split(",");
 			realReadings = realReadings.substring(2);
 
 
-			leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
+			int asd = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
+			System.out.println("new Readings:" + asd);
+			leftSensor[0].setRealReading(asd);
 			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
 			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
 			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
@@ -356,6 +366,8 @@ public class MyRobot {
 					+ Character.getNumericValue(realReadings.charAt(5))
 					+ "\n"
 			);
+			realReadings = realReadings.substring(5);
+			System.out.println(realReadings);
 			System.out.println(">>>>");
 
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
@@ -364,7 +376,16 @@ public class MyRobot {
 			e.printStackTrace();
 		}
 	}
+	double[] a = {21.3, 28.7, 39, 50.9, 60.5};
 
+	private int getRealLeftSensorReadings(double rawValue) {
+		for (int i = 0; i < 5; i++) {
+			if (rawValue < a[i]) {
+				return i + 1;
+			}
+		}
+		return 0;
+	}
 	public boolean isAtGoalZone() {
 		return (getCurRow() == GOAL_ZONE_ROW && getCurCol() == GOAL_ZONE_COL);
 	}

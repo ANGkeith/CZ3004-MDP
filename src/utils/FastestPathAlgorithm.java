@@ -34,6 +34,7 @@ public class FastestPathAlgorithm {
         String instructions = "";
     	buildTree(true);
         path = getFastestPath(true);
+
         instructions += getInstructionsFromPath(path);
         executeFastestPath(path);
 
@@ -45,7 +46,6 @@ public class FastestPathAlgorithm {
         executeFastestPath(path);
 
         System.out.println(AndroidApi.constructPathForArduino(instructions));
-
     }
 
     public String getInstructionsFromPath(Stack<Grid> s) {

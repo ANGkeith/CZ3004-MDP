@@ -24,19 +24,15 @@ public class AndroidApi {
         return Orientation.valueOf(payload[2]);
     }
 
-    public static String constructMessageForAndroid(String... datas) {
-        String message = "an";
-        for (String d: datas) {
-            message = message + d + ",";
-        }
-        return message;
-    }
-
     public static String constructPathForArduino(String instructions) {
 
         String formattedInstructions = "";
         int count = 0;
         for (int i = 0; i < instructions.length(); i++) {
+            if (count == 9) {
+                formattedInstructions += 9;
+                count = 0;
+            }
             if (instructions.charAt(i) == 'W') {
                 count++;
             } else {
@@ -46,6 +42,9 @@ public class AndroidApi {
                 formattedInstructions += instructions.charAt(i);
                 count = 0;
             }
+        }
+        if (count != 0) {
+            formattedInstructions += count;
         }
         return "ad" + formattedInstructions;
     }

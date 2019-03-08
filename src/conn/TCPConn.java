@@ -3,10 +3,7 @@ package conn;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
-
-import models.Constants;
 
 public class TCPConn {
 	
@@ -28,7 +25,7 @@ public class TCPConn {
 	
 	public static void main(String[] args) throws IOException {
 		TCPConn tcpConn = new TCPConn();
-		tcpConn.readMessage();
+		tcpConn.readMessageArduino();
 
 		/*
 		TCPConn conn = TCPConn.getInstance();
@@ -37,7 +34,7 @@ public class TCPConn {
 		while (true)
 		{
 			conn.sendMessage(Constants.READ_SENSOR_VALUES);
-			String msgReceived = conn.readMessage();
+			String msgReceived = conn.readMessageArduino();
 			System.out.println("Message received: "+ msgReceived);
 		}
 		*/
@@ -60,9 +57,15 @@ public class TCPConn {
 		System.out.println("Message sent: " + msg);
 	}
 
-	public String readMessage() {
+	public String readMessageArduino() {
 		String msgReceived = mScannerFromRPI.nextLine().trim();
 		mScannerFromRPI.nextLine();
+		System.out.println("Message received: " + msgReceived);
+		return msgReceived;
+	}
+
+	public String readMessage() {
+		String msgReceived = mScannerFromRPI.nextLine().trim();
 		System.out.println("Message received: " + msgReceived);
 		return msgReceived;
 	}
