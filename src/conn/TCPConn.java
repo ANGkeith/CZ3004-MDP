@@ -54,7 +54,7 @@ public class TCPConn {
 	public void sendMessage(String msg) {
 		mWriterToRPI.print(msg);
 		mWriterToRPI.flush();
-		System.out.println("Message sent: " + msg);
+		//System.out.println("Message sent: " + msg);
 	}
 
 	public String readMessageArduino() {

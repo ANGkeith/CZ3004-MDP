@@ -67,12 +67,12 @@ public class SimulatorController implements MouseListener {
                     try {
                         if (test){
                             MyRobot.isRealRun = true;
-
                             // simulate start signal from android
                             message = "explore:10,5,N";
                             while(!message.contains(START_EXPLORATION)) {
                                 System.out.println("something wrong");
                             }
+
 
                             myRobot.setStartRowColOri(AndroidApi.getRow(message),
                                     AndroidApi.getCol(message),
@@ -83,6 +83,7 @@ public class SimulatorController implements MouseListener {
                             tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
                             System.out.println("Successfully Connected!");
                             myRobot.getConnection(tcpConn);
+
                             message = tcpConn.readMessage();
 
                             while(!message.contains(START_EXPLORATION)) {

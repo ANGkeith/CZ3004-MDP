@@ -79,8 +79,53 @@ public class MyRobot {
 		return true;
 	}
 
-	public String constructMessageForAndroid() {
-		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
+	public String constructMessageForAndroid(String instruction) {
+		// TODO clean up
+		int nextRow;
+		int nextCol;
+		Orientation nextOrientation;
+		nextRow = getCurRow();
+		nextCol = getCurCol();
+		nextOrientation = getCurOrientation();
+
+		if (instruction.equals(FORWARD_INSTRUCTION_TO_ARDUINO)) {
+			if (curOrientation == Orientation.N) {
+				nextRow = curRow - 1;
+			} else if (curOrientation == Orientation.E) {
+				nextCol = curCol + 1;
+			} else if (curOrientation == Orientation.S) {
+				nextRow = curRow + 1;
+			} else if (curOrientation == Orientation.W) {
+				nextCol = curCol - 1;
+			} else {
+				System.out.println("errF");
+			}
+		} else if (instruction.equals(TURN_RIGHT_INSTRUCTION_TO_ARDUINO)) {
+			if (curOrientation == Orientation.N) {
+				nextOrientation = Orientation.E;
+			} else if (curOrientation == Orientation.E) {
+				nextOrientation = Orientation.S;
+			} else if (curOrientation == Orientation.S) {
+				nextOrientation = Orientation.W;
+			} else if (curOrientation == Orientation.W) {
+				nextOrientation = Orientation.N;
+			} else {
+				System.out.println("errR");
+			}
+		} else if (instruction.equals(TURN_LEFT_INSTRUCTION_TO_ARDUINO)) {
+			if (curOrientation == Orientation.N) {
+				nextOrientation = Orientation.W;
+			} else if (curOrientation == Orientation.E) {
+				nextOrientation = Orientation.N;
+			} else if (curOrientation == Orientation.S) {
+				nextOrientation = Orientation.E;
+			} else if (curOrientation == Orientation.W) {
+				nextOrientation = Orientation.S;
+			} else {
+				System.out.println("errL");
+			}
+		}
+		String p0 = nextCol + "," + Arena.getRowFromActualRow(nextRow) + "," + nextOrientation.toString();
 		String p1 = arena.generateMapDescriptorP1();
 		String p2 = arena.generateMapDescriptorP2();
 
@@ -144,13 +189,14 @@ public class MyRobot {
 		if (!hasObstacleRightInFront()) {
 			if (isRealRun) {
 				try {
-					if (!SimulatorController.test) {
-						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
-						tcpConn.sendMessage(constructMessageForAndroid());
-						tcpConn.sendMessage(constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
-					} else {
+					if (SimulatorController.test) {
 						System.out.println("F");
 						System.out.println(constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
+					} else {
+						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+						tcpConn.sendMessage(constructMessageForAndroid(FORWARD_INSTRUCTION_TO_ARDUINO));
+						tcpConn.sendMessage(constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
+						System.out.println("Message To Rpi: " + constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -185,13 +231,14 @@ public class MyRobot {
 
 		if (isRealRun) {
 			try {
-				if (!SimulatorController.test) {
-					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid());
-					tcpConn.sendMessage(constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
-				} else {
+				if (SimulatorController.test) {
 					System.out.println("R");
 					System.out.println(constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
+				} else {
+					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
+					tcpConn.sendMessage(constructMessageForAndroid(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
+					tcpConn.sendMessage(constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
+					System.out.println("Message To Rpi: " + constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -219,13 +266,14 @@ public class MyRobot {
 
 		if (isRealRun) {
 			try {
-				if (!SimulatorController.test) {
-					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid());
-					tcpConn.sendMessage(constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
-				} else {
+				if (SimulatorController.test) {
 					System.out.println("L");
 					System.out.println(constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
+				} else {
+					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+					tcpConn.sendMessage(constructMessageForAndroid(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
+					tcpConn.sendMessage(constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
+					System.out.println("Message To Rpi: " + constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -366,7 +414,7 @@ public class MyRobot {
 					+ Character.getNumericValue(realReadings.charAt(5))
 					+ "\n"
 			);
-			realReadings = realReadings.substring(5);
+			realReadings = realReadings.substring(7);
 			System.out.println(realReadings);
 			System.out.println(">>>>");
 
@@ -376,11 +424,11 @@ public class MyRobot {
 			e.printStackTrace();
 		}
 	}
-	double[] a = {21.3, 28.7, 39, 50.9, 60.5};
+	double[] leftSensorThreshold = {21.3, 28.7, 39, 47.9, 57.0};
 
 	private int getRealLeftSensorReadings(double rawValue) {
 		for (int i = 0; i < 5; i++) {
-			if (rawValue < a[i]) {
+			if (rawValue < leftSensorThreshold[i]) {
 				return i + 1;
 			}
 		}
