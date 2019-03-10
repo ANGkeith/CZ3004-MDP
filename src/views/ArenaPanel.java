@@ -78,7 +78,7 @@ public class ArenaPanel extends JPanel {
                 if (sensor.getSensorReading() == 0) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
-                if (SimulatorController.test || MyRobot.isRealRun) {
+                if (MyRobot.isRealRun) {
                     numOfSensibleGrid = sensor.getSensorRange();
                 }
                 for (int i = 1; i <= numOfSensibleGrid; i++) {

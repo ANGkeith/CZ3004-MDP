@@ -83,130 +83,28 @@ public class MyRobot {
 		return true;
 	}
 
-	public String constructMessageForAndroid(String instruction) {
-		// TODO clean up
-		int nextRow;
-		int nextCol;
-		Orientation nextOrientation;
-		nextRow = getCurRow();
-		nextCol = getCurCol();
-		nextOrientation = getCurOrientation();
-
-		if (instruction.equals(FORWARD_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextRow = curRow - 1;
-			} else if (curOrientation == Orientation.E) {
-				nextCol = curCol + 1;
-			} else if (curOrientation == Orientation.S) {
-				nextRow = curRow + 1;
-			} else if (curOrientation == Orientation.W) {
-				nextCol = curCol - 1;
-			} else {
-				System.out.println("errF");
-			}
-		} else if (instruction.equals(TURN_RIGHT_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextOrientation = Orientation.E;
-			} else if (curOrientation == Orientation.E) {
-				nextOrientation = Orientation.S;
-			} else if (curOrientation == Orientation.S) {
-				nextOrientation = Orientation.W;
-			} else if (curOrientation == Orientation.W) {
-				nextOrientation = Orientation.N;
-			} else {
-				System.out.println("errR");
-			}
-		} else if (instruction.equals(TURN_LEFT_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextOrientation = Orientation.W;
-			} else if (curOrientation == Orientation.E) {
-				nextOrientation = Orientation.N;
-			} else if (curOrientation == Orientation.S) {
-				nextOrientation = Orientation.E;
-			} else if (curOrientation == Orientation.W) {
-				nextOrientation = Orientation.S;
-			} else {
-				System.out.println("errL");
-			}
-		}
-		String p0 = nextCol + "," + Arena.getRowFromActualRow(nextRow) + "," + nextOrientation.toString();
+	public String constructMessageForAndroid() {
+		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
 		String p1 = arena.generateMapDescriptorP1();
 		String p2 = arena.generateMapDescriptorP2();
 
 		String toAndroid = "an"+ p0 + "," + p1 + "," + p2 + ",";
 		return toAndroid;
-
 	}
 
-	public String constructMessageForRpi(String instruction) {
-		// TODO clean up
-		int nextRow;
-		int nextCol;
-		Orientation nextOrientation;
-		nextRow = getCurRow();
-		nextCol = getCurCol();
-		nextOrientation = getCurOrientation();
+	public String constructP0ForAndroid() {
+		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
+		return "an" + p0;
+	}
 
-		if (instruction.equals(FORWARD_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextRow = curRow - 1;
-			} else if (curOrientation == Orientation.E) {
-				nextCol = curCol + 1;
-			} else if (curOrientation == Orientation.S) {
-				nextRow = curRow + 1;
-			} else if (curOrientation == Orientation.W) {
-				nextCol = curCol - 1;
-			} else {
-				System.out.println("errF");
-			}
-		} else if (instruction.equals(TURN_RIGHT_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextOrientation = Orientation.E;
-			} else if (curOrientation == Orientation.E) {
-				nextOrientation = Orientation.S;
-			} else if (curOrientation == Orientation.S) {
-				nextOrientation = Orientation.W;
-			} else if (curOrientation == Orientation.W) {
-				nextOrientation = Orientation.N;
-			} else {
-				System.out.println("errR");
-			}
-		} else if (instruction.equals(TURN_LEFT_INSTRUCTION_TO_ARDUINO)) {
-			if (curOrientation == Orientation.N) {
-				nextOrientation = Orientation.W;
-			} else if (curOrientation == Orientation.E) {
-				nextOrientation = Orientation.N;
-			} else if (curOrientation == Orientation.S) {
-				nextOrientation = Orientation.E;
-			} else if (curOrientation == Orientation.W) {
-				nextOrientation = Orientation.S;
-			} else {
-				System.out.println("errL");
-			}
-		}
-		String myPosition = nextCol + "," + Arena.getRowFromActualRow(nextRow) + "," + nextOrientation.toString();
+	public String constructMessageForRpi() {
+		String myPosition = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
 		return RPI_IDENTIFIER + myPosition;
 	}
 
 	public void forward() {
 
 		if (!hasObstacleRightInFront()) {
-			if (isRealRun) {
-				try {
-					if (SimulatorController.test) {
-						System.out.println("F");
-						System.out.println(constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
-					} else {
-						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
-						tcpConn.sendMessage(constructMessageForAndroid(FORWARD_INSTRUCTION_TO_ARDUINO));
-						tcpConn.sendMessage(constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
-						System.out.println("Message To Rpi: " + constructMessageForRpi(FORWARD_INSTRUCTION_TO_ARDUINO));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
 			SimulatorController.numFwd++;
 
 			if (curOrientation == Orientation.N) {
@@ -222,9 +120,24 @@ public class MyRobot {
 				temp = curCol - 1;
 				setCurCol(temp);
 			}
+			if (isRealRun) {
+				if (SimulatorController.isRunningExploration) {
+				    if (SimulatorController.manualSensorReading) {
+						System.out.println("FORWARD");
+						System.out.println(constructMessageForAndroid());
+						System.out.println(constructMessageForRpi());
+					} else {
+						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+						tcpConn.sendMessage(constructMessageForAndroid());
+						tcpConn.sendMessage(constructMessageForRpi());
+					}
+				}
+			}
 			pcs.firePropertyChange(REPAINT, null, null);
 			if (isRealRun) {
-				updateSensorsWithRealReadings();
+				if (SimulatorController.isRunningExploration) {
+					updateSensorsWithRealReadings();
+				}
 			}
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
@@ -232,23 +145,6 @@ public class MyRobot {
 	}
 
 	public void turnRight() {
-
-		if (isRealRun) {
-			try {
-				if (SimulatorController.test) {
-					System.out.println("R");
-					System.out.println(constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
-				} else {
-					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
-					tcpConn.sendMessage(constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
-					System.out.println("Message To Rpi: " + constructMessageForRpi(TURN_RIGHT_INSTRUCTION_TO_ARDUINO));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
 		SimulatorController.numTurn++;
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.E);
@@ -259,31 +155,29 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.W) {
 			setCurOrientation(Orientation.N);
 		}
+		if (isRealRun) {
+			if (SimulatorController.isRunningExploration) {
+				if (SimulatorController.manualSensorReading) {
+					System.out.println("RIGHT");
+					System.out.println(constructMessageForAndroid());
+					System.out.println(constructMessageForRpi());
+				} else {
+					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
+					tcpConn.sendMessage(constructMessageForAndroid());
+					tcpConn.sendMessage(constructMessageForRpi());
+				}
+			}
+		}
 		pcs.firePropertyChange(REPAINT, null, null);
 		if (isRealRun) {
-			updateSensorsWithRealReadings();
+		    if (SimulatorController.isRunningExploration) {
+				updateSensorsWithRealReadings();
+			}
 		}
 		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
 	public void turnLeft() {
-
-		if (isRealRun) {
-			try {
-				if (SimulatorController.test) {
-					System.out.println("L");
-					System.out.println(constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
-				} else {
-					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
-					tcpConn.sendMessage(constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
-					System.out.println("Message To Rpi: " + constructMessageForRpi(TURN_LEFT_INSTRUCTION_TO_ARDUINO));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
 		SimulatorController.numTurn++;
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.W);
@@ -294,9 +188,24 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.W) {
 			setCurOrientation(Orientation.S);
 		}
+		if (isRealRun) {
+			if (SimulatorController.isRunningExploration) {
+				if (SimulatorController.manualSensorReading) {
+					System.out.println("LEFT");
+					System.out.println(constructMessageForAndroid());
+					System.out.println(constructMessageForRpi());
+				} else {
+					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+					tcpConn.sendMessage(constructMessageForAndroid());
+					tcpConn.sendMessage(constructMessageForRpi());
+				}
+			}
+		}
 		pcs.firePropertyChange(REPAINT, null, null);
 		if (isRealRun) {
-			updateSensorsWithRealReadings();
+		    if (SimulatorController.isRunningExploration) {
+				updateSensorsWithRealReadings();
+			}
 		}
 		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
@@ -378,7 +287,7 @@ public class MyRobot {
 		boolean messageFound;
 		String realReadings;
 		try {
-			if (SimulatorController.test) {
+			if (SimulatorController.manualSensorReading) {
 				System.out.println("Enter a sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
 						+ getCurCol() + ", "  + getCurOrientation() + ": ");
 				Scanner sc = new Scanner(System.in);
@@ -398,16 +307,20 @@ public class MyRobot {
 			realReadings = realReadings.substring(2);
 
 
-			int asd = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
-			System.out.println("new Readings:" + asd);
-			leftSensor[0].setRealReading(asd);
+			System.out.println("<<<<");
+			if (SimulatorController.manualSensorReading) {
+				leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
+			} else {
+				int leftSensorReading = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
+				System.out.println("new Readings:" + leftSensorReading);
+				leftSensor[0].setRealReading(leftSensorReading);
+			}
 			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
 			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
 			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
 			rightSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(4)));
 			rightSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(5)));
 
-			System.out.println("<<<<");
 			System.out.print("Readings at " + Arena.getActualRowFromRow(getCurRow()) + "," + getCurCol() + ": ");
 			System.out.print("\t L: " + Character.getNumericValue(realReadings.charAt(0)));
 			System.out.print("   F: " + Character.getNumericValue(realReadings.charAt(1))
@@ -418,8 +331,10 @@ public class MyRobot {
 					+ Character.getNumericValue(realReadings.charAt(5))
 					+ "\n"
 			);
-			realReadings = realReadings.substring(7);
-			System.out.println(realReadings);
+			if (!SimulatorController.manualSensorReading) {
+				realReadings = realReadings.substring(7);
+				System.out.println(realReadings);
+			}
 			System.out.println(">>>>");
 
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);

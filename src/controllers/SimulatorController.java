@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
+import static models.MyRobot.isRealRun;
 
 public class SimulatorController implements MouseListener {
     private static MyRobot myRobot;
@@ -44,10 +45,12 @@ public class SimulatorController implements MouseListener {
     private FastestPathAlgorithm fastestPathAlgo;
     private String instructionsWhenStartAtNorth;
     private String instructionsWhenStartAtEast;
+    public static boolean isRunningExploration = false;
+    private String fastestPathInstructions;
 
     private static CenterPanel centerPanel;
 
-    public static  boolean test = true;
+    public static  boolean manualSensorReading = true;
     private TCPConn tcpConn;
     
     SwingWorker<Boolean, Void> worker;
@@ -237,18 +240,20 @@ public class SimulatorController implements MouseListener {
     }
 
     private void startRealRun(MyRobot myRobot, CenterPanel centerPanel) {
-        MyRobot.isRealRun = true;
+        isRealRun = true;
+        isRunningExploration = false;
         tcpConn = TCPConn.getInstance();
         worker = new SwingWorker<Boolean, Void>(){
 
             protected Boolean doInBackground() throws Exception {
                 String message;
-                if (test){
+                if (manualSensorReading){
                     // simulate start signal from android
                     message = "explore:13,1,E|1,18";
                     while(!message.contains(START_EXPLORATION)) {
                         System.out.println("something wrong");
                     }
+                    isRunningExploration = true;
                     API.processStartExplorationMsg(message, myRobot);
                 } else {
                     System.out.println("Waiting for connection");
@@ -262,6 +267,7 @@ public class SimulatorController implements MouseListener {
                         System.out.println("Expecting start exploration but received: " + message);
                         message = tcpConn.readMessage();
                     }
+                    isRunningExploration = true;
                     API.processStartExplorationMsg(message, myRobot);
                 }
                 exploration(centerPanel, myRobot, ExplorationType.NORMAL);
@@ -271,13 +277,14 @@ public class SimulatorController implements MouseListener {
         worker.execute();
 
     }
+
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
         myRobot.setCurPositionToStart();
         myRobot.getArena().reinitializeArena(myRobot);
 
         myRobot.pcs.firePropertyChange(myRobot.REPAINT, null, null);
-        if (myRobot.isRealRun) {
+        if (isRealRun) {
             myRobot.updateSensorsWithRealReadings();
         }
         myRobot.pcs.firePropertyChange(myRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
@@ -321,12 +328,14 @@ public class SimulatorController implements MouseListener {
                 );
 
                 if (bestStartingPosition == Orientation.N) {
-                    if (MyRobot.isRealRun) {
+                    fastestPathInstructions = instructionsWhenStartAtNorth;
+                    if (isRealRun) {
                         tcpConn.sendMessage("an" + "Start facing North");
                     }
                     System.out.println("start facing north");
                 } else {
-                    if (MyRobot.isRealRun) {
+                    fastestPathInstructions = instructionsWhenStartAtEast;
+                    if (isRealRun) {
                         tcpConn.sendMessage("an" + "Start facing East");
                     }
                     System.out.println("start facing east");
@@ -336,22 +345,18 @@ public class SimulatorController implements MouseListener {
 
             @Override
             protected void done() {
+                isRunningExploration = false;
                 String message;
-                if (test && MyRobot.isRealRun) {
-                    message = "fastest:1,1,N";
-                    while (!message.contains(START_FASTEST)) {
-                        System.out.println("something wrong");
-                    }
-                    API.processStartFastestMsg(message, myRobot);
-                    fastestPath(centerPanel, myRobot);
-                }
-                if (MyRobot.isRealRun) {
+                if (isRealRun) {
                     message = tcpConn.readMessage();
                     while(!message.contains(START_FASTEST)) {
                         System.out.println("Expecting start fastest path but received: " + message);
                         message = tcpConn.readMessage();
                     }
                     API.processStartFastestMsg(message, myRobot);
+                    // TODO change this value accordingly
+                    myRobot.setTurningSpeed(1);
+                    myRobot.setForwardSpeed(1);
                     fastestPath(centerPanel, myRobot);
                 }
             }
@@ -391,7 +396,11 @@ public class SimulatorController implements MouseListener {
                     instructionsToBeExecuted = null;
                     System.out.println("Only start with East Or North");
                 }
-                executeInstructionInSimulator(instructionsToBeExecuted);
+                if (isRealRun) {
+                    executeInstructionInSimulator(fastestPathInstructions);
+                } else {
+                    executeInstructionInSimulator(instructionsToBeExecuted);
+                }
                 timer.stop();
                 return true;
             }
@@ -410,6 +419,9 @@ public class SimulatorController implements MouseListener {
                 right();
             } else {
                 System.out.println("Unknown Instruction");
+            }
+            if (isRealRun) {
+                tcpConn.sendMessage(myRobot.constructP0ForAndroid());
             }
         }
     }
