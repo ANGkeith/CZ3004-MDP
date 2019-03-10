@@ -48,6 +48,7 @@ public class Constants {
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
+    public static final String CALIBRATE_INSTRUCTION_TO_ARDUINO = "arC";
     public static final String FORWARD_INSTRUCTION_TO_ARDUINO = "arW";
     public static final String TURN_LEFT_INSTRUCTION_TO_ARDUINO = "arA";
     public static final String TURN_RIGHT_INSTRUCTION_TO_ARDUINO = "arD";
@@ -62,6 +63,9 @@ public class Constants {
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
 
 	public static final String RPI_IDENTIFIER = "rpi";
+
+    public static final double[] LEFT_SENSOR_THRESHOLD = {21.3, 28.7, 39, 47.9, 57.0};
+	public static final int TIMES_NOT_CALIBRATED_THRESHOLD = 7;
 
     public enum Orientation {
         N,

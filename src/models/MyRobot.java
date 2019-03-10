@@ -16,6 +16,7 @@ import conn.TCPConn;
 import utils.FileReaderWriter;
 
 import static models.Constants.*;
+import static utils.ExplorationAlgorithm.timesNotCalibrated;
 
 public class MyRobot {
 	public static final String REPAINT = "repaint";
@@ -105,10 +106,27 @@ public class MyRobot {
 		return RPI_IDENTIFIER + myPosition;
 	}
 
+	public void calibrate() {
+		if (isRealRun()) {
+			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+			System.out.println(Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
+			timesNotCalibrated = 0;
+		} else {
+			System.out.println(Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
+			timesNotCalibrated = 0;
+			// TODO add delay?
+		}
+	}
+
 	public void forward() {
+
+		if (timesNotCalibrated > TIMES_NOT_CALIBRATED_THRESHOLD && rightSideFacingVirtualWall()) {
+			calibrate();
+		}
 
 		if (!hasObstacleRightInFront()) {
 			SimulatorController.numFwd++;
+			timesNotCalibrated++;
 
 			if (curOrientation == Orientation.N) {
 				temp = curRow - 1;
@@ -148,7 +166,12 @@ public class MyRobot {
 	}
 
 	public void turnRight() {
+		if (timesNotCalibrated > TIMES_NOT_CALIBRATED_THRESHOLD && rightSideFacingVirtualWall()) {
+			calibrate();
+		}
+
 		SimulatorController.numTurn++;
+		timesNotCalibrated++;
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.E);
 		} else if (curOrientation == Orientation.E) {
@@ -181,7 +204,13 @@ public class MyRobot {
 	}
 
 	public void turnLeft() {
+		if (timesNotCalibrated > TIMES_NOT_CALIBRATED_THRESHOLD && rightSideFacingVirtualWall()) {
+			calibrate();
+		}
+
 		SimulatorController.numTurn++;
+		timesNotCalibrated++;
+
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.W);
 		} else if (curOrientation == Orientation.E) {
@@ -358,11 +387,10 @@ public class MyRobot {
 			e.printStackTrace();
 		}
 	}
-	double[] leftSensorThreshold = {21.3, 28.7, 39, 47.9, 57.0};
 
 	private int getRealLeftSensorReadings(double rawValue) {
 		for (int i = 0; i < 5; i++) {
-			if (rawValue < leftSensorThreshold[i]) {
+			if (rawValue < LEFT_SENSOR_THRESHOLD[i]) {
 				return i + 1;
 			}
 		}
@@ -448,6 +476,22 @@ public class MyRobot {
 			}
 		}
 		return true;
+	}
+
+	public boolean rightSideFacingVirtualWall() {
+		if (curRow == 18 && curOrientation == Orientation.E) {
+			return true;
+		}
+		if (curRow == 1 && curOrientation == Orientation.W) {
+			return true;
+		}
+		if (curCol == 1 && curOrientation == Orientation.S) {
+			return true;
+		}
+		if (curCol == 13 && curOrientation == Orientation.N) {
+			return true;
+		}
+		return false;
 	}
 
 	public int getCurCol() {
