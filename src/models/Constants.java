@@ -43,6 +43,7 @@ public class Constants {
     public static final Color PATH_TAKEN_COLOR = new Color(80, 65, 255, 132);
 
     public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/local_storage/mock_arena.txt";
+    public static final String LOG_PATH = System.getProperty("user.dir") + "/local_storage/log.txt";
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 

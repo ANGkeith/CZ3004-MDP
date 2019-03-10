@@ -1,11 +1,10 @@
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.nio.file.FileSystems;
 
 import javax.swing.*;
 
-import conn.TCPConn;
 import controllers.ArenaPanelController;
 import controllers.SimulatorController;
 import models.Arena;
@@ -70,6 +69,10 @@ public class App extends JFrame {
             if (!fileContent.equals("")) {
                 referenceArena.binStringToArena(fileReader.read());
             }
+
+            // deletes previous log
+            FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
+            fileWriter.logMsg("", false);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }

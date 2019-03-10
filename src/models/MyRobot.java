@@ -4,6 +4,8 @@ import controllers.SimulatorController;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -11,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import conn.TCPConn;
+import utils.FileReaderWriter;
 
 import static models.Constants.*;
 
@@ -303,23 +306,34 @@ public class MyRobot {
 				} while (!messageFound);
 			}
 
-			String[] readingsArr = realReadings.split(",");
+			String[] readingsArr = new String[2];
+			if (realReadings.contains(",")) {
+				readingsArr = realReadings.split(",");
+			}
 			realReadings = realReadings.substring(2);
 
-
-			System.out.println("<<<<");
 			if (SimulatorController.manualSensorReading) {
 				leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
 			} else {
 				int leftSensorReading = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
-				System.out.println("new Readings:" + leftSensorReading);
 				leftSensor[0].setRealReading(leftSensorReading);
 			}
+
 			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
 			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
 			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
 			rightSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(4)));
 			rightSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(5)));
+
+			try {
+				FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
+				fileWriter.logMsg("(" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " +
+						realReadings.charAt(0) + " " + realReadings.substring(1,4) + " " + realReadings.substring(4, 6) +
+						" " + readingsArr[1] + "\n", true);
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
+			/*
 
 			System.out.print("Readings at " + Arena.getActualRowFromRow(getCurRow()) + "," + getCurCol() + ": ");
 			System.out.print("\t L: " + Character.getNumericValue(realReadings.charAt(0)));
@@ -337,6 +351,7 @@ public class MyRobot {
 			}
 			System.out.println(">>>>");
 
+			*/
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

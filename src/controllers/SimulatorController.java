@@ -52,7 +52,7 @@ public class SimulatorController implements MouseListener {
 
     public static  boolean manualSensorReading = true;
     private TCPConn tcpConn;
-    
+
     SwingWorker<Boolean, Void> worker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());

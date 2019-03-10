@@ -1,14 +1,11 @@
 package utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+
+import static models.Constants.LOG_PATH;
 
 public class FileReaderWriter {
 
@@ -30,6 +27,17 @@ public class FileReaderWriter {
         writer = new OutputStreamWriter(out, DEFAULT_ENCODING);
         writer.write(str);
         writer.close();
+    }
+
+    public void logMsg(String str, Boolean append) {
+        try {
+            OutputStream output = new FileOutputStream(LOG_PATH, append);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(output);
+            outputStreamWriter.write(str);
+            outputStreamWriter.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
     }
 
     public String read() throws IOException {
