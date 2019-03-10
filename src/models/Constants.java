@@ -16,6 +16,9 @@ public class Constants {
 
     public static final int DEFAULT_START_ROW = 18;
     public static final int DEFAULT_START_COL = 1;
+    public static final int DEFAULT_WAY_POINT_ROW = 1;
+    public static final int DEFAULT_WAY_POINT_COL = 13;
+
     public static final Orientation DEFAULT_START_ORIENTATION = Orientation.E;
 
     public static final int MOVE_COST = 1;

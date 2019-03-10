@@ -26,9 +26,10 @@ public class Grid {
         g = INFINITY;
         h = INFINITY;
         cameFrom = null;
+        o = null;
     }
 
-    public void reinitizalizeGridCost() {
+    public void resetGridCostAndCameFrom() {
         f = INFINITY;
         g = INFINITY;
         h = INFINITY;

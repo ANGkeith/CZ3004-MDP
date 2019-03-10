@@ -60,13 +60,13 @@ public class TCPConn {
 	public String readMessageArduino() {
 		String msgReceived = mScannerFromRPI.nextLine().trim();
 		mScannerFromRPI.nextLine();
-		System.out.println("Message received: " + msgReceived);
+		//System.out.println("Message received: " + msgReceived);
 		return msgReceived;
 	}
 
 	public String readMessage() {
 		String msgReceived = mScannerFromRPI.nextLine().trim();
-		System.out.println("Message received: " + msgReceived);
+		//System.out.println("Message received: " + msgReceived);
 		return msgReceived;
 	}
 

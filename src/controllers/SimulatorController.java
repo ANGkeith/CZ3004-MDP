@@ -5,7 +5,7 @@ import static models.Constants.*;
 import models.Arena;
 import models.MyRobot;
 import models.Result;
-import utils.AndroidApi;
+import utils.API;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
 import utils.FileReaderWriter;
@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,12 +42,15 @@ public class SimulatorController implements MouseListener {
     private JLabel[] statusLbls;
     private ExplorationAlgorithm explorationAlgo;
     private FastestPathAlgorithm fastestPathAlgo;
+    private String instructionsWhenStartAtNorth;
+    private String instructionsWhenStartAtEast;
+
     private static CenterPanel centerPanel;
 
-    public static  boolean test = false;
+    public static  boolean test = true;
     private TCPConn tcpConn;
     
-    SwingWorker<Boolean, Void> explorationWorker;
+    SwingWorker<Boolean, Void> worker;
     public SimulatorController(WestPanel westPanel) {
         westPanel.addTestMovementListener(e -> westPanel.arenaPanel.requestFocus());
     }
@@ -57,60 +59,7 @@ public class SimulatorController implements MouseListener {
         this.centerPanel = centerPanel;
         this.myRobot = myRobot;
 
-        centerPanel.addRPIBtnListener(e -> {
-
-        	tcpConn = TCPConn.getInstance();
-        	explorationWorker = new SwingWorker<Boolean, Void>(){
-        		
-        		protected Boolean doInBackground() throws Exception {
-        		    String message;
-                    try {
-                        if (test){
-                            MyRobot.isRealRun = true;
-                            // simulate start signal from android
-                            message = "explore:10,5,N";
-                            while(!message.contains(START_EXPLORATION)) {
-                                System.out.println("something wrong");
-                            }
-
-
-                            myRobot.setStartRowColOri(AndroidApi.getRow(message),
-                                    AndroidApi.getCol(message),
-                                    AndroidApi.getOrientation(message)
-                            );
-                        } else {
-                            System.out.println("Waiting for connection");
-                            tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
-                            System.out.println("Successfully Connected!");
-                            myRobot.getConnection(tcpConn);
-
-                            message = tcpConn.readMessage();
-
-                            while(!message.contains(START_EXPLORATION)) {
-                                message = tcpConn.readMessage();
-                            }
-
-                            myRobot.setStartRowColOri(AndroidApi.getRow(message),
-                                    AndroidApi.getCol(message),
-                                    AndroidApi.getOrientation(message)
-                            );
-                        }
-                        exploration(centerPanel, myRobot, ExplorationType.NORMAL);
-
-                    } catch (UnknownHostException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                        return true;
-                    }
-        	};
-        	
-        	explorationWorker.execute();
-        	
-        });
+        centerPanel.addRPIBtnListener(e -> startRealRun(myRobot, centerPanel));
         
         centerPanel.addModifyBtnListener(e -> {
             enableConfigurations(centerPanel);
@@ -169,9 +118,10 @@ public class SimulatorController implements MouseListener {
     }
     private void resetConfigurations(CenterPanel centerPanel, MyRobot myRobot) {
         JTextField[] fields = centerPanel.getFields();
-        fields[0].setText((myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
+        fields[0].setText(Arena.getActualRowFromRow(myRobot.getCurRow()) + ", " + (myRobot.getCurCol()));
         fields[1].setText((Double.toString(myRobot.getForwardSpeed())));
         fields[2].setText((Double.toString(myRobot.getTurningSpeed())));
+        fields[3].setText(Arena.getActualRowFromRow(myRobot.getWayPointRow()) + ", " + (myRobot.getWayPointCol()));
         fields[4].setText((Double.toString(myRobot.getExplorationCoverageLimit())));
         fields[5].setText((myRobot.getExplorationTimeLimitFormatted()));
 
@@ -179,6 +129,7 @@ public class SimulatorController implements MouseListener {
 
     private void setConfigurations(CenterPanel centerPanel, MyRobot myRobot, Boolean resetMap) {
         String[] rowCol = parseInputToRowColArr(centerPanel.getFields()[0].getText());
+        String[] wayPointRowCol = parseInputToRowColArr(centerPanel.getFields()[3].getText());
         double forwardSpeed = Double.parseDouble(centerPanel.getFields()[1].getText());
         double turningSpeed = Double.parseDouble(centerPanel.getFields()[2].getText());
 
@@ -190,6 +141,8 @@ public class SimulatorController implements MouseListener {
         myRobot.setCurPositionToStart();
         myRobot.setForwardSpeed(forwardSpeed);
         myRobot.setTurningSpeed(turningSpeed);
+        myRobot.setWayPointRow(Arena.getRowFromActualRow(Integer.parseInt(wayPointRowCol[0], 10)));
+        myRobot.setWayPointCol(Integer.parseInt(wayPointRowCol[1], 10));
         myRobot.setExplorationCoverageLimit(Double.parseDouble(centerPanel.getFields()[4].getText()));
         myRobot.setExplorationTimeLimit(parseInputToSecs(centerPanel.getFields()[5].getText()));
 
@@ -214,8 +167,8 @@ public class SimulatorController implements MouseListener {
         centerPanel.getFastestPathBtn().setEnabled(false);
         reinitStatusPanelVariables();
         centerPanel.reinitStatusPanelTxt();
-        if (explorationWorker != null) {
-            explorationWorker.cancel(true);
+        if (worker != null) {
+            worker.cancel(true);
         }
     }
     private void reinitStatusPanelVariables() {
@@ -254,7 +207,6 @@ public class SimulatorController implements MouseListener {
         return min * 60 + sec;
     }
 
-
     public Orientation orientationStringToEnum(String s) {
         if (s == "North") {
             return Orientation.N;
@@ -284,6 +236,41 @@ public class SimulatorController implements MouseListener {
         clipboard.setContents(contentToBeCopied, contentToBeCopied);
     }
 
+    private void startRealRun(MyRobot myRobot, CenterPanel centerPanel) {
+        MyRobot.isRealRun = true;
+        tcpConn = TCPConn.getInstance();
+        worker = new SwingWorker<Boolean, Void>(){
+
+            protected Boolean doInBackground() throws Exception {
+                String message;
+                if (test){
+                    // simulate start signal from android
+                    message = "explore:13,1,E|1,18";
+                    while(!message.contains(START_EXPLORATION)) {
+                        System.out.println("something wrong");
+                    }
+                    API.processStartExplorationMsg(message, myRobot);
+                } else {
+                    System.out.println("Waiting for connection");
+                    tcpConn.instantiateConnection(TCPConn.RPI_IP, TCPConn.RPI_PORT);
+                    System.out.println("Successfully Connected!");
+                    myRobot.getConnection(tcpConn);
+
+                    message = tcpConn.readMessage();
+
+                    while(!message.contains(START_EXPLORATION)) {
+                        System.out.println("Expecting start exploration but received: " + message);
+                        message = tcpConn.readMessage();
+                    }
+                    API.processStartExplorationMsg(message, myRobot);
+                }
+                exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+                return true;
+            }
+        };
+        worker.execute();
+
+    }
     private void exploration(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType){
         this.myRobot = myRobot;
         myRobot.setCurPositionToStart();
@@ -294,7 +281,6 @@ public class SimulatorController implements MouseListener {
             myRobot.updateSensorsWithRealReadings();
         }
         myRobot.pcs.firePropertyChange(myRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
-
 
         explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
 
@@ -312,7 +298,7 @@ public class SimulatorController implements MouseListener {
             }
         });
 
-        explorationWorker = new SwingWorker<Boolean, Void>() {
+        worker = new SwingWorker<Boolean, Void>() {
             @Override
             protected Boolean doInBackground() throws Exception {
                 myRobot.setHasFoundGoalZoneFlag(false);
@@ -321,13 +307,161 @@ public class SimulatorController implements MouseListener {
                 timer.start();
                 explorationAlgo.explorationLogic(false);
                 timer.stop();
-                System.out.println("P1: " + myRobot.getArena().generateMapDescriptorP1());
-                System.out.println("P2: " + myRobot.getArena().generateMapDescriptorP2());
                 centerPanel.getFastestPathBtn().setEnabled(true);
+
+                fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
+                instructionsWhenStartAtEast = fastestPathAlgo.generateInstructionsForFastestPath(Orientation.E);
+
+                myRobot.getArena().resetGridCostAndCameFrom();
+                instructionsWhenStartAtNorth = fastestPathAlgo.generateInstructionsForFastestPath(Orientation.N);
+
+                Orientation bestStartingPosition = fastestPathAlgo.getMostOptimalStartingPosition(
+                        instructionsWhenStartAtNorth,
+                        instructionsWhenStartAtEast
+                );
+
+                if (bestStartingPosition == Orientation.N) {
+                    if (MyRobot.isRealRun) {
+                        tcpConn.sendMessage("an" + "Start facing North");
+                    }
+                    System.out.println("start facing north");
+                } else {
+                    if (MyRobot.isRealRun) {
+                        tcpConn.sendMessage("an" + "Start facing East");
+                    }
+                    System.out.println("start facing east");
+                }
+                return true;
+            }
+
+            @Override
+            protected void done() {
+                String message;
+                if (test && MyRobot.isRealRun) {
+                    message = "fastest:1,1,N";
+                    while (!message.contains(START_FASTEST)) {
+                        System.out.println("something wrong");
+                    }
+                    API.processStartFastestMsg(message, myRobot);
+                    fastestPath(centerPanel, myRobot);
+                }
+                if (MyRobot.isRealRun) {
+                    message = tcpConn.readMessage();
+                    while(!message.contains(START_FASTEST)) {
+                        System.out.println("Expecting start fastest path but received: " + message);
+                        message = tcpConn.readMessage();
+                    }
+                    API.processStartFastestMsg(message, myRobot);
+                    fastestPath(centerPanel, myRobot);
+                }
+            }
+        };
+        worker.execute();
+    }
+
+
+    private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
+        this.myRobot = myRobot;
+        myRobot.setStartRow(DEFAULT_START_ROW);
+        myRobot.setStartCol(DEFAULT_START_COL);
+        myRobot.setCurPositionToStart();
+        myRobot.resetPathTaken();
+
+        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
+        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
+
+        timeElapsed[0] = 0;
+        centerPanel.setExplorationAndFastestPathBtns(false);
+
+        statusLbls = centerPanel.getStatusLbls();
+
+        worker = new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                numTurn = 0;
+                numFwd = 0;
+
+                timer.start();
+                String instructionsToBeExecuted;
+                if (myRobot.getStartOrientation() == Orientation.N) {
+                    instructionsToBeExecuted = instructionsWhenStartAtNorth;
+                } else if (myRobot.getStartOrientation() == Orientation.E) {
+                    instructionsToBeExecuted = instructionsWhenStartAtEast;
+                } else {
+                    instructionsToBeExecuted = null;
+                    System.out.println("Only start with East Or North");
+                }
+                executeInstructionInSimulator(instructionsToBeExecuted);
+                timer.stop();
                 return true;
             }
         };
-        explorationWorker.execute();
+        worker.execute();
+    }
+
+
+    public void executeInstructionInSimulator(String instructions) throws InterruptedException {
+        for (int i = 0; i < instructions.length(); i ++) {
+            if (instructions.charAt(i) == 'W') {
+                forward();
+            } else if (instructions.charAt(i) == 'A') {
+                left();
+            } else if (instructions.charAt(i) == 'D') {
+                right();
+            } else {
+                System.out.println("Unknown Instruction");
+            }
+        }
+    }
+
+    public void forward() throws InterruptedException {
+        Thread.sleep(fwdSpeedMs);
+        myRobot.forward();
+        myRobot.addCurGridToPathTaken();
+    }
+
+    public void right() throws InterruptedException {
+
+        Thread.sleep(turningSpeedMs);
+        myRobot.turnRight();
+    }
+
+    public void left() throws InterruptedException {
+        Thread.sleep(turningSpeedMs);
+        myRobot.turnLeft();
+    }
+
+    public SimulatorController getInstance() {
+    	//if(_instance == null)
+    	//	_instance = new SimulatorController(centerPanel, myRobot);
+    	return this;
+    }
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == 3) {
+            bruteForceAllPossibleStartingPosition(centerPanel, myRobot, ExplorationType.NORMAL);
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 
     // used for finding out the best starting position
@@ -341,7 +475,7 @@ public class SimulatorController implements MouseListener {
 
         centerPanel.setExplorationAndFastestPathBtns(false);
 
-        explorationWorker = new SwingWorker<Boolean, Void>() {
+        worker = new SwingWorker<Boolean, Void>() {
             @Override
             protected Boolean doInBackground() throws Exception {
                 ArrayList<Result> results = new ArrayList<>();
@@ -379,98 +513,6 @@ public class SimulatorController implements MouseListener {
                 return true;
             }
         };
-        explorationWorker.execute();
-    }
-
-    private void fastestPath(CenterPanel centerPanel, MyRobot myRobot){
-        this.myRobot = myRobot;
-        // TODO send optimal orientation to android
-        myRobot.setCurPositionToStart();
-        myRobot.resetPathTaken();
-
-        fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
-
-        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
-        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
-
-        timeElapsed[0] = 0;
-        centerPanel.setExplorationAndFastestPathBtns(false);
-
-        statusLbls = centerPanel.getStatusLbls();
-
-        explorationWorker = new SwingWorker<Boolean, Void>() {
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                numTurn = 0;
-                numFwd = 0;
-                timer.start();
-                String instructions = fastestPathAlgo.A_Star();
-
-                if (MyRobot.isRealRun) {
-                    String startFastestPathSignal = tcpConn.readMessage();
-                    while(!startFastestPathSignal.contains(START_FASTEST)) {
-                        startFastestPathSignal = tcpConn.readMessage();
-                    }
-                    tcpConn.sendMessage(AndroidApi.constructPathForArduino(instructions));
-                }
-                timer.stop();
-                return true;
-            }
-        };
-        explorationWorker.execute();
-    }
-
-
-    public void forward() throws InterruptedException {
-        Thread.sleep(fwdSpeedMs);
-        myRobot.forward();
-        myRobot.addCurGridToPathTaken();
-    }
-
-    public void right() throws InterruptedException {
-        Thread.sleep(turningSpeedMs);
-        myRobot.turnRight();
-    }
-
-    public void left() throws InterruptedException {
-        Thread.sleep(turningSpeedMs);
-        myRobot.turnLeft();
-    }
-
-    public SimulatorController getInstance() {
-    	//if(_instance == null)
-    	//	_instance = new SimulatorController(centerPanel, myRobot);
-    	return this;
-    }
-    
-    public CenterPanel getCenterPanel() {
-    	return centerPanel;
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == 3) {
-            bruteForceAllPossibleStartingPosition(centerPanel, myRobot, ExplorationType.NORMAL);
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
+        worker.execute();
     }
 }

@@ -158,17 +158,17 @@ public class Arena {
                     this.grids[r][c].setHasObstacle(false);
                     this.grids[r][c].setHasBeenExplored(true);
                 }
-                this.grids[r][c].reinitizalizeGridCost();
+                this.grids[r][c].resetGridCostAndCameFrom();
             }
         }
         setHasExploredBasedOnOccupiedGrid(myRobot);
         myRobot.resetPathTaken();
     }
     
-    public void resetGridCost() {
+    public void resetGridCostAndCameFrom() {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             for (int c = 0; c < ARENA_WIDTH; c++) {
-                this.grids[r][c].reinitizalizeGridCost();
+                this.grids[r][c].resetGridCostAndCameFrom();
             }
         }
     }

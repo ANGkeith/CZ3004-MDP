@@ -17,11 +17,16 @@ import static models.Constants.*;
 public class MyRobot {
 	public static final String REPAINT = "repaint";
 	public static final String UPDATE_GUI_BASED_ON_SENSOR = "updateGuiBasedOnSensor";
+	public static final String WAYPOINT_UPDATE = "wayPointUpdate";
+	public static final String START_POSITION_UPDATE = "startPositionUpdate";
+
 
 	private int curRow;
 	private int curCol;
 	private int startRow = DEFAULT_START_ROW;
 	private int startCol = DEFAULT_START_COL;
+	private int wayPointRow = DEFAULT_WAY_POINT_ROW;
+	private int wayPointCol = DEFAULT_WAY_POINT_COL;
 	private Orientation startOrientation = DEFAULT_START_ORIENTATION;
 	private int temp;
 	private Orientation curOrientation;
@@ -60,7 +65,6 @@ public class MyRobot {
 	}
 
 	public void getConnection(TCPConn tcpConn) {
-		this.isRealRun = true;
 		this.tcpConn = tcpConn;
 	}
 
@@ -600,6 +604,7 @@ public class MyRobot {
 
 	public void setStartRow(int startRow) {
 		this.startRow = startRow;
+		pcs.firePropertyChange(MyRobot.START_POSITION_UPDATE, null, null);
 	}
 
 	public int getStartCol() {
@@ -608,6 +613,7 @@ public class MyRobot {
 
 	public void setStartCol(int startCol) {
 		this.startCol = startCol;
+		pcs.firePropertyChange(MyRobot.START_POSITION_UPDATE, null, null);
 	}
 
 	public Orientation getStartOrientation() {
@@ -616,15 +622,28 @@ public class MyRobot {
 
 	public void setStartOrientation(Orientation startOrientation) {
 		this.startOrientation = startOrientation;
+		pcs.firePropertyChange(MyRobot.START_POSITION_UPDATE, null, null);
 	}
 
 	public boolean isRealRun() {
 		return isRealRun;
 	}
 
-	public void setStartRowColOri(int row, int col, Orientation orientation) {
-		setStartRow(row);
-		setStartCol(col);
-		setStartOrientation(orientation);
+	public int getWayPointRow() {
+		return wayPointRow;
+	}
+
+	public void setWayPointRow(int wayPointRow) {
+		this.wayPointRow = wayPointRow;
+		pcs.firePropertyChange(MyRobot.WAYPOINT_UPDATE, null, null);
+	}
+
+	public int getWayPointCol() {
+		return wayPointCol;
+	}
+
+	public void setWayPointCol(int wayPointCol) {
+		this.wayPointCol = wayPointCol;
+		pcs.firePropertyChange(MyRobot.WAYPOINT_UPDATE, null, null);
 	}
 }

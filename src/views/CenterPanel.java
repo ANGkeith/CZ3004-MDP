@@ -10,10 +10,12 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import static models.Constants.*;
 
-public class CenterPanel extends JPanel {
+public class CenterPanel extends JPanel implements PropertyChangeListener {
 
     public final String[] statusPrefixedLbls;
 
@@ -39,9 +41,13 @@ public class CenterPanel extends JPanel {
     private JPanel mainPanel;
     private JPanel configPanel;
     private JPanel statusPanel;
+    private MyRobot myRobot;
 
 
     public CenterPanel(MyRobot myRobot) {
+        this.myRobot = myRobot;
+        myRobot.addPropertyChangeListener(this);
+
         mainPanel = new JPanel();
         mainPanel.setBackground(null);
         mainPanel.setPreferredSize(new Dimension(300, 700));
@@ -80,7 +86,7 @@ public class CenterPanel extends JPanel {
         fields[0] = new JTextField((Arena.getActualRowFromRow(myRobot.getStartRow())) + ", " + (myRobot.getStartCol()));
         fields[1] = new JTextField(Double.toString(myRobot.getForwardSpeed()));
         fields[2] = new JTextField(Double.toString(myRobot.getTurningSpeed()));
-        fields[3] = new JTextField();
+        fields[3] = new JTextField(Arena.getActualRowFromRow(myRobot.getWayPointRow()) + ", " + myRobot.getWayPointCol());
         fields[4] = new JTextField(Double.toString(myRobot.getExplorationCoverageLimit()));
         fields[5] = new JTextField(myRobot.getExplorationTimeLimitFormatted());
 
@@ -259,5 +265,17 @@ public class CenterPanel extends JPanel {
 
     public JLabel[] getStatusLbls() {
         return statusLbls;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (MyRobot.WAYPOINT_UPDATE.equals(evt.getPropertyName())) {
+            fields[3].setText(Arena.getActualRowFromRow(myRobot.getWayPointRow()) + ", " + myRobot.getWayPointCol());
+        }
+        if (MyRobot.START_POSITION_UPDATE.equals(evt.getPropertyName())) {
+            fields[3].setText(Arena.getActualRowFromRow(myRobot.getWayPointRow()) + ", " + myRobot.getWayPointCol());
+            orientationSelection.setSelectedItem(orientationEnumToString(myRobot.getStartOrientation()));
+            fields[0].setText(Arena.getActualRowFromRow(myRobot.getStartRow()) + ", " + (myRobot.getStartCol()));
+        }
     }
 }
