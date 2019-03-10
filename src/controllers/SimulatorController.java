@@ -249,7 +249,7 @@ public class SimulatorController implements MouseListener {
                 String message;
                 if (manualSensorReading){
                     // simulate start signal from android
-                    message = "explore:13,1,E|1,18";
+                    message = "explore:4,1,N|1,18";
                     while(!message.contains(START_EXPLORATION)) {
                         System.out.println("something wrong");
                     }

@@ -78,13 +78,18 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                             curRow = sensor.getSensorAbsoluteRow() + i;
                             curCol = sensor.getSensorAbsoluteCol();
                             break;
-                        default:
+                        case W:
                             curRow = sensor.getSensorAbsoluteRow();
                             curCol = sensor.getSensorAbsoluteCol() - i;
                             break;
+                        default:
+                            curCol = 1;
+                            curRow = 1;
+                            System.out.println("error at updateArenaBasedOnSensorReadings");
+                            break;
                     }
                     curGrid = arena.getGrid(curRow, curCol);
-                    if (curGrid != null) {
+                    if (curGrid != null && !Arena.isStartZone(curRow, curCol) && !Arena.isGoalZone(curRow, curCol)) {
                         curGrid.setHasBeenExplored(true);
                         if (i == sensor.getSensorReading()) {
                             curGrid.setHasObstacle(true);

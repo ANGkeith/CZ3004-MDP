@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 
 import static models.Constants.LOG_FOR_CALIBRATION_PATH;
-import static models.Constants.LOG_PATH;
 
 public class testSensorValues {
 
@@ -46,7 +45,6 @@ public class testSensorValues {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-            
             tcpConn.sendMessage("arW");
 
         }
