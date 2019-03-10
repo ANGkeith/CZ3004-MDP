@@ -355,6 +355,9 @@ public class SimulatorController implements MouseListener {
                     }
                     API.processStartFastestMsg(message, myRobot);
                     // TODO change this value accordingly
+
+                    tcpConn.sendMessage(API.constructPathForArduino(fastestPathInstructions));
+
                     myRobot.setTurningSpeed(1);
                     myRobot.setForwardSpeed(1);
                     fastestPath(centerPanel, myRobot);

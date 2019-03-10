@@ -109,10 +109,10 @@ public class MyRobot {
 	public void calibrate() {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
-			System.out.println(Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
+			System.out.println("Calibrating at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
 			timesNotCalibrated = 0;
 		} else {
-			System.out.println(Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
+			System.out.println("Calibrating at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibrated);
 			timesNotCalibrated = 0;
 			// TODO add delay?
 		}
