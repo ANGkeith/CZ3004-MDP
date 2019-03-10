@@ -106,4 +106,12 @@ public class Grid {
     public void setO(Orientation o) {
         this.o = o;
     }
+
+    public boolean isHasObstacle() {
+        return hasObstacle;
+    }
+
+    public boolean isHasBeenExplored() {
+        return hasBeenExplored;
+    }
 }
