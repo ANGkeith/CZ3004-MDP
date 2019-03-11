@@ -156,6 +156,8 @@ public class MyRobot {
 					updateArenaBasedOnRealReadings();
 					sendPositionToAndroidAndRpi();
 				}
+			} else {
+				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 			}
 		}
 	}
@@ -191,6 +193,8 @@ public class MyRobot {
 				updateArenaBasedOnRealReadings();
 				sendPositionToAndroidAndRpi();
 			}
+		} else {
+			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
 	}
 
@@ -226,6 +230,8 @@ public class MyRobot {
 				updateArenaBasedOnRealReadings();
 				sendPositionToAndroidAndRpi();
 			}
+		} else {
+			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
 	}
 
@@ -360,25 +366,6 @@ public class MyRobot {
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
 			}
-			/*
-
-			System.out.print("Readings at " + Arena.getActualRowFromRow(getCurRow()) + "," + getCurCol() + ": ");
-			System.out.print("\t L: " + Character.getNumericValue(realReadings.charAt(0)));
-			System.out.print("   F: " + Character.getNumericValue(realReadings.charAt(1))
-					+ Character.getNumericValue(realReadings.charAt(2))
-					+ Character.getNumericValue(realReadings.charAt(3))
-			);
-			System.out.print("   R: " + Character.getNumericValue(realReadings.charAt(4))
-					+ Character.getNumericValue(realReadings.charAt(5))
-					+ "\n"
-			);
-			if (!SimulatorController.manualSensorReading) {
-				realReadings = realReadings.substring(7);
-				System.out.println(realReadings);
-			}
-			System.out.println(">>>>");
-
-			*/
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
 		} catch (Exception e) {
