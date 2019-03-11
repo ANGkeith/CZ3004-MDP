@@ -50,7 +50,7 @@ public class SimulatorController implements MouseListener {
 
     private static CenterPanel centerPanel;
 
-    public static  boolean manualSensorReading = true;
+    public static  boolean manualSensorReading = false;
     private TCPConn tcpConn;
 
     SwingWorker<Boolean, Void> worker;
@@ -249,7 +249,7 @@ public class SimulatorController implements MouseListener {
                 String message;
                 if (manualSensorReading){
                     // simulate start signal from android
-                    message = "explore:4,1,N|1,18";
+                    message = "explore:4,1,E|1,18";
                     while(!message.contains(START_EXPLORATION)) {
                         System.out.println("something wrong");
                     }
@@ -285,7 +285,7 @@ public class SimulatorController implements MouseListener {
 
         myRobot.pcs.firePropertyChange(myRobot.REPAINT, null, null);
         if (isRealRun) {
-            myRobot.updateArenaBasedOnRealReadings();
+            myRobot.updateArenaBasedOnRealReadings("Start");
         }
         myRobot.pcs.firePropertyChange(myRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
@@ -436,7 +436,6 @@ public class SimulatorController implements MouseListener {
     }
 
     public void right() throws InterruptedException {
-
         Thread.sleep(turningSpeedMs);
         myRobot.turnRight();
     }

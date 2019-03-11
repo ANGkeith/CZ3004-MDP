@@ -12,7 +12,8 @@ public class ExplorationAlgorithm {
     private MyRobot myRobot;
     private ExplorationType explorationType;
     private SimulatorController sim;
-    public static int timesNotCalibrated = 0;
+    public static int timesNotCalibratedR = 0;
+    public static int timesNotCalibratedF = 0;
 
 
     public ExplorationAlgorithm(MyRobot myRobot, SimulatorController sim, ExplorationType explorationType) {

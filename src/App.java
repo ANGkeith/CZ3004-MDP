@@ -72,7 +72,7 @@ public class App extends JFrame {
 
             // deletes previous log
             FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-            fileWriter.logMsg("", false);
+            fileWriter.logMsg("(x, y, o) <Instrucions> (delay by one) \n", false);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
