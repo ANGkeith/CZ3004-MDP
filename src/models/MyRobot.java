@@ -145,23 +145,18 @@ public class MyRobot {
 				if (SimulatorController.isRunningExploration) {
 				    if (SimulatorController.manualSensorReading) {
 						System.out.println("FORWARD");
-						System.out.println(constructMessageForAndroid());
-						System.out.println(constructMessageForRpi());
 					} else {
 						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
-						tcpConn.sendMessage(constructMessageForAndroid());
-						tcpConn.sendMessage(constructMessageForRpi());
 					}
 				}
 			}
 			pcs.firePropertyChange(REPAINT, null, null);
 			if (isRealRun) {
 				if (SimulatorController.isRunningExploration) {
-					updateSensorsWithRealReadings();
+					updateArenaBasedOnRealReadings();
+					sendPositionToAndroidAndRpi();
 				}
 			}
-			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
-
 		}
 	}
 
@@ -185,22 +180,18 @@ public class MyRobot {
 			if (SimulatorController.isRunningExploration) {
 				if (SimulatorController.manualSensorReading) {
 					System.out.println("RIGHT");
-					System.out.println(constructMessageForAndroid());
-					System.out.println(constructMessageForRpi());
 				} else {
 					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid());
-					tcpConn.sendMessage(constructMessageForRpi());
 				}
 			}
 		}
 		pcs.firePropertyChange(REPAINT, null, null);
 		if (isRealRun) {
 		    if (SimulatorController.isRunningExploration) {
-				updateSensorsWithRealReadings();
+				updateArenaBasedOnRealReadings();
+				sendPositionToAndroidAndRpi();
 			}
 		}
-		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
 	public void turnLeft() {
@@ -224,24 +215,31 @@ public class MyRobot {
 			if (SimulatorController.isRunningExploration) {
 				if (SimulatorController.manualSensorReading) {
 					System.out.println("LEFT");
-					System.out.println(constructMessageForAndroid());
-					System.out.println(constructMessageForRpi());
 				} else {
 					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-					tcpConn.sendMessage(constructMessageForAndroid());
-					tcpConn.sendMessage(constructMessageForRpi());
 				}
 			}
 		}
 		pcs.firePropertyChange(REPAINT, null, null);
 		if (isRealRun) {
 		    if (SimulatorController.isRunningExploration) {
-				updateSensorsWithRealReadings();
+				updateArenaBasedOnRealReadings();
+				sendPositionToAndroidAndRpi();
 			}
 		}
-		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
+	public void sendPositionToAndroidAndRpi() {
+		if (SimulatorController.manualSensorReading) {
+			System.out.println("LEFT");
+			System.out.println(constructMessageForAndroid());
+			System.out.println(constructMessageForRpi());
+		} else {
+			tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+			tcpConn.sendMessage(constructMessageForAndroid());
+			tcpConn.sendMessage(constructMessageForRpi());
+		}
+	}
 	public void setCurPositionToStart() {
 		setCurRow(startRow);
 		setCurCol(startCol);
@@ -315,7 +313,7 @@ public class MyRobot {
 		return false;
 	}
 
-	public void updateSensorsWithRealReadings() {
+	public void updateArenaBasedOnRealReadings() {
 		boolean messageFound;
 		String realReadings;
 		try {
@@ -382,6 +380,7 @@ public class MyRobot {
 
 			*/
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
