@@ -31,6 +31,7 @@ import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 import static models.MyRobot.isRealRun;
+import static utils.API.constructMessageForAndroid;
 import static utils.Utils.longDelay;
 
 public class SimulatorController implements MouseListener {
@@ -91,8 +92,8 @@ public class SimulatorController implements MouseListener {
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
         centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
         centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
-        centerPanel.addMapDescriptorP1Listener(e -> copyP1ToClipBoard(centerPanel, myRobot));
-        centerPanel.addMapDescriptorP2Listener(e -> copyP2ToClipBoard(centerPanel, myRobot));
+        centerPanel.addMapDescriptorP1Listener(e -> copyP1ToClipBoard(myRobot));
+        centerPanel.addMapDescriptorP2Listener(e -> copyP2ToClipBoard(myRobot));
 
     }
 
@@ -228,13 +229,13 @@ public class SimulatorController implements MouseListener {
         }
     }
 
-    private void copyP1ToClipBoard(CenterPanel centerPanel, MyRobot myRobot) {
+    private void copyP1ToClipBoard(MyRobot myRobot) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection contentToBeCopied = new StringSelection(myRobot.getArena().generateMapDescriptorP1());
         clipboard.setContents(contentToBeCopied, contentToBeCopied);
     }
 
-    private void copyP2ToClipBoard(CenterPanel centerPanel, MyRobot myRobot) {
+    private void copyP2ToClipBoard(MyRobot myRobot) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection contentToBeCopied = new StringSelection(myRobot.getArena().generateMapDescriptorP2());
         clipboard.setContents(contentToBeCopied, contentToBeCopied);
@@ -340,23 +341,33 @@ public class SimulatorController implements MouseListener {
             @Override
             protected void done() {
                 String message;
+                if (myRobot.getCurOrientation() == Orientation.W) {
+                    myRobot.leftFP();
+                }
+                myRobot.leftFP();
+                if (bestStartingPosition == Orientation.N) {
+                    myRobot.leftFP();
+                }
+                System.out.println(constructMessageForAndroid(myRobot));
+                myRobot.setStartOrientation(bestStartingPosition);
                 if (isRealRun) {
                     longDelay();
                     // assuming that robot will only come in only being south/west oriented
                     if (myRobot.getCurOrientation() == Orientation.W) {
-                        tcpConn.sendMessage("arA");
+                        tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
                     }
-                    tcpConn.sendMessage("arC");
-                    tcpConn.sendMessage("arA");
-                    tcpConn.sendMessage("arC");
+                    tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+                    tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+                    tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
                     if (bestStartingPosition == Orientation.N) {
-                        tcpConn.sendMessage("arA");
+                        tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
                     }
 
                     myRobot.setCurOrientation(bestStartingPosition);
 
                     // end of exploration
-                    tcpConn.sendMessage("arf");
+                    tcpConn.sendMessage(EXPLORATION_DONE_TO_ARDUINO);
+                    tcpConn.sendMessage(constructMessageForAndroid(myRobot));
 
                     message = tcpConn.readMessage();
                     while(!message.contains(START_FASTEST)) {
@@ -425,9 +436,9 @@ public class SimulatorController implements MouseListener {
             }
             myRobot.addCurGridToPathTaken();
             if (isRealRun) {
-                tcpConn.sendMessage(myRobot.constructMessageForAndroid());
+                tcpConn.sendMessage(constructMessageForAndroid(myRobot));
             }
-            System.out.println(myRobot.constructMessageForAndroid());
+            System.out.println(constructMessageForAndroid(myRobot));
         }
     }
 

@@ -2,6 +2,7 @@ package models;
 
 import controllers.SimulatorController;
 
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Queue;
@@ -13,7 +14,10 @@ import java.util.regex.Pattern;
 import conn.TCPConn;
 
 import javax.swing.*;
+
 import static models.Constants.*;
+import static utils.API.constructMessageForAndroid;
+import static utils.API.constructMessageForRpi;
 import static utils.ExplorationAlgorithm.timesNotCalibratedF;
 import static utils.ExplorationAlgorithm.timesNotCalibratedR;
 import static utils.Utils.delay;
@@ -87,30 +91,11 @@ public class MyRobot {
 		return true;
 	}
 
-	public String constructMessageForAndroid() {
-		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
-		String p1 = arena.generateMapDescriptorP1();
-		String p2 = arena.generateMapDescriptorP2();
-
-		String toAndroid = "an"+ p0 + "," + p1 + "," + p2 + ",";
-		return toAndroid;
-	}
-
-	public String constructP0ForAndroid() {
-		String p0 = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
-		return "an" + p0;
-	}
-
-	public String constructMessageForRpi() {
-		String myPosition = getCurCol() + "," + Arena.getRowFromActualRow(getCurRow()) + "," + getCurOrientation().toString();
-		return RPI_IDENTIFIER + myPosition;
-	}
-
 	public void calibrate() {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
 		}
-		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		//System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
 		timesNotCalibratedR = 0;
 	}
 
@@ -118,7 +103,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 		}
-		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		//System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
 		timesNotCalibratedF = 0;
 	}
 
@@ -167,7 +152,6 @@ public class MyRobot {
 	}
 
 	public void forward() {
-
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
 			calibrate();
 		}
@@ -298,21 +282,29 @@ public class MyRobot {
 
 	public void sendPositionToAndroidAndRpi() {
 		if (SimulatorController.manualSensorReading) {
-			System.out.println(constructMessageForAndroid());
-			System.out.println(constructMessageForRpi());
+			System.out.println(constructMessageForAndroid(this));
+			System.out.println(constructMessageForRpi(this));
 		} else {
-			SwingWorker worker = new SwingWorker<Void, Void>() {
-				@Override
-				protected Void doInBackground() throws Exception {
-					delay();
-					tcpConn.sendMessage(constructMessageForAndroid());
-					//tcpConn.sendMessage(constructMessageForRpi());
-					return null;
-				}
-			};
-			worker.execute();
+			MySwingWorker mySwingWorker = new MySwingWorker(this);
+			mySwingWorker.execute();
 		}
 	}
+
+	class MySwingWorker extends SwingWorker<Void, Void> {
+		private MyRobot myRobot;
+		public MySwingWorker(MyRobot myRobot) {
+			this.myRobot = myRobot;
+		}
+
+		@Override
+		protected Void doInBackground () {
+			delay();
+			tcpConn.sendMessage(constructMessageForAndroid(myRobot));
+			//tcpConn.sendMessage(constructMessageForRpi(myRobot));
+			return null;
+        }
+	}
+
 
 	public boolean hasObstacleRightInFront() {
 		for (int i = 0; i < frontSensor.length; i++) {

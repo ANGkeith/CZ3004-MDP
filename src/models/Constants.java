@@ -53,6 +53,8 @@ public class Constants {
     public static final String FORWARD_INSTRUCTION_TO_ARDUINO = "arW";
     public static final String TURN_LEFT_INSTRUCTION_TO_ARDUINO = "arA";
     public static final String TURN_RIGHT_INSTRUCTION_TO_ARDUINO = "arD";
+    public static final String EXPLORATION_DONE_TO_ARDUINO = "arf";
+
 	public static final String EXPLORE_DONE = "F";
 	public static final String SEPARATOR = "|";
 	public static final String READ_SENSOR_VALUES = "E";
@@ -77,7 +79,6 @@ public class Constants {
 	public static final int TIMES_NOT_CALIBRATED_R_THRESHOLD = 7;
     public static final int TIMES_NOT_CALIBRATED_F_THRESHOLD = 7;
 
-	public static int LOG_LINE_NUM = 1;
     public enum Orientation {
         N,
         E,
