@@ -8,7 +8,7 @@ import static models.Constants.LOG_FOR_CALIBRATION_PATH;
 
 public class testSensorValues {
 
-    public final static int COUNT = 8;
+    public final static int COUNT = 4;
 
     public static void main(String[] args) {
         TCPConn tcpConn;
@@ -24,14 +24,19 @@ public class testSensorValues {
             e.printStackTrace();
         }
         System.out.println("Successfully Connected!");
+        /*
+        tcpConn.readMessage();
+        tcpConn.readMessageArduino();
+        */
 
-        String msg = tcpConn.readMessageArduino();
-        System.out.println(msg);
 
-        tcpConn.sendMessage("arW");
+        for (int i = 0; i<100; i++ ) {
+            tcpConn.sendMessage("anD");
+        }
 
+/*
         for (int i = 0; i < COUNT - 1; i++) {
-            sensorValues = tcpConn.readMessage();
+            sensorValues = tcpConn.readMessageArduino();
             String[] readingsArr;
             readingsArr = sensorValues.split(",");
             // remove header
@@ -45,9 +50,11 @@ public class testSensorValues {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-            tcpConn.sendMessage("arW");
+            tcpConn.sendMessage("arD");
 
         }
+        tcpConn.readMessageArduino();
+        */
     }
 
 

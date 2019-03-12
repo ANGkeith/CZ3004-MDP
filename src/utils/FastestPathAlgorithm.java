@@ -231,7 +231,7 @@ public class FastestPathAlgorithm {
     }
 
     // turn myRobot to targetOrientation
-    private void turnRobot(Orientation targetOrientation) throws Exception {
+    public void turnRobot(Orientation targetOrientation) throws Exception {
         Orientation curOrientation = myRobot.getCurOrientation();
 
         int modulus;
@@ -250,6 +250,7 @@ public class FastestPathAlgorithm {
             sim.right();
             sim.right();
         }
+        myRobot.pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
     }
 
     private String instructionToTurnToTarget(Orientation curOrientation, Orientation targetOrientation) {
@@ -282,7 +283,7 @@ public class FastestPathAlgorithm {
         if (nCost < eCost) {
             return Orientation.N;
         }
-        return Orientation.S;
+        return Orientation.E;
     }
 
     private int calculateCostFromInstructions(String instructions) {

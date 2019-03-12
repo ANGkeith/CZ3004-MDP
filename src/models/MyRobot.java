@@ -4,8 +4,6 @@ import controllers.SimulatorController;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,11 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import conn.TCPConn;
-import utils.FileReaderWriter;
 
+import javax.swing.*;
 import static models.Constants.*;
 import static utils.ExplorationAlgorithm.timesNotCalibratedF;
 import static utils.ExplorationAlgorithm.timesNotCalibratedR;
+import static utils.Utils.delay;
 
 public class MyRobot {
 	public static final String REPAINT = "repaint";
@@ -109,72 +108,67 @@ public class MyRobot {
 
 	public void calibrate() {
 		if (isRealRun()) {
-		    if (SimulatorController.manualSensorReading) {
-				try {
-					FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-					fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<Calibrate> \n", true);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-			} else {
-				try {
-					FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-					fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<Calibrate> \n", true);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-				tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
-				System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
-			}
-			timesNotCalibratedR = 0;
-		} else {
-			try {
-				FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-				fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<Calibrate> \n", true);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-			System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
-			timesNotCalibratedR = 0;
-			// TODO add delay?
+			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
 		}
+		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		timesNotCalibratedR = 0;
 	}
 
 	public void calibrateFront() {
 		if (isRealRun()) {
-			if (SimulatorController.manualSensorReading) {
-				try {
-					FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-					fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<CalibrateF> \n", true);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-			} else {
-				try {
-					FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-					fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<CalibrateF> \n", true);
-				} catch (IOException ioException) {
-					ioException.printStackTrace();
-				}
-				tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
-				System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
-			}
-			timesNotCalibratedF = 0;
-		} else {
-			try {
-				FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-				fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " + "<CalibrateF> \n", true);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-			System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
-			timesNotCalibratedF = 0;
-			// TODO add delay?
+			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 		}
+		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		timesNotCalibratedF = 0;
 	}
+
+	public void forwardFP() {
+		if (curOrientation == Orientation.N) {
+			temp = curRow - 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.E) {
+			temp = curCol + 1;
+			setCurCol(temp);
+		} else if (curOrientation == Orientation.S) {
+			temp = curRow + 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.W) {
+			temp = curCol - 1;
+			setCurCol(temp);
+		}
+		pcs.firePropertyChange(REPAINT, null, null);
+	}
+
+	public void rightFP() {
+		if (curOrientation == Orientation.N) {
+			setCurOrientation(Orientation.E);
+		} else if (curOrientation == Orientation.E) {
+			setCurOrientation(Orientation.S);
+		} else if (curOrientation == Orientation.S) {
+			setCurOrientation(Orientation.W);
+		} else if (curOrientation == Orientation.W) {
+			setCurOrientation(Orientation.N);
+		}
+		pcs.firePropertyChange(REPAINT, null, null);
+
+	}
+
+	public void leftFP() {
+		if (curOrientation == Orientation.N) {
+			setCurOrientation(Orientation.W);
+		} else if (curOrientation == Orientation.E) {
+			setCurOrientation(Orientation.N);
+		} else if (curOrientation == Orientation.S) {
+			setCurOrientation(Orientation.E);
+		} else if (curOrientation == Orientation.W) {
+			setCurOrientation(Orientation.S);
+		}
+		pcs.firePropertyChange(REPAINT, null, null);
+	}
+
 	public void forward() {
 
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && rightSideFacingArenaWall()) {
+		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
 			calibrate();
 		}
 
@@ -200,21 +194,21 @@ public class MyRobot {
 				temp = curCol - 1;
 				setCurCol(temp);
 			}
+
+			pcs.firePropertyChange(REPAINT, null, null);
+
 			if (isRealRun) {
-				if (SimulatorController.isRunningExploration) {
-				    if (SimulatorController.manualSensorReading) {
-						System.out.println("FORWARD");
-					} else {
-						tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
-					}
+				if (SimulatorController.manualSensorReading) {
+					System.out.println("FORWARD");
+				} else {
+					tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+					//delay();
 				}
 			}
-			pcs.firePropertyChange(REPAINT, null, null);
+
 			if (isRealRun) {
-				if (SimulatorController.isRunningExploration) {
-					updateArenaBasedOnRealReadings("F");
-					sendPositionToAndroidAndRpi();
-				}
+				updateArenaBasedOnRealReadings("F");
+				sendPositionToAndroidAndRpi();
 			} else {
 				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 			}
@@ -222,10 +216,9 @@ public class MyRobot {
 	}
 
 	public void turnRight() {
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && rightSideFacingArenaWall()) {
+		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
 			calibrate();
 		}
-
 		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
 			calibrateFront();
 		}
@@ -233,6 +226,7 @@ public class MyRobot {
 		SimulatorController.numTurn++;
 		timesNotCalibratedR++;
 		timesNotCalibratedF++;
+
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.E);
 		} else if (curOrientation == Orientation.E) {
@@ -242,28 +236,28 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.W) {
 			setCurOrientation(Orientation.N);
 		}
+
+		pcs.firePropertyChange(REPAINT, null, null);
+
 		if (isRealRun) {
-			if (SimulatorController.isRunningExploration) {
-				if (SimulatorController.manualSensorReading) {
-					System.out.println("RIGHT");
-				} else {
-					tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
-				}
+			if (SimulatorController.manualSensorReading) {
+				System.out.println("RIGHT");
+			} else {
+				tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
+				//delay();
 			}
 		}
-		pcs.firePropertyChange(REPAINT, null, null);
+
 		if (isRealRun) {
-		    if (SimulatorController.isRunningExploration) {
-				updateArenaBasedOnRealReadings("R");
-				sendPositionToAndroidAndRpi();
-			}
+			updateArenaBasedOnRealReadings("R");
+			sendPositionToAndroidAndRpi();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
 	}
 
 	public void turnLeft() {
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && rightSideFacingArenaWall()) {
+		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
 			calibrate();
 		}
 
@@ -285,20 +279,18 @@ public class MyRobot {
 			setCurOrientation(Orientation.S);
 		}
 		if (isRealRun) {
-			if (SimulatorController.isRunningExploration) {
-				if (SimulatorController.manualSensorReading) {
-					System.out.println("LEFT");
-				} else {
-					tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-				}
+			if (SimulatorController.manualSensorReading) {
+				System.out.println("LEFT");
+			} else {
+				tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+				//delay();
 			}
 		}
 		pcs.firePropertyChange(REPAINT, null, null);
+
 		if (isRealRun) {
-		    if (SimulatorController.isRunningExploration) {
-				updateArenaBasedOnRealReadings("L");
-				sendPositionToAndroidAndRpi();
-			}
+			updateArenaBasedOnRealReadings("L");
+			sendPositionToAndroidAndRpi();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
@@ -306,15 +298,31 @@ public class MyRobot {
 
 	public void sendPositionToAndroidAndRpi() {
 		if (SimulatorController.manualSensorReading) {
-			System.out.println("LEFT");
 			System.out.println(constructMessageForAndroid());
 			System.out.println(constructMessageForRpi());
 		} else {
-			tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-			tcpConn.sendMessage(constructMessageForAndroid());
-			tcpConn.sendMessage(constructMessageForRpi());
+			SwingWorker worker = new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					delay();
+					tcpConn.sendMessage(constructMessageForAndroid());
+					//tcpConn.sendMessage(constructMessageForRpi());
+					return null;
+				}
+			};
+			worker.execute();
 		}
 	}
+
+	public boolean hasObstacleRightInFront() {
+		for (int i = 0; i < frontSensor.length; i++) {
+			if (frontSensor[i].getSensorReading() == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setCurPositionToStart() {
 		setCurRow(startRow);
 		setCurCol(startCol);
@@ -370,13 +378,8 @@ public class MyRobot {
 		return false;
 	}
 
-	public boolean hasObstacleRightInFront() {
-		for (int i = 0; i < frontSensor.length; i++) {
-			if (frontSensor[i].getSensorReading() == 1) {
-				return true;
-			}
-		}
-		return false;
+	public boolean detectObstacleAtBothRightSensor() {
+		return (rightSensor[0].getSensorReading()  == 1) && (rightSensor[1].getSensorReading() == 1);
 	}
 
 	public boolean hasObstacleToItsImmediateLeft() {
@@ -401,6 +404,9 @@ public class MyRobot {
 
 				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
 			} else {
+				System.out.println("<<<");
+				System.out.println("Sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
+						+ getCurCol() + ", "  + getCurOrientation() + ": ");
 				realReadings = tcpConn.readMessageArduino();
 				do {
 					m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
@@ -417,25 +423,68 @@ public class MyRobot {
 			if (SimulatorController.manualSensorReading) {
 				leftSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(0)));
 			} else {
+				int leftSensorReading;
+				int frontLSensorReading;
+				int frontMSensorReading;
+				int frontRSensorReading;
+				int rightFSensorReading;
+				int rightBSensorReading;
+				try {
+					leftSensorReading = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
+				} catch (NumberFormatException e) {
+					leftSensorReading = getRealLeftSensorReadings(80.0);
+				}
+				try {
+					frontLSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[2]), FRONT_L_SENSOR_THRESHOLD);
+				} catch (NumberFormatException e) {
+					frontLSensorReading = getRealShortSensorRreadings(80.0, FRONT_R_SENSOR_THRESHOLD);
+				}
+
+				try {
+					frontMSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[3]), FRONT_M_SENSOR_THRESHOLD);
+				} catch (NumberFormatException e) {
+					frontMSensorReading = getRealShortSensorRreadings(80.0, FRONT_M_SENSOR_THRESHOLD);
+				}
+
+				try {
+					frontRSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[4]), FRONT_R_SENSOR_THRESHOLD);
+				} catch (NumberFormatException e) {
+					frontRSensorReading = getRealShortSensorRreadings(80.0, FRONT_R_SENSOR_THRESHOLD);
+				}
+
+				try{
+					rightFSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[5]), RIGHT_F_SENSOR_THRESHOLD);
+				} catch (NumberFormatException e) {
+					rightFSensorReading = getRealShortSensorRreadings(80.0, RIGHT_F_SENSOR_THRESHOLD);
+				}
+
+				try {
+					rightBSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[6]), RIGHT_B_SENSOR_THRESHOLD);
+				} catch (NumberFormatException e) {
+					rightBSensorReading = getRealShortSensorRreadings(80.0, RIGHT_B_SENSOR_THRESHOLD);
+				}
+
+				/*
 				int leftSensorReading = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
+				int frontLSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[2]), FRONT_L_SENSOR_THRESHOLD);
+				int frontMSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[3]), FRONT_M_SENSOR_THRESHOLD);
+				int frontMSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[3]), FRONT_M_SENSOR_THRESHOLD);
+				int frontRSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[4]), FRONT_R_SENSOR_THRESHOLD);
+				int rightFSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[5]), RIGHT_F_SENSOR_THRESHOLD);
+				int rightBSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[6]), RIGHT_B_SENSOR_THRESHOLD);
+				*/
+
 				leftSensor[0].setRealReading(leftSensorReading);
+				frontSensor[0].setRealReading(frontLSensorReading);
+				frontSensor[1].setRealReading(frontMSensorReading);
+				frontSensor[2].setRealReading(frontRSensorReading);
+				rightSensor[0].setRealReading(rightFSensorReading);
+				rightSensor[1].setRealReading(rightBSensorReading);
+
+				System.out.println(leftSensorReading + " " + frontLSensorReading + frontMSensorReading + frontRSensorReading + " " + rightFSensorReading + rightBSensorReading);
+				System.out.println(">>>");
 			}
 
-			frontSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(1)));
-			frontSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(2)));
-			frontSensor[2].setRealReading(Character.getNumericValue(realReadings.charAt(3)));
-			rightSensor[0].setRealReading(Character.getNumericValue(realReadings.charAt(4)));
-			rightSensor[1].setRealReading(Character.getNumericValue(realReadings.charAt(5)));
-
-			try {
-				FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-				fileWriter.logMsg(LOG_LINE_NUM++ + " (" + getCurCol() + ", " + getCurRow() + ", " + getCurOrientation() + ") " +
-						"<" + instructions + "> " +
-						realReadings.charAt(0) + " " + realReadings.substring(1,4) + " " + realReadings.substring(4, 6) +
-						" " + readingsArr[1] + "\n", true);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
 			pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
 		} catch (Exception e) {
@@ -452,6 +501,16 @@ public class MyRobot {
 		}
 		return 0;
 	}
+
+	private int getRealShortSensorRreadings(double rawValue, double[] threshold) {
+		for (int i = 0; i < 2; i++) {
+			if (rawValue < threshold[i]) {
+				return i + 1;
+			}
+		}
+		return 0;
+	}
+
 	public boolean isAtGoalZone() {
 		return (getCurRow() == GOAL_ZONE_ROW && getCurCol() == GOAL_ZONE_COL);
 	}

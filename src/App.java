@@ -69,10 +69,6 @@ public class App extends JFrame {
             if (!fileContent.equals("")) {
                 referenceArena.binStringToArena(fileReader.read());
             }
-
-            // deletes previous log
-            FileReaderWriter fileWriter = new FileReaderWriter(FileSystems.getDefault().getPath(LOG_PATH));
-            fileWriter.logMsg("(x, y, o) <Instrucions> (delay by one) \n", false);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }

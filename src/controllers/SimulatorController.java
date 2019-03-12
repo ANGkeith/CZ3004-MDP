@@ -31,9 +31,11 @@ import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 import static models.MyRobot.isRealRun;
+import static utils.Utils.longDelay;
 
 public class SimulatorController implements MouseListener {
     private static MyRobot myRobot;
+    static Orientation bestStartingPosition;
     private int turningSpeedMs;
     private int fwdSpeedMs;
     private Timer timer;
@@ -45,7 +47,6 @@ public class SimulatorController implements MouseListener {
     private FastestPathAlgorithm fastestPathAlgo;
     private String instructionsWhenStartAtNorth;
     private String instructionsWhenStartAtEast;
-    public static boolean isRunningExploration = false;
     private String fastestPathInstructions;
 
     private static CenterPanel centerPanel;
@@ -241,7 +242,6 @@ public class SimulatorController implements MouseListener {
 
     private void startRealRun(MyRobot myRobot, CenterPanel centerPanel) {
         isRealRun = true;
-        isRunningExploration = false;
         tcpConn = TCPConn.getInstance();
         worker = new SwingWorker<Boolean, Void>(){
 
@@ -253,7 +253,6 @@ public class SimulatorController implements MouseListener {
                     while(!message.contains(START_EXPLORATION)) {
                         System.out.println("something wrong");
                     }
-                    isRunningExploration = true;
                     API.processStartExplorationMsg(message, myRobot);
                 } else {
                     System.out.println("Waiting for connection");
@@ -267,7 +266,6 @@ public class SimulatorController implements MouseListener {
                         System.out.println("Expecting start exploration but received: " + message);
                         message = tcpConn.readMessage();
                     }
-                    isRunningExploration = true;
                     API.processStartExplorationMsg(message, myRobot);
                 }
                 exploration(centerPanel, myRobot, ExplorationType.NORMAL);
@@ -322,44 +320,53 @@ public class SimulatorController implements MouseListener {
                 myRobot.getArena().resetGridCostAndCameFrom();
                 instructionsWhenStartAtNorth = fastestPathAlgo.generateInstructionsForFastestPath(Orientation.N);
 
-                Orientation bestStartingPosition = fastestPathAlgo.getMostOptimalStartingPosition(
+                bestStartingPosition = fastestPathAlgo.getMostOptimalStartingPosition(
                         instructionsWhenStartAtNorth,
                         instructionsWhenStartAtEast
                 );
 
                 if (bestStartingPosition == Orientation.N) {
                     fastestPathInstructions = instructionsWhenStartAtNorth;
-                    if (isRealRun) {
-                        tcpConn.sendMessage("an" + "Start facing North");
-                    }
                     System.out.println("start facing north");
-                } else {
+                } else if (bestStartingPosition == Orientation.E){
                     fastestPathInstructions = instructionsWhenStartAtEast;
-                    if (isRealRun) {
-                        tcpConn.sendMessage("an" + "Start facing East");
-                    }
                     System.out.println("start facing east");
+                } else {
+                    System.out.println(bestStartingPosition);
                 }
                 return true;
             }
 
             @Override
             protected void done() {
-                isRunningExploration = false;
                 String message;
                 if (isRealRun) {
+                    longDelay();
+                    // assuming that robot will only come in only being south/west oriented
+                    if (myRobot.getCurOrientation() == Orientation.W) {
+                        tcpConn.sendMessage("arA");
+                    }
+                    tcpConn.sendMessage("arC");
+                    tcpConn.sendMessage("arA");
+                    tcpConn.sendMessage("arC");
+                    if (bestStartingPosition == Orientation.N) {
+                        tcpConn.sendMessage("arA");
+                    }
+
+                    myRobot.setCurOrientation(bestStartingPosition);
+
+                    // end of exploration
+                    tcpConn.sendMessage("arf");
+
                     message = tcpConn.readMessage();
                     while(!message.contains(START_FASTEST)) {
                         System.out.println("Expecting start fastest path but received: " + message);
                         message = tcpConn.readMessage();
                     }
-                    API.processStartFastestMsg(message, myRobot);
                     // TODO change this value accordingly
 
-                    tcpConn.sendMessage(API.constructPathForArduino(fastestPathInstructions));
-
-                    myRobot.setTurningSpeed(1);
-                    myRobot.setForwardSpeed(1);
+                    myRobot.setTurningSpeed(0.50);
+                    myRobot.setForwardSpeed(0.50);
                     fastestPath(centerPanel, myRobot);
                 }
             }
@@ -390,20 +397,10 @@ public class SimulatorController implements MouseListener {
                 numFwd = 0;
 
                 timer.start();
-                String instructionsToBeExecuted;
-                if (myRobot.getStartOrientation() == Orientation.N) {
-                    instructionsToBeExecuted = instructionsWhenStartAtNorth;
-                } else if (myRobot.getStartOrientation() == Orientation.E) {
-                    instructionsToBeExecuted = instructionsWhenStartAtEast;
-                } else {
-                    instructionsToBeExecuted = null;
-                    System.out.println("Only start with East Or North");
-                }
                 if (isRealRun) {
-                    executeInstructionInSimulator(fastestPathInstructions);
-                } else {
-                    executeInstructionInSimulator(instructionsToBeExecuted);
+                    tcpConn.sendMessage(API.constructPathForArduino(fastestPathInstructions));
                 }
+                executeInstructionInSimulator(fastestPathInstructions);
                 timer.stop();
                 return true;
             }
@@ -415,17 +412,22 @@ public class SimulatorController implements MouseListener {
     public void executeInstructionInSimulator(String instructions) throws InterruptedException {
         for (int i = 0; i < instructions.length(); i ++) {
             if (instructions.charAt(i) == 'W') {
-                forward();
+                Thread.sleep(fwdSpeedMs);
+                myRobot.forwardFP();
             } else if (instructions.charAt(i) == 'A') {
-                left();
+                Thread.sleep(turningSpeedMs);
+                myRobot.leftFP();
             } else if (instructions.charAt(i) == 'D') {
-                right();
+                Thread.sleep(turningSpeedMs);
+                myRobot.rightFP();
             } else {
                 System.out.println("Unknown Instruction");
             }
+            myRobot.addCurGridToPathTaken();
             if (isRealRun) {
-                tcpConn.sendMessage(myRobot.constructP0ForAndroid());
+                tcpConn.sendMessage(myRobot.constructMessageForAndroid());
             }
+            System.out.println(myRobot.constructMessageForAndroid());
         }
     }
 

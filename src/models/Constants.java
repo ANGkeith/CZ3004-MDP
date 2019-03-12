@@ -64,8 +64,16 @@ public class Constants {
 	public static final String CALIBRATE_PATTERN = ":1:[0-9]:1:[0-9]:[0-9][|]";
 
 	public static final String RPI_IDENTIFIER = "rpi";
+    public static final String ARD_IDENTIFIER = "ar";
+    public static final String ANDROID_IDENTIFIER = "ar";
 
+    public static final double[] FRONT_L_SENSOR_THRESHOLD = {16.5, 23.4};
+    public static final double[] FRONT_M_SENSOR_THRESHOLD = {16.5, 23.4};
+    public static final double[] FRONT_R_SENSOR_THRESHOLD = {16.5, 23.4};
+    public static final double[] RIGHT_F_SENSOR_THRESHOLD = {14.0, 22.0};
+    public static final double[] RIGHT_B_SENSOR_THRESHOLD = {14.0, 21.5};
     public static final double[] LEFT_SENSOR_THRESHOLD = {21.3, 28.7, 39, 47.9, 57.0};
+
 	public static final int TIMES_NOT_CALIBRATED_R_THRESHOLD = 7;
     public static final int TIMES_NOT_CALIBRATED_F_THRESHOLD = 7;
 

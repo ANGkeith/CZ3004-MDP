@@ -54,19 +54,19 @@ public class TCPConn {
 	public void sendMessage(String msg) {
 		mWriterToRPI.print(msg);
 		mWriterToRPI.flush();
-		//System.out.println("Message sent: " + msg);
+		System.out.println("Message sent: " + msg);
 	}
 
 	public String readMessageArduino() {
 		String msgReceived = mScannerFromRPI.nextLine().trim();
 		mScannerFromRPI.nextLine();
-		//System.out.println("Message received: " + msgReceived);
+		System.out.println("Message(Ard) received: " + msgReceived);
 		return msgReceived;
 	}
 
 	public String readMessage() {
 		String msgReceived = mScannerFromRPI.nextLine().trim();
-		//System.out.println("Message received: " + msgReceived);
+		System.out.println("Message received: " + msgReceived);
 		return msgReceived;
 	}
 
