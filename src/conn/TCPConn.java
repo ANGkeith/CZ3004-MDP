@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static models.Constants.END_DELIMITER;
+
 public class TCPConn {
 	
 	public static final String RPI_IP = "192.168.2.1";
@@ -52,7 +54,7 @@ public class TCPConn {
 	}
 	
 	public void sendMessage(String msg) {
-		mWriterToRPI.print(msg);
+		mWriterToRPI.print(msg + END_DELIMITER);
 		mWriterToRPI.flush();
 		System.out.println("Message sent: " + msg);
 	}

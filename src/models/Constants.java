@@ -68,6 +68,7 @@ public class Constants {
 	public static final String RPI_IDENTIFIER = "rpi";
     public static final String ARD_IDENTIFIER = "ar";
     public static final String ANDROID_IDENTIFIER = "ar";
+    public static final String END_DELIMITER = ";";
 
     public static final double[] FRONT_L_SENSOR_THRESHOLD = {16.5, 23.4};
     public static final double[] FRONT_M_SENSOR_THRESHOLD = {16.5, 23.4};
