@@ -14,22 +14,6 @@ import views.*;
 import static models.Constants.*;
 
 public class App extends JFrame {
-    // Views
-    private JPanel contentPane;
-    private CenterPanel centerPanel;
-    private EastPanel eastPanel;
-    private WestPanel westPanel;
-
-    // Models
-    private Arena arena;
-    private Arena referenceArena;
-    private MyRobot myRobot;
-    
-    //Controller
-    private SimulatorController westPanelController;
-    private SimulatorController centerPanelController;
-    private SimulatorController eastPanelController;
-    private ArenaPanelController arenaPanelController;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -59,7 +43,24 @@ public class App extends JFrame {
 
 
 
-    private void initComponents() {	
+    private void initComponents() {
+        // Views
+        JPanel contentPane;
+        CenterPanel centerPanel;
+        EastPanel eastPanel;
+        WestPanel westPanel;
+
+        // Models
+        Arena arena;
+        Arena referenceArena;
+        MyRobot myRobot;
+
+        //Controller
+        SimulatorController westPanelController;
+        SimulatorController centerPanelController;
+        SimulatorController eastPanelController;
+        ArenaPanelController arenaPanelController;
+
         // Models
         referenceArena = new Arena();
         arena = new Arena();

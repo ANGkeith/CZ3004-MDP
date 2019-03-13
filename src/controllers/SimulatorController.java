@@ -411,6 +411,8 @@ public class SimulatorController implements MouseListener {
                 if (isRealRun) {
                     tcpConn.sendMessage(API.constructPathForArduino(fastestPathInstructions));
                 }
+                System.out.println(fastestPathInstructions);
+                System.out.println(API.constructPathForArduino(fastestPathInstructions));
                 executeInstructionInSimulator(fastestPathInstructions);
                 timer.stop();
                 return true;

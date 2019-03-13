@@ -1,4 +1,0 @@
-(x, y, o) <Instrucions> (delay by one) 
-1 (13, 17, E) <CalibrateF> 
-2 (1, 10, W) <CalibrateF> 
-3 (1, 4, W) <CalibrateF> 
