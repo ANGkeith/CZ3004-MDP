@@ -172,7 +172,6 @@ public class Arena {
             }
         }
     }
-    
 
     public static boolean isGoalZone(int row, int col) {
         return (row < ZONE_SIZE) && (col > ARENA_WIDTH - 1 - ZONE_SIZE);

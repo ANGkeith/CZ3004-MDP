@@ -3,6 +3,7 @@ package controllers;
 import static models.Constants.*;
 
 import models.Arena;
+import models.Grid;
 import models.MyRobot;
 import models.Result;
 import utils.API;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
+import static models.MyRobot.REPAINT;
 import static models.MyRobot.isRealRun;
 import static utils.API.constructMessageForAndroid;
 import static utils.Utils.longDelay;
@@ -340,6 +342,15 @@ public class SimulatorController implements MouseListener {
 
             @Override
             protected void done() {
+                for (Grid q: myRobot.getPathTaken()) {
+                    for (int i = -1; i < 2; i++) {
+                        for (int j = -1; j < 2; j++) {
+                            myRobot.getArena().getGrid(q.getRow() + i, q.getCol() + j).setHasObstacle(false);
+                        }
+                    }
+                }
+                tcpConn.sendMessage(constructMessageForAndroid(myRobot));
+                myRobot.pcs.firePropertyChange(REPAINT, null, null);
                 String message;
                 if (myRobot.getCurOrientation() == Orientation.W) {
                     myRobot.leftFP();

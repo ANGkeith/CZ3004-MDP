@@ -90,11 +90,13 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                     }
                     curGrid = arena.getGrid(curRow, curCol);
                     if (curGrid != null && !Arena.isStartZone(curRow, curCol) && !Arena.isGoalZone(curRow, curCol)) {
+                        curGrid.setHasBeenExplored(true);
                         if (i == sensor.getSensorReading()) {
                             if (curGrid.isHasBeenExplored() && !curGrid.isHasObstacle()) {
                                 // TODO handle this case
                                 System.out.println("Previously no obstacle, but now has obstacle at : "
                                         + Arena.getActualRowFromRow(curRow) + ", " + curCol);
+
                             }
                             curGrid.setHasObstacle(true);
                         } else {
@@ -102,9 +104,9 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                 // TODO handle this case
                                 System.out.println("Previously has obstacle, but now no obstacle at : "
                                         + Arena.getActualRowFromRow(curRow) + ", " + curCol);
+                                //curGrid.setHasBeenExplored(false);
                             }
                         }
-                        curGrid.setHasBeenExplored(true);
                     }
                 }
             }

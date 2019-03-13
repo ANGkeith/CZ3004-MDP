@@ -7,6 +7,9 @@ import java.nio.file.FileSystems;
 import java.util.concurrent.TimeUnit;
 
 import static models.Constants.LOG_FOR_CALIBRATION_PATH;
+import static models.Constants.START_FASTEST;
+import static utils.Utils.delay;
+import static utils.Utils.longDelay;
 
 public class testSensorValues {
 
@@ -37,8 +40,16 @@ public class testSensorValues {
         System.out.println("Successfully Connected!");
 
 
+        String message = tcpConn.readMessage();
+        while(!message.contains(START_FASTEST)) {
+            System.out.println("Expecting start fastest path but received: " + message);
+            message = tcpConn.readMessage();
+        }
 
         tcpConn.sendMessage("an1,1,E,ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,001000200040078000000038001000000004000820107e30040000000061008020004000800,");
+
+        longDelay();
+
 
         tcpConn.sendMessage("ar3A95D2A3D7");
 
@@ -110,11 +121,11 @@ public class testSensorValues {
         hardcodedelay(fwdDelay);
         tcpConn.sendMessage("an13,18,E,ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,001000200040078000000038001000000004000820107e30040000000061008020004000800,");
 
-        /*
-        for (int i = 0; i<100; i++ ) {
-            tcpConn.sendMessage("anD");
-        }
-        /*
+
+       /* for (int i = 0; i<100; i++ ) {
+            tcpConn.sendMessage("arD;");
+        }*/
+
 
 /*
         tcpConn.readMessage();

@@ -285,8 +285,9 @@ public class MyRobot {
 			System.out.println(constructMessageForAndroid(this));
 			System.out.println(constructMessageForRpi(this));
 		} else {
-			MySwingWorker mySwingWorker = new MySwingWorker(this);
-			mySwingWorker.execute();
+			tcpConn.sendMessage(constructMessageForAndroid(this));
+			//MySwingWorker mySwingWorker = new MySwingWorker(this);
+			//mySwingWorker.execute();
 		}
 	}
 
@@ -451,6 +452,8 @@ public class MyRobot {
 				}
 
 				try {
+					System.out.println("reading 6" + readingsArr[6]);
+					readingsArr[6] = readingsArr[6].split(";")[0];
 					rightBSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[6]), RIGHT_B_SENSOR_THRESHOLD);
 				} catch (NumberFormatException e) {
 					rightBSensorReading = getRealShortSensorRreadings(80.0, RIGHT_B_SENSOR_THRESHOLD);

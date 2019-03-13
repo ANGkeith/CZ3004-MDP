@@ -72,10 +72,10 @@ public class Constants {
 
     public static final double[] FRONT_L_SENSOR_THRESHOLD = {16.5, 23.4};
     public static final double[] FRONT_M_SENSOR_THRESHOLD = {16.5, 23.4};
-    public static final double[] FRONT_R_SENSOR_THRESHOLD = {16.5, 23.4};
-    public static final double[] RIGHT_F_SENSOR_THRESHOLD = {14.0, 22.0};
-    public static final double[] RIGHT_B_SENSOR_THRESHOLD = {14.0, 21.5};
-    public static final double[] LEFT_SENSOR_THRESHOLD = {21.3, 28.7, 39, 47.9, 57.0};
+    public static final double[] FRONT_R_SENSOR_THRESHOLD = {15.5, 25.4};
+    public static final double[] RIGHT_F_SENSOR_THRESHOLD = {14.0, 23.5};
+    public static final double[] RIGHT_B_SENSOR_THRESHOLD = {14.0, 23.5};
+    public static final double[] LEFT_SENSOR_THRESHOLD = {20.3, 28.7, 39, 50.9, 61.0};
 
 	public static final int TIMES_NOT_CALIBRATED_R_THRESHOLD = 7;
     public static final int TIMES_NOT_CALIBRATED_F_THRESHOLD = 7;
