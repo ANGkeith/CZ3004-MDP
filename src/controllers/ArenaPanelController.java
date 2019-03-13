@@ -90,7 +90,6 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                     }
                     curGrid = arena.getGrid(curRow, curCol);
                     if (curGrid != null && !Arena.isStartZone(curRow, curCol) && !Arena.isGoalZone(curRow, curCol)) {
-                        curGrid.setHasBeenExplored(true);
                         if (i == sensor.getSensorReading()) {
                             if (curGrid.isHasBeenExplored() && !curGrid.isHasObstacle()) {
                                 // TODO handle this case
@@ -107,6 +106,16 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                 //curGrid.setHasBeenExplored(false);
                             }
                         }
+
+                        // prevent obstacle from being added to path taken
+                        for (Grid q: myRobot.getPathTaken()) {
+                            for (int k = -1; k < 2; k++) {
+                                for (int l = -1; l < 2; l++) {
+                                    myRobot.getArena().getGrid(q.getRow() + k, q.getCol() + l).setHasObstacle(false);
+                                }
+                            }
+                        }
+                        curGrid.setHasBeenExplored(true);
                     }
                 }
             }
