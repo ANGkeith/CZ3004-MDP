@@ -66,7 +66,10 @@ public class SimulatorController implements MouseListener {
         this.centerPanel = centerPanel;
         this.myRobot = myRobot;
 
-        centerPanel.addRPIBtnListener(e -> startRealRun(myRobot, centerPanel));
+        centerPanel.addRPIBtnListener(e -> {
+            centerPanel.getRpiBtn().setEnabled(false);
+            startRealRun(myRobot, centerPanel);
+        });
         
         centerPanel.addModifyBtnListener(e -> {
             enableConfigurations(centerPanel);
@@ -342,25 +345,11 @@ public class SimulatorController implements MouseListener {
 
             @Override
             protected void done() {
-                for (Grid q: myRobot.getPathTaken()) {
-                    for (int i = -1; i < 2; i++) {
-                        for (int j = -1; j < 2; j++) {
-                            myRobot.getArena().getGrid(q.getRow() + i, q.getCol() + j).setHasObstacle(false);
-                        }
-                    }
+                if (isRealRun) {
+                    tcpConn.sendMessage(constructMessageForAndroid(myRobot));
                 }
-                tcpConn.sendMessage(constructMessageForAndroid(myRobot));
-                myRobot.pcs.firePropertyChange(REPAINT, null, null);
+
                 String message;
-                if (myRobot.getCurOrientation() == Orientation.W) {
-                    myRobot.leftFP();
-                }
-                myRobot.leftFP();
-                if (bestStartingPosition == Orientation.N) {
-                    myRobot.leftFP();
-                }
-                System.out.println(constructMessageForAndroid(myRobot));
-                myRobot.setStartOrientation(bestStartingPosition);
                 if (isRealRun) {
                     longDelay();
                     // assuming that robot will only come in only being south/west oriented
@@ -390,6 +379,16 @@ public class SimulatorController implements MouseListener {
                     myRobot.setTurningSpeed(0.50);
                     myRobot.setForwardSpeed(0.50);
                     fastestPath(centerPanel, myRobot);
+                } else {
+                    if (myRobot.getCurOrientation() == Orientation.W) {
+                        myRobot.leftFP();
+                    }
+                    myRobot.leftFP();
+                    if (bestStartingPosition == Orientation.N) {
+                        myRobot.leftFP();
+                    }
+                    System.out.println(constructMessageForAndroid(myRobot));
+                    myRobot.setStartOrientation(bestStartingPosition);
                 }
             }
         };

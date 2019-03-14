@@ -57,7 +57,7 @@ public class CenterPanel extends JPanel implements PropertyChangeListener {
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 40));
 
         rpiBtn = new JButton("Connect to RPI");
-        rpiBtn.setToolTipText("Right Click to connect to RPI");
+        rpiBtn.setToolTipText("Left Click to connect to RPI");
         explorationBtn = new JButton( "Exploration");
         explorationBtn.setToolTipText("Right Click to find Best Starting Position");
         fastestPathBtn = new JButton("Fastest Path");
@@ -265,6 +265,10 @@ public class CenterPanel extends JPanel implements PropertyChangeListener {
 
     public JLabel[] getStatusLbls() {
         return statusLbls;
+    }
+
+    public JButton getRpiBtn() {
+        return rpiBtn;
     }
 
     @Override
