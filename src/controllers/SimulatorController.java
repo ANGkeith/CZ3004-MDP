@@ -34,6 +34,7 @@ import static models.Constants.ARENA_DESCRIPTOR_PATH;
 import static models.MyRobot.REPAINT;
 import static models.MyRobot.isRealRun;
 import static utils.API.constructMessageForAndroid;
+import static utils.API.constructP0ForAndroid;
 import static utils.Utils.longDelay;
 
 public class SimulatorController implements MouseListener {
@@ -345,6 +346,12 @@ public class SimulatorController implements MouseListener {
 
             @Override
             protected void done() {
+                myRobot.leftFP();
+                if (bestStartingPosition == Orientation.N) {
+                    myRobot.leftFP();
+                }
+                System.out.println(constructMessageForAndroid(myRobot));
+                myRobot.setStartOrientation(bestStartingPosition);
                 if (isRealRun) {
                     tcpConn.sendMessage(constructMessageForAndroid(myRobot));
                 }
@@ -377,20 +384,14 @@ public class SimulatorController implements MouseListener {
                     // TODO change this value accordingly
 
                     myRobot.setTurningSpeed(0.50);
-                    myRobot.setForwardSpeed(0.50);
+                    myRobot.setForwardSpeed(0.30);
                     fastestPath(centerPanel, myRobot);
-                } else {
-                    if (myRobot.getCurOrientation() == Orientation.W) {
-                        myRobot.leftFP();
-                    }
+                }
+                if (myRobot.getCurOrientation() == Orientation.W) {
                     myRobot.leftFP();
-                    if (bestStartingPosition == Orientation.N) {
-                        myRobot.leftFP();
-                    }
-                    System.out.println(constructMessageForAndroid(myRobot));
-                    myRobot.setStartOrientation(bestStartingPosition);
                 }
             }
+
         };
         worker.execute();
     }
@@ -448,9 +449,9 @@ public class SimulatorController implements MouseListener {
             }
             myRobot.addCurGridToPathTaken();
             if (isRealRun) {
-                tcpConn.sendMessage(constructMessageForAndroid(myRobot));
+                tcpConn.sendMessage(constructP0ForAndroid(myRobot));
             }
-            System.out.println(constructMessageForAndroid(myRobot));
+            System.out.println(constructP0ForAndroid(myRobot));
         }
     }
 

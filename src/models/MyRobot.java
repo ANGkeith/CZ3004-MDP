@@ -13,14 +13,12 @@ import java.util.regex.Pattern;
 
 import conn.TCPConn;
 
-import javax.swing.*;
 
 import static models.Constants.*;
 import static utils.API.constructMessageForAndroid;
 import static utils.API.constructMessageForRpi;
 import static utils.ExplorationAlgorithm.timesNotCalibratedF;
 import static utils.ExplorationAlgorithm.timesNotCalibratedR;
-import static utils.Utils.delay;
 
 public class MyRobot {
 	public static final String REPAINT = "repaint";
@@ -186,7 +184,6 @@ public class MyRobot {
 					System.out.println("FORWARD");
 				} else {
 					tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
-					//delay();
 				}
 			}
 
@@ -228,7 +225,6 @@ public class MyRobot {
 				System.out.println("RIGHT");
 			} else {
 				tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
-				//delay();
 			}
 		}
 
@@ -267,7 +263,6 @@ public class MyRobot {
 				System.out.println("LEFT");
 			} else {
 				tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-				//delay();
 			}
 		}
 		pcs.firePropertyChange(REPAINT, null, null);
@@ -286,26 +281,8 @@ public class MyRobot {
 			System.out.println(constructMessageForRpi(this));
 		} else {
 			tcpConn.sendMessage(constructMessageForAndroid(this));
-			//MySwingWorker mySwingWorker = new MySwingWorker(this);
-			//mySwingWorker.execute();
 		}
 	}
-
-	class MySwingWorker extends SwingWorker<Void, Void> {
-		private MyRobot myRobot;
-		public MySwingWorker(MyRobot myRobot) {
-			this.myRobot = myRobot;
-		}
-
-		@Override
-		protected Void doInBackground () {
-			delay();
-			tcpConn.sendMessage(constructMessageForAndroid(myRobot));
-			//tcpConn.sendMessage(constructMessageForRpi(myRobot));
-			return null;
-        }
-	}
-
 
 	public boolean hasObstacleRightInFront() {
 		for (int i = 0; i < frontSensor.length; i++) {

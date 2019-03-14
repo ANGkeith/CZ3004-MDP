@@ -71,7 +71,7 @@ public class Constants {
     public static final String END_DELIMITER = ";";
 
 
-    public static final double[] FRONT_L_SENSOR_THRESHOLD = {15.0, 23.4};
+    public static final double[] FRONT_L_SENSOR_THRESHOLD = {16.5, 23.4};
     public static final double[] FRONT_M_SENSOR_THRESHOLD = {16.5, 24.0};
     public static final double[] FRONT_R_SENSOR_THRESHOLD = {15.5, 25.4};
     public static final double[] RIGHT_F_SENSOR_THRESHOLD = {14.0, 23.5};

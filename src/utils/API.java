@@ -43,7 +43,7 @@ public class API {
 
         String formattedInstructions = "";
         int count = 0;
-        for (int i = 0; i < instructions.length(); i++) {
+        for (int i = 0; i < instructions.length()-1; i++) {
             if (count == 9) {
                 formattedInstructions += 9;
                 count = 0;
@@ -61,6 +61,7 @@ public class API {
         if (count != 0) {
             formattedInstructions += count;
         }
+        formattedInstructions += "H";
         return ARD_IDENTIFIER + formattedInstructions;
     }
 }
