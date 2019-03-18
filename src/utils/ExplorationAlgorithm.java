@@ -61,6 +61,54 @@ public class ExplorationAlgorithm {
         }
     }
 
+    public void imageExploration() throws Exception {
+        boolean explorationCompletedFlag = false;
+        boolean imageExplorationFlag = false;
+        int count = 0;
+        int imgDetected = 0;
+
+        while (!explorationCompletedFlag && explorationStoppingConditions()) {
+            if (myRobot.leftSensorDetectedObstacle()) {
+            }
+            if (myRobot.frontSensorDetectedObstacle()) {
+                sim.right();
+                sim.left();
+            }
+            if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
+                if (!myRobot.hasObstacleRightInFront()) {
+                    sim.forward();
+                    count = 0;
+                } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
+                    sim.left();
+                    count = 0;
+                } else if (myRobot.hasObstacleToItsImmediateLeft()) {
+                    sim.right();
+                    sim.right();
+                    count = 0;
+                }
+            } else {
+                sim.right();
+                sim.forward();
+                count++;
+                if (count == 5) {
+                    count = 0;
+                    sim.left();
+                }
+
+            }
+            if (myRobot.isAtGoalZone()) {
+                timesNotCalibratedF = 200;
+                timesNotCalibratedR = 200;
+                myRobot.setHasFoundGoalZoneFlag(true);
+            }
+
+            if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
+                explorationCompletedFlag = true;
+            }
+
+        }
+    }
+
     private boolean explorationStoppingConditions() {
         if (explorationType == ExplorationType.NORMAL) {
             return true;

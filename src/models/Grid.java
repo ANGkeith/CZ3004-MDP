@@ -15,6 +15,11 @@ public class Grid {
     private Orientation o;
     private Grid cameFrom;
 
+    private boolean u;
+    private boolean d;
+    private boolean l;
+    private boolean r;
+
     public Grid(int row, int col) {
         hasObstacle = false;
         hasBeenExplored = false;
@@ -27,6 +32,12 @@ public class Grid {
         h = INFINITY;
         cameFrom = null;
         o = null;
+
+        u = false;
+        d = false;
+        l = false;
+        r = false;
+
     }
 
     public void resetGridCostAndCameFrom() {
@@ -113,5 +124,41 @@ public class Grid {
 
     public boolean isHasBeenExplored() {
         return hasBeenExplored;
+    }
+
+    public void setVirtualWall(boolean virtualWall) {
+        isVirtualWall = virtualWall;
+    }
+
+    public boolean isU() {
+        return u;
+    }
+
+    public void setU(boolean u) {
+        this.u = u;
+    }
+
+    public boolean isD() {
+        return d;
+    }
+
+    public void setD(boolean d) {
+        this.d = d;
+    }
+
+    public boolean isL() {
+        return l;
+    }
+
+    public void setL(boolean l) {
+        this.l = l;
+    }
+
+    public boolean isR() {
+        return r;
+    }
+
+    public void setR(boolean r) {
+        this.r = r;
     }
 }

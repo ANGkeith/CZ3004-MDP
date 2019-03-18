@@ -41,6 +41,7 @@ public class Constants {
     public static final Color ORIENTATION_MARKER_COLOR = Color.WHITE;
     public static final Color SENSOR_RANGE_COLOR = new Color(212, 255, 46, 100);
     public static final Color PATH_TAKEN_COLOR = new Color(80, 65, 255, 132);
+    public static final Color OBSTACLE_FACE_CAPTURED_COLOR = Color.GREEN;
 
     public static final String ARENA_DESCRIPTOR_PATH = System.getProperty("user.dir") + "/local_storage/mock_arena.txt";
     public static final String LOG_PATH = System.getProperty("user.dir") + "/local_storage/log.txt";
@@ -80,6 +81,8 @@ public class Constants {
 
 	public static final int TIMES_NOT_CALIBRATED_R_THRESHOLD = 7;
     public static final int TIMES_NOT_CALIBRATED_F_THRESHOLD = 7;
+
+    public static final int NUMBER_OF_IMAGE_NEEDED = 5;
 
     public enum Orientation {
         N,

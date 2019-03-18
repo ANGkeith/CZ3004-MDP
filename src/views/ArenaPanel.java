@@ -40,6 +40,7 @@ public class ArenaPanel extends JPanel {
         drawGridBorder(g);
         drawArenaDivider(g);
         displayRobot(g, myRobot.getCurRow(), myRobot.getCurCol());
+        displayObstacleFaceSeen(g);
     }
 
     private void fillGrids(Graphics g) {
@@ -63,6 +64,28 @@ public class ArenaPanel extends JPanel {
         }
     }
 
+    private void displayObstacleFaceSeen(Graphics g) {
+        g.setColor(OBSTACLE_FACE_CAPTURED_COLOR);
+        for (int row = 0; row < ARENA_HEIGHT; row++) {
+            for (int col = 0; col < ARENA_WIDTH; col++) {
+                grid = arena.getGrid(row, col);
+                if (grid.hasObstacle()) {
+                    if (grid.isR()) {
+                        g.fillRect((col + 1) * GRID_SIZE - 1, row * GRID_SIZE, 2, GRID_SIZE);
+                    }
+                    if (grid.isL()) {
+                        g.fillRect(col * GRID_SIZE - 1, row * GRID_SIZE, 2, GRID_SIZE);
+                    }
+                    if (grid.isD()) {
+                        g.fillRect(col * GRID_SIZE, (row + 1) * GRID_SIZE - 1, GRID_SIZE, 2);
+                    }
+                    if (grid.isU()) {
+                        g.fillRect(col * GRID_SIZE, row * GRID_SIZE - 1, GRID_SIZE, 2);
+                    }
+                }
+            }
+        }
+    }
     private void displaySensorRange(Graphics g) {
         int numOfSensibleGrid;
         int curRow;

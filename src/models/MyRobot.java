@@ -149,6 +149,28 @@ public class MyRobot {
 		pcs.firePropertyChange(REPAINT, null, null);
 	}
 
+	public void reverse() {
+		timesNotCalibratedF++;
+		if (curOrientation == Orientation.N) {
+			temp = curRow + 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.E) {
+			temp = curCol - 1;
+			setCurCol(temp);
+		} else if (curOrientation == Orientation.S) {
+			temp = curRow - 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.W) {
+			temp = curCol + 1;
+			setCurCol(temp);
+		}
+
+		pcs.firePropertyChange(REPAINT, null, null);
+
+		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+	}
+
+
 	public void forward() {
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
 			calibrate();
@@ -358,11 +380,18 @@ public class MyRobot {
 
 	public boolean frontSensorDetectedObstacle() {
 		for (int i = 0; i < frontSensor.length; i++) {
-			if (frontSensor[i].getSensorReading() > 0) {
+			if (frontSensor[i].getSensorReading() == 2 && !robotFront2GridAwayFromArenaWall()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean robotFront2GridAwayFromArenaWall() {
+		return (curOrientation == Orientation.S && curRow == 17) ||
+				(curOrientation == Orientation.E && curCol == 12) ||
+				(curOrientation == Orientation.N && curRow == 2) ||
+				(curOrientation == Orientation.W && curCol == 2);
 	}
 
 
@@ -377,6 +406,48 @@ public class MyRobot {
 			}
 		}
 		return false;
+	}
+
+	public boolean canReverseByOne() {
+	    int i;
+	    Grid grid;
+		switch(curOrientation) {
+			case N:
+				for (i = -1; i < 2; i ++) {
+					grid = getArena().getGrid(curRow - 1, curCol + i);
+					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
+						return false;
+					}
+				}
+				break;
+			case E:
+				for (i = -1; i < 2; i ++) {
+					grid = getArena().getGrid(curRow + i, curCol - 1);
+					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
+						return false;
+					}
+				}
+				break;
+			case S:
+				for (i = -1; i < 2; i ++) {
+					grid = getArena().getGrid(curRow + 1, curCol + i);
+					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
+						return false;
+					}
+				}
+				break;
+			case W:
+				for (i = -1; i < 2; i ++) {
+					grid = getArena().getGrid(curRow + i, curCol + 1);
+					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
+						return false;
+					}
+				}
+				break;
+			default:
+				System.out.println("Unexpected value at canReverseByOne()");
+		}
+		return true;
 	}
 
 	public void updateArenaBasedOnRealReadings(String instructions) {

@@ -159,6 +159,10 @@ public class Arena {
                     this.grids[r][c].setHasBeenExplored(true);
                 }
                 this.grids[r][c].resetGridCostAndCameFrom();
+                this.grids[r][c].setU(false);
+                this.grids[r][c].setD(false);
+                this.grids[r][c].setL(false);
+                this.grids[r][c].setR(false);
             }
         }
         setHasExploredBasedOnOccupiedGrid(myRobot);

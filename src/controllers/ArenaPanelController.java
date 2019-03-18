@@ -1,10 +1,7 @@
 package controllers;
 
-import models.Grid;
-import models.MyRobot;
-import models.Sensor;
+import models.*;
 import views.ArenaPanel;
-import models.Arena;
 import views.CenterPanel;
 
 import java.awt.event.KeyEvent;
@@ -55,7 +52,6 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
         int curCol;
         Grid curGrid;
         Sensor[][] frontRightLeftSensors;
-
         frontRightLeftSensors = myRobot.getAllSensor();
 
         for (Sensor[] sensors: frontRightLeftSensors) {
@@ -95,7 +91,6 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                 // TODO handle this case
                                 System.out.println("Previously no obstacle, but now has obstacle at : "
                                         + Arena.getActualRowFromRow(curRow) + ", " + curCol);
-
                             }
                             curGrid.setHasObstacle(true);
                         } else {
@@ -130,6 +125,8 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
             myRobot.turnRight();
         } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             myRobot.turnLeft();
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            myRobot.reverse();
         }
     }
 
