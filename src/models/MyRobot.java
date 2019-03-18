@@ -349,6 +349,23 @@ public class MyRobot {
 		return false;
 	}
 
+	public boolean leftSensorDetectedObstacle() {
+		if (leftSensor[0].getSensorReading() > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean frontSensorDetectedObstacle() {
+		for (int i = 0; i < frontSensor.length; i++) {
+			if (frontSensor[i].getSensorReading() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	public boolean detectObstacleAtBothRightSensor() {
 		return (rightSensor[0].getSensorReading()  == 1) && (rightSensor[1].getSensorReading() == 1);
 	}
