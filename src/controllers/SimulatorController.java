@@ -317,7 +317,7 @@ public class SimulatorController implements MouseListener {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                explorationAlgo.explorationLogic();
+                explorationAlgo.imageExploration();
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
 

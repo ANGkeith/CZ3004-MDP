@@ -17,8 +17,7 @@ import conn.TCPConn;
 import static models.Constants.*;
 import static utils.API.constructMessageForAndroid;
 import static utils.API.constructMessageForRpi;
-import static utils.ExplorationAlgorithm.timesNotCalibratedF;
-import static utils.ExplorationAlgorithm.timesNotCalibratedR;
+import static utils.ExplorationAlgorithm.*;
 
 public class MyRobot {
 	public static final String REPAINT = "repaint";
@@ -151,6 +150,7 @@ public class MyRobot {
 
 	public void reverse() {
 		timesNotCalibratedF++;
+		SimulatorController.numFwd++;
 		if (curOrientation == Orientation.N) {
 			temp = curRow + 1;
 			setCurRow(temp);
@@ -170,6 +170,138 @@ public class MyRobot {
 		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
+
+	public void takePicture() {
+	    int i;
+		Grid grid2;
+		Grid grid1;
+	    Grid grid0;
+	    picTaken++;
+
+		if (curOrientation == Orientation.N) {
+			for (i = 0; i < 5; i++) {
+				grid2 = getArena().getGrid((curRow - 1), (curCol - 2) - i);
+				if (grid2 != null && grid2.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid2.setR(true);
+						break;
+					}
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid1 = getArena().getGrid((curRow), (curCol - 2) - i);
+				if (grid1 != null && grid1.hasObstacle()) {
+					grid1.setR(true);
+					break;
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid0 = getArena().getGrid((curRow + 1), (curCol - 2) - i);
+				if (grid0 != null && grid0.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid0.setR(true);
+						break;
+					}
+				}
+			}
+		} else if (curOrientation == Orientation.S) {
+			for (i = 0; i < 5; i++) {
+				grid2 = getArena().getGrid((curRow + 1), (curCol + 2) + i);
+				if (grid2 != null && grid2.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid2.setL(true);
+						break;
+					}
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid1 = getArena().getGrid((curRow), (curCol + 2) + i);
+				if (grid1 != null && grid1.hasObstacle()) {
+					grid1.setL(true);
+					break;
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid0 = getArena().getGrid((curRow - 1), (curCol + 2) + i);
+				if (grid0 != null && grid0.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid0.setL(true);
+						break;
+					}
+				}
+			}
+		} else if (curOrientation == Orientation.E) {
+			for (i = 0; i < 5; i++) {
+				grid2 = getArena().getGrid((curRow - 2) - i, (curCol + 1));
+				if (grid2 != null && grid2.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid2.setD(true);
+						break;
+					}
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid1 = getArena().getGrid((curRow - 2) - i, (curCol));
+				if (grid1 != null && grid1.hasObstacle()) {
+					grid1.setD(true);
+					break;
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid0 = getArena().getGrid((curRow - 2) - i, (curCol - 1));
+				if (grid0 != null && grid0.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid0.setD(true);
+						break;
+					}
+				}
+			}
+		} else if (curOrientation == Orientation.W) {
+			for (i = 0; i < 5; i++) {
+				grid2 = getArena().getGrid((curRow + 2) + i, (curCol - 1));
+				if (grid2 != null && grid2.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid2.setU(true);
+						break;
+					}
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid1 = getArena().getGrid((curRow + 2) + i, (curCol));
+				if (grid1 != null && grid1.hasObstacle()) {
+					grid1.setU(true);
+					break;
+				}
+			}
+			for (i = 0; i < 5; i++) {
+				grid0 = getArena().getGrid((curRow + 2) + i, (curCol + 1));
+				if (grid0 != null && grid0.hasObstacle()) {
+					if (i < 2) {
+						break;
+					} else {
+						grid0.setU(true);
+						break;
+					}
+				}
+			}
+		}
+		pcs.firePropertyChange(REPAINT, null, null);
+
+	}
 
 	public void forward() {
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
@@ -373,12 +505,27 @@ public class MyRobot {
 
 	public boolean leftSensorDetectedObstacle() {
 		if (leftSensor[0].getSensorReading() > 0) {
-			return true;
+		    //return true;
+			return !seeIfObstacleIsArenaWall(leftSensor[0].getSensorReading());
 		}
 		return false;
 	}
 
-	public boolean frontSensorDetectedObstacle() {
+	private boolean seeIfObstacleIsArenaWall(int reading) {
+		if (curOrientation == Orientation.N) {
+			return (getArena().getGrid(curRow - 1, (curCol - 1) - reading) == null);
+		} else if (curOrientation == Orientation.S) {
+			return (getArena().getGrid(curRow + 1, (curCol + 1) + reading) == null);
+		} else if (curOrientation == Orientation.E) {
+			return (getArena().getGrid((curRow - 1) - reading, (curCol + 1)) == null);
+		} else if (curOrientation == Orientation.W) {
+			return (getArena().getGrid((curRow + 1) + reading, (curCol - 1)) == null);
+		}
+		System.out.println("Unexpected value at seeIfObstacleIsArenaWall");
+		return false;
+	}
+
+	public boolean frontSensorDetectedObstacle2GridAway() {
 		for (int i = 0; i < frontSensor.length; i++) {
 			if (frontSensor[i].getSensorReading() == 2 && !robotFront2GridAwayFromArenaWall()) {
 				return true;
@@ -613,6 +760,58 @@ public class MyRobot {
 		allSensor[1] = getRightSensor();
 		allSensor[2] = getLeftSensor();
 		return allSensor;
+	}
+
+	public boolean ifNeedToTakePictureOfBlindSpotGrid() {
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+
+		int blindSpotRow;
+		int blindSpotCol;
+		Grid blindSpotGrid;
+
+		switch (curOrientation) {
+			case N:
+				blindSpotCol = curCol + 2;
+				blindSpotRow = curRow;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isL();
+				} else {
+					return false;
+				}
+			case E:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow + 2;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isU();
+				} else {
+					return false;
+				}
+			case S:
+				blindSpotCol = curCol - 2;
+				blindSpotRow = curRow;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isR();
+				} else {
+					return false;
+				}
+			case W:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow - 2;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isD();
+				} else {
+					return false;
+				}
+			default:
+				System.out.println("Unexpected value at ifNeedToTakePictureOfBlindSpot");
+				return false;
+		}
 	}
 
 	public boolean rightBlindSpotHasObstacle() {

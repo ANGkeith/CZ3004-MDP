@@ -27,7 +27,6 @@ public class Sensor
     }
 
     public Orientation getSensorOrientation() {
-
         switch (sensor_position) {
             case FRONT:
                 return myRobot.getCurOrientation();

@@ -3,8 +3,6 @@ package utils;
 import controllers.SimulatorController;
 import models.MyRobot;
 
-import static controllers.SimulatorController.numFwd;
-import static controllers.SimulatorController.numTurn;
 import static models.Constants.*;
 
 public class ExplorationAlgorithm {
@@ -14,6 +12,7 @@ public class ExplorationAlgorithm {
     private SimulatorController sim;
     public static int timesNotCalibratedR = 0;
     public static int timesNotCalibratedF = 0;
+    public static int picTaken = 0;
 
 
     public ExplorationAlgorithm(MyRobot myRobot, SimulatorController sim, ExplorationType explorationType) {
@@ -63,27 +62,58 @@ public class ExplorationAlgorithm {
 
     public void imageExploration() throws Exception {
         boolean explorationCompletedFlag = false;
-        boolean imageExplorationFlag = false;
         int count = 0;
-        int imgDetected = 0;
+        boolean takePicFlag = false;
 
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
-            if (myRobot.leftSensorDetectedObstacle()) {
+            if (takePicFlag == true) {
+                myRobot.takePicture();
+                takePicFlag = false;
             }
-            if (myRobot.frontSensorDetectedObstacle()) {
-                sim.right();
-                sim.left();
+            if (myRobot.leftSensorDetectedObstacle()) {
+                takePicFlag = true;
+            }
+            if (myRobot.frontSensorDetectedObstacle2GridAway()) {
+                if (myRobot.canReverseByOne()) {
+                    sim.reverse();
+                    sim.right();
+                    myRobot.takePicture();
+                    sim.left();
+                    sim.forward();
+                }
             }
             if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                        sim.left();
+                        sim.left();
+                        myRobot.takePicture();
+                        sim.right();
+                        sim.right();
+                        //System.out.println((19 - myRobot.getCurRow() + " , " + myRobot.getCurCol()));
+                    }
                     sim.forward();
                     count = 0;
                 } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
-                    sim.left();
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                        sim.left();
+                        sim.left();
+                        myRobot.takePicture();
+                        sim.right();
+                        //System.out.println((19 - myRobot.getCurRow() + " , " + myRobot.getCurCol()));
+                    } else {
+                        sim.left();
+                    }
                     count = 0;
                 } else if (myRobot.hasObstacleToItsImmediateLeft()) {
-                    sim.right();
-                    sim.right();
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                        sim.right();
+                        sim.right();
+                        myRobot.takePicture();
+                    } else {
+                        sim.right();
+                        sim.right();
+                    }
                     count = 0;
                 }
             } else {
@@ -104,6 +134,8 @@ public class ExplorationAlgorithm {
 
             if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
                 explorationCompletedFlag = true;
+                System.out.println("Num of Pics taken = " + picTaken);
+                picTaken = 0;
             }
 
         }
