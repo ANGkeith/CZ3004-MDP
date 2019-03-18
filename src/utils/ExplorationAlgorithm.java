@@ -22,7 +22,7 @@ public class ExplorationAlgorithm {
         this.explorationType = explorationType;
     }
 
-    public void explorationLogic(boolean isBruteForcing) throws Exception {
+    public void explorationLogic() throws Exception {
         boolean explorationCompletedFlag = false;
         int count = 0;
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
@@ -58,12 +58,6 @@ public class ExplorationAlgorithm {
                 explorationCompletedFlag = true;
             }
 
-            if (isBruteForcing) {
-                // shortcircuit if estimated to be in an infinite loop
-                if (((numFwd + numTurn * 2)> 50 && myRobot.getArena().getCoveragePercentage() < 30.0) || numFwd > 200) {
-                    explorationCompletedFlag = true;
-                }
-            }
         }
     }
 

@@ -317,7 +317,7 @@ public class SimulatorController implements MouseListener {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                explorationAlgo.explorationLogic(false);
+                explorationAlgo.explorationLogic();
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
 
@@ -480,7 +480,6 @@ public class SimulatorController implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == 3) {
-            bruteForceAllPossibleStartingPosition(centerPanel, myRobot, ExplorationType.NORMAL);
         }
     }
 
@@ -502,57 +501,5 @@ public class SimulatorController implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
-    }
-
-    // used for finding out the best starting position
-    private void bruteForceAllPossibleStartingPosition(CenterPanel centerPanel, MyRobot myRobot, ExplorationType explorationType) {
-        this.myRobot = myRobot;
-
-        explorationAlgo = new ExplorationAlgorithm(myRobot, getInstance(), explorationType);
-
-        turningSpeedMs = (int)(myRobot.getTurningSpeed() * 1000);
-        fwdSpeedMs = (int)(myRobot.getForwardSpeed() * 1000);
-
-        centerPanel.setExplorationAndFastestPathBtns(false);
-
-        worker = new SwingWorker<Boolean, Void>() {
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                ArrayList<Result> results = new ArrayList<>();
-                Result result;
-                for (int r = ARENA_HEIGHT/2 + 1; r <= ARENA_HEIGHT; r++) {
-                    for (int c = 1; c < ARENA_WIDTH - 1; c++) {
-                        for (int o = 0; o < 4; o++) {
-                            if (myRobot.possibleStartingPosition(r, c)) {
-                                myRobot.setHasFoundGoalZoneFlag(false);
-                                numTurn = 0;
-                                numFwd = 0;
-                                myRobot.setStartRow(r);
-                                myRobot.setStartCol(c);
-                                myRobot.setStartOrientation(Orientation.values()[o]);
-                                myRobot.setCurPositionToStart();
-                                myRobot.getArena().reinitializeArena(myRobot);
-                                myRobot.resetPathTaken();
-                                myRobot.pcs.firePropertyChange(MyRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
-                                myRobot.getArena().setHasExploredBasedOnOccupiedGrid(myRobot);
-                                explorationAlgo.explorationLogic(true);
-
-                                if (numFwd < 200 && myRobot.getArena().getCoveragePercentage() == 100.0) {
-                                    result = new Result(r, c, Orientation.values()[o], numFwd, numTurn, numFwd+numTurn);
-                                    results.add(result);
-                                }
-                            }
-                        }
-                    }
-                }
-                Collections.sort(results);
-                System.out.println("This is the top 5 best starting position");
-                for (int i = 0; i < 5; i++) {
-                    System.out.println(results.get(i).toString());
-                }
-                return true;
-            }
-        };
-        worker.execute();
     }
 }
