@@ -561,7 +561,7 @@ public class MyRobot {
 		switch(curOrientation) {
 			case N:
 				for (i = -1; i < 2; i ++) {
-					grid = getArena().getGrid(curRow - 1, curCol + i);
+					grid = getArena().getGrid(curRow + 2, curCol + i);
 					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
 						return false;
 					}
@@ -569,7 +569,7 @@ public class MyRobot {
 				break;
 			case E:
 				for (i = -1; i < 2; i ++) {
-					grid = getArena().getGrid(curRow + i, curCol - 1);
+					grid = getArena().getGrid(curRow + i, curCol - 2);
 					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
 						return false;
 					}
@@ -577,7 +577,7 @@ public class MyRobot {
 				break;
 			case S:
 				for (i = -1; i < 2; i ++) {
-					grid = getArena().getGrid(curRow + 1, curCol + i);
+					grid = getArena().getGrid(curRow - 2, curCol + i);
 					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
 						return false;
 					}
@@ -585,7 +585,7 @@ public class MyRobot {
 				break;
 			case W:
 				for (i = -1; i < 2; i ++) {
-					grid = getArena().getGrid(curRow + i, curCol + 1);
+					grid = getArena().getGrid(curRow + i, curCol + 2);
 					if (grid == null || grid.hasObstacle() || !grid.hasBeenExplored()) {
 						return false;
 					}
@@ -762,7 +762,7 @@ public class MyRobot {
 		return allSensor;
 	}
 
-	public boolean ifNeedToTakePictureOfBlindSpotGrid() {
+	public boolean ifNeedToTakePictureOfBlindSpotGrid1() {
 		int curRow = getCurRow();
 		int curCol = getCurCol();
 		Orientation curOrientation = getCurOrientation();
@@ -802,6 +802,58 @@ public class MyRobot {
 			case W:
 				blindSpotCol = curCol;
 				blindSpotRow = curRow - 2;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isD();
+				} else {
+					return false;
+				}
+			default:
+				System.out.println("Unexpected value at ifNeedToTakePictureOfBlindSpot");
+				return false;
+		}
+	}
+
+	public boolean ifNeedToTakePictureOfBlindSpotGrid2() {
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+
+		int blindSpotRow;
+		int blindSpotCol;
+		Grid blindSpotGrid;
+
+		switch (curOrientation) {
+			case N:
+				blindSpotCol = curCol + 3;
+				blindSpotRow = curRow;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isL();
+				} else {
+					return false;
+				}
+			case E:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow + 3;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isU();
+				} else {
+					return false;
+				}
+			case S:
+				blindSpotCol = curCol - 3;
+				blindSpotRow = curRow;
+				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
+					return !blindSpotGrid.isR();
+				} else {
+					return false;
+				}
+			case W:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow - 3;
 				blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
 				if (blindSpotGrid != null && blindSpotGrid.hasObstacle()) {
 					return !blindSpotGrid.isD();

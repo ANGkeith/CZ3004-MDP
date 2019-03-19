@@ -84,7 +84,7 @@ public class ExplorationAlgorithm {
             }
             if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
-                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.left();
                         sim.left();
                         myRobot.takePicture();
@@ -95,7 +95,7 @@ public class ExplorationAlgorithm {
                     sim.forward();
                     count = 0;
                 } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
-                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.left();
                         sim.left();
                         myRobot.takePicture();
@@ -106,7 +106,7 @@ public class ExplorationAlgorithm {
                     }
                     count = 0;
                 } else if (myRobot.hasObstacleToItsImmediateLeft()) {
-                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid()) {
+                    if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.right();
                         sim.right();
                         myRobot.takePicture();
@@ -118,13 +118,24 @@ public class ExplorationAlgorithm {
                 }
             } else {
                 sim.right();
+                if (myRobot.leftSensorDetectedObstacle()) {
+                    takePicFlag = true;
+                }
                 sim.forward();
+                // handles stair case
+                if (myRobot.ifNeedToTakePictureOfBlindSpotGrid2()) {
+                    System.out.println("asd");
+                    sim.left();
+                    sim.left();
+                    myRobot.takePicture();
+                    sim.right();
+                    sim.right();
+                }
                 count++;
                 if (count == 5) {
                     count = 0;
                     sim.left();
                 }
-
             }
             if (myRobot.isAtGoalZone()) {
                 timesNotCalibratedF = 200;
