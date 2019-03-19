@@ -124,7 +124,6 @@ public class ExplorationAlgorithm {
                 sim.forward();
                 // handles stair case
                 if (myRobot.ifNeedToTakePictureOfBlindSpotGrid2()) {
-                    System.out.println("asd");
                     sim.left();
                     sim.left();
                     myRobot.takePicture();

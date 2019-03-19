@@ -33,8 +33,7 @@ import java.util.Collections;
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
 import static models.MyRobot.REPAINT;
 import static models.MyRobot.isRealRun;
-import static utils.API.constructMessageForAndroid;
-import static utils.API.constructP0ForAndroid;
+import static utils.API.*;
 import static utils.Utils.longDelay;
 
 public class SimulatorController implements MouseListener {
@@ -317,7 +316,7 @@ public class SimulatorController implements MouseListener {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                explorationAlgo.imageExploration();
+                explorationAlgo.explorationLogic();
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
 

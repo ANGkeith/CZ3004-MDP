@@ -49,9 +49,6 @@ public class testSensorValues {
         tcpConn.sendMessage("an1,1,N,ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,001000200040078000000038001000000004000820107e30040000000061008020004000800,");
 
         longDelay();
-/*
-
- */
 
         tcpConn.sendMessage(API.constructPathForArduino(instructions));
 

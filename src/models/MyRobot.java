@@ -434,6 +434,7 @@ public class MyRobot {
 			System.out.println(constructMessageForAndroid(this));
 			System.out.println(constructMessageForRpi(this));
 		} else {
+			tcpConn.sendMessage(constructMessageForRpi(this));
 			tcpConn.sendMessage(constructMessageForAndroid(this));
 			tcpConn.sendMessage(constructMessageForRpi(this));
 		}

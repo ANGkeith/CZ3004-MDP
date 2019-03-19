@@ -22,7 +22,7 @@ public class API {
 
 	public static String constructMessageForRpi(MyRobot myRobot) {
 		String myPosition = myRobot.getCurCol() + "," + Arena.getRowFromActualRow(myRobot.getCurRow()) + "," + myRobot.getCurOrientation().toString();
-		return RPI_IDENTIFIER + myPosition;
+		return RPI_IDENTIFIER + myPosition.toLowerCase();
 	}
 
     public static void processStartExplorationMsg(String message, MyRobot myRobot) {
