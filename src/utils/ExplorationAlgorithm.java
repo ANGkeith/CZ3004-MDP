@@ -24,7 +24,18 @@ public class ExplorationAlgorithm {
     public void explorationLogic() throws Exception {
         boolean explorationCompletedFlag = false;
         int count = 0;
+        boolean takePicFlag = false;
+        myRobot.takePicture();
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
+            if (takePicFlag == true) {
+                myRobot.takePicture();
+                takePicFlag = false;
+            }
+            if (myRobot.leftSensorDetectedObstacle()) {
+                takePicFlag = true;
+            }
+
+
             if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
                     sim.forward();
@@ -39,6 +50,9 @@ public class ExplorationAlgorithm {
                 }
             } else {
                 sim.right();
+                if (myRobot.leftSensorDetectedObstacle()) {
+                    takePicFlag = true;
+                }
                 sim.forward();
                 count++;
                 if (count == 5) {
@@ -144,8 +158,6 @@ public class ExplorationAlgorithm {
 
             if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
                 explorationCompletedFlag = true;
-                System.out.println("Num of Pics taken = " + picTaken);
-                picTaken = 0;
             }
 
         }

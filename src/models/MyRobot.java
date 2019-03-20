@@ -2,7 +2,6 @@ package models;
 
 import controllers.SimulatorController;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Queue;
@@ -301,6 +300,10 @@ public class MyRobot {
 		}
 		pcs.firePropertyChange(REPAINT, null, null);
 
+		if (isRealRun()) {
+		    sendCommandToRpiToTakePicture();
+		}
+
 	}
 
 	public void forward() {
@@ -343,7 +346,7 @@ public class MyRobot {
 
 			if (isRealRun) {
 				updateArenaBasedOnRealReadings("F");
-				sendPositionToAndroidAndRpi();
+				sendPositionToAndroid();
 			} else {
 				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 			}
@@ -384,7 +387,7 @@ public class MyRobot {
 
 		if (isRealRun) {
 			updateArenaBasedOnRealReadings("R");
-			sendPositionToAndroidAndRpi();
+			sendPositionToAndroid();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
@@ -423,19 +426,24 @@ public class MyRobot {
 
 		if (isRealRun) {
 			updateArenaBasedOnRealReadings("L");
-			sendPositionToAndroidAndRpi();
+			sendPositionToAndroid();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 		}
 	}
 
-	public void sendPositionToAndroidAndRpi() {
+	public void sendPositionToAndroid() {
 		if (SimulatorController.manualSensorReading) {
 			System.out.println(constructMessageForAndroid(this));
+		} else {
+			tcpConn.sendMessage(constructMessageForAndroid(this));
+		}
+	}
+
+	public void sendCommandToRpiToTakePicture() {
+		if (SimulatorController.manualSensorReading) {
 			System.out.println(constructMessageForRpi(this));
 		} else {
-			tcpConn.sendMessage(constructMessageForRpi(this));
-			tcpConn.sendMessage(constructMessageForAndroid(this));
 			tcpConn.sendMessage(constructMessageForRpi(this));
 		}
 	}
@@ -504,9 +512,9 @@ public class MyRobot {
 		return false;
 	}
 
+	// does not return true if arena wall is detected
 	public boolean leftSensorDetectedObstacle() {
 		if (leftSensor[0].getSensorReading() > 0) {
-		    //return true;
 			return !seeIfObstacleIsArenaWall(leftSensor[0].getSensorReading());
 		}
 		return false;
@@ -553,6 +561,11 @@ public class MyRobot {
 				return true;
 			}
 		}
+		return false;
+	}
+
+	public boolean hasSomeObstacleFaceNotCapturedOnTheLeft() {
+		//TODO
 		return false;
 	}
 
@@ -1076,5 +1089,17 @@ public class MyRobot {
 	public void setWayPointCol(int wayPointCol) {
 		this.wayPointCol = wayPointCol;
 		pcs.firePropertyChange(MyRobot.WAYPOINT_UPDATE, null, null);
+	}
+
+	public Grid[] get5GridToLeftOfRobot(int row, int col) {
+		int i;
+
+		Grid[] leftFront5Grids = new Grid[5];
+		if (curOrientation == Orientation.N) {
+			for (i = 0; i < 5; i ++) {
+				leftFront5Grids[i] = getArena().getGrid(row, col);
+			}
+		}
+		return leftFront5Grids;
 	}
 }

@@ -34,6 +34,7 @@ import static models.Constants.ARENA_DESCRIPTOR_PATH;
 import static models.MyRobot.REPAINT;
 import static models.MyRobot.isRealRun;
 import static utils.API.*;
+import static utils.ExplorationAlgorithm.picTaken;
 import static utils.Utils.longDelay;
 
 public class SimulatorController implements MouseListener {
@@ -345,6 +346,9 @@ public class SimulatorController implements MouseListener {
 
             @Override
             protected void done() {
+                System.out.println("Num of Pics taken = " + picTaken);
+                picTaken = 0;
+
                 myRobot.leftFP();
                 if (bestStartingPosition == Orientation.N) {
                     myRobot.leftFP();
