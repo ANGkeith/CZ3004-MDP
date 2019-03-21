@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.concurrent.TimeUnit;
 
-import static models.Constants.LOG_FOR_CALIBRATION_PATH;
-import static models.Constants.START_FASTEST;
+import static models.Constants.*;
 import static utils.Utils.delay;
 import static utils.Utils.longDelay;
 
@@ -40,105 +39,26 @@ public class testSensorValues {
         System.out.println("Successfully Connected!");
 
 
-        String message = tcpConn.readMessage();
-        while(!message.contains(START_FASTEST)) {
-            System.out.println("Expecting start fastest path but received: " + message);
-            message = tcpConn.readMessage();
+
+        tcpConn.sendMessage("arE;");
+        tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
+        tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+        tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
+        tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
+        tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+
+        for (int i = 0; i<10; i++ ) {
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+
+            tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+            tcpConn.sendMessage(TURN_RIGHT_INSTRUCTION_TO_ARDUINO);
         }
-
-        tcpConn.sendMessage("an1,1,N,ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,001000200040078000000038001000000004000820107e30040000000061008020004000800,");
-
-        longDelay();
-
-        tcpConn.sendMessage(API.constructPathForArduino(instructions));
-
-        tcpConn.sendMessage("an1,2,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,3,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,4,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,5,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,6,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,7,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,8,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,9,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,10,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,11,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,12,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,13,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,14,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,15,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,16,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an1,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an2,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an3,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an4,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an5,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an6,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an7,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,16,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,16,S,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,15,S,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,14,S,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,13,S,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,12,S,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an8,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an9,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an10,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an11,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an12,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,12,E,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,12,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,13,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,14,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,15,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,16,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,17,N,");
-		hardcodedelay(fwdDelay);
-        tcpConn.sendMessage("an13,18,N,");
-		hardcodedelay(fwdDelay);
-
-
-       /* for (int i = 0; i<100; i++ ) {
-            tcpConn.sendMessage("arD;");
-        }*/
 
 
 /*

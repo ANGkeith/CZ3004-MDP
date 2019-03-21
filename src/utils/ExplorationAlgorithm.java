@@ -29,7 +29,7 @@ public class ExplorationAlgorithm {
         visitedBottomRight = false;
         visitedGoalZone = false;
         visitedTopLeft = false;
-        int count = 0;
+        int antiLoopCounter = 0;
         boolean takePicFlag = false;
         myRobot.takePicture();
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
@@ -42,28 +42,66 @@ public class ExplorationAlgorithm {
             }
 
 
-            if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
+            if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
                     sim.forward();
-                    count = 0;
-                } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
+                    antiLoopCounter = 0;
+                } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     sim.left();
-                    count = 0;
-                } else if (myRobot.hasObstacleToItsImmediateLeft()) {
+                    antiLoopCounter = 0;
+                } else if (myRobot.hasObstacleToImmediateLeft()) {
                     sim.right();
                     sim.right();
-                    count = 0;
+                    antiLoopCounter = 0;
                 }
             } else {
-                sim.right();
-                if (myRobot.leftSensorDetectedObstacle()) {
-                    takePicFlag = true;
-                }
-                sim.forward();
-                count++;
-                if (count == 5) {
-                    count = 0;
-                    sim.left();
+                if (myRobot.hasObstacleOneGridFromTheRight()) {
+                    antiLoopCounter = 0;
+                    if (!myRobot.hasObstacleRightInFront()) {
+                        // delay turning by one step
+                        sim.forward();
+                        if (myRobot.rightSensorReadingGives(0, 0) && !myRobot.rightBlindSpotHasObstacle2() && !myRobot.rightBlindSpotHasObstacle()) {
+                            sim.right();
+                            sim.forward();
+                            sim.forward();
+                        } else if (myRobot.rightBlindSpotHasObstacle()){
+                            sim.forward();
+                        } else if (myRobot.rightSensorReadingGives(2, 2)){
+                            sim.right();
+                            sim.forward();
+                            sim.left();
+                        } else {
+                            sim.right();
+                            sim.forward();
+                            sim.left();
+                        }
+                    } else {
+
+                        if (myRobot.rightSideFrontSensorThirdGridNeedsToBeExplored()) {
+                            sim.right();
+                            sim.forward();
+                        } else if (!myRobot.frontFacingArenaWall()) {
+                            sim.right();
+                            sim.forward();
+                        } else {
+                            sim.right();
+                            sim.right();
+                            if (myRobot.rightSensorReadingGives(2, 2) || myRobot.rightSensorReadingGives(2, 0) || myRobot.rightSensorReadingGives(0, 2)) {
+                                sim.forward();
+                            }
+                        }
+                    }
+                } else {
+                    sim.right();
+                    if (myRobot.leftSensorDetectedObstacle()) {
+                        takePicFlag = true;
+                    }
+                    sim.forward();
+                    antiLoopCounter++;
+                    if (antiLoopCounter == 5) {
+                        antiLoopCounter = 0;
+                        sim.left();
+                    }
                 }
 
             }
@@ -116,7 +154,7 @@ public class ExplorationAlgorithm {
                     sim.forward();
                 }
             }
-            if (myRobot.hasObstacleToItsImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
+            if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.left();
@@ -128,7 +166,7 @@ public class ExplorationAlgorithm {
                     }
                     sim.forward();
                     count = 0;
-                } else if (!myRobot.hasObstacleToItsImmediateLeft()) {
+                } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.left();
                         sim.left();
@@ -139,7 +177,7 @@ public class ExplorationAlgorithm {
                         sim.left();
                     }
                     count = 0;
-                } else if (myRobot.hasObstacleToItsImmediateLeft()) {
+                } else if (myRobot.hasObstacleToImmediateLeft()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
                         sim.right();
                         sim.right();

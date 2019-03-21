@@ -91,7 +91,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
 		}
-		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
+		//System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
 		timesNotCalibratedR = 0;
 	}
 
@@ -99,7 +99,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 		}
-		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
+		//System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
 		timesNotCalibratedF = 0;
 	}
 
@@ -350,6 +350,9 @@ public class MyRobot {
 			} else {
 				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 			}
+		} else {
+			System.out.println(curRow + " " + curCol + " " + curOrientation);
+			System.out.println("WARNING: COLLIDING");
 		}
 	}
 
@@ -444,7 +447,7 @@ public class MyRobot {
 		if (SimulatorController.manualSensorReading) {
 			System.out.println(constructMessageForRpi(this));
 		} else {
-			tcpConn.sendMessage(constructMessageForRpi(this));
+			//tcpConn.sendMessage(constructMessageForRpi(this));
 		}
 	}
 
@@ -485,7 +488,7 @@ public class MyRobot {
         
          Sensor Value Format = 
          */
-    	
+
 
 		frontSensor = new Sensor[3];
 		rightSensor = new Sensor[2];
@@ -503,13 +506,26 @@ public class MyRobot {
 		allSensor = new Sensor[3][3];
 	}
 
-	public boolean hasObstacleToItsImmediateRight() {
+	public boolean hasObstacleToImmediateRight() {
 		for (int i = 0; i < rightSensor.length; i++) {
 			if (rightSensor[i].getSensorReading() == 1) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean hasObstacleOneGridFromTheRight() {
+		for (int i = 0; i < rightSensor.length; i++) {
+			if (rightSensor[i].getSensorReading() == 2) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean rightSensorReadingGives(int frontReading, int backReading) {
+		return (rightSensor[0].getSensorReading() == frontReading && rightSensor[1].getSensorReading() == backReading);
 	}
 
 	// does not return true if arena wall is detected
@@ -555,7 +571,37 @@ public class MyRobot {
 		return (rightSensor[0].getSensorReading()  == 1) && (rightSensor[1].getSensorReading() == 1);
 	}
 
-	public boolean hasObstacleToItsImmediateLeft() {
+	public boolean rightSideFrontSensorThirdGridNeedsToBeExplored() {
+		int row;
+		int col;
+		Grid grid;
+		if (curOrientation == Orientation.S) {
+			row = curRow + 1;
+			col = curCol - 4;
+		} else if (curOrientation == Orientation.N) {
+			row = curRow - 1;
+			col = curCol + 4;
+		} else if (curOrientation == Orientation.E) {
+			row = curRow + 4;
+			col = curCol + 1;
+		} else if (curOrientation == Orientation.W) {
+			row = curRow - 4;
+			col = curCol - 1;
+		} else {
+			System.out.println("Unexpected Orientation at rightSideFrontSernsorThirdGridNeedsToBeExplored");
+			row = -1;
+			col = -1;
+		}
+		grid = getArena().getGrid(row, col);
+		if (grid != null && !grid.hasBeenExplored()) {
+			return true;
+		}
+		return false;
+
+
+	}
+
+	public boolean hasObstacleToImmediateLeft() {
 		for (int i = 0; i < leftSensor.length; i++) {
 			if (leftSensor[i].getSensorReading() == 1) {
 				return true;
@@ -616,17 +662,16 @@ public class MyRobot {
 		String realReadings;
 		try {
 			if (SimulatorController.manualSensorReading) {
-				System.out.println("Enter a sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
-						+ getCurCol() + ", "  + getCurOrientation() + ": ");
+				//System.out.println("Enter a sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
+				//		+ getCurCol() + ", "  + getCurOrientation() + ": ");
 				Scanner sc = new Scanner(System.in);
 				realReadings =  sc.nextLine();
 
 
 				m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
 			} else {
-				System.out.println("<<<");
-				System.out.println("Sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
-						+ getCurCol() + ", "  + getCurOrientation() + ": ");
+				// System.out.println("<<<< \n Sensor reading at " + Arena.getActualRowFromRow(getCurRow()) + ", "
+				//		+ getCurCol() + ", "  + getCurOrientation() + ": ");
 				realReadings = tcpConn.readMessageArduino();
 				do {
 					m = Pattern.compile(SENSOR_READING_PATTERN).matcher(realReadings);
@@ -679,7 +724,6 @@ public class MyRobot {
 				}
 
 				try {
-					System.out.println("reading 6" + readingsArr[6]);
 					readingsArr[6] = readingsArr[6].split(";")[0];
 					rightBSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[6]), RIGHT_B_SENSOR_THRESHOLD);
 				} catch (NumberFormatException e) {
@@ -914,6 +958,45 @@ public class MyRobot {
 			blindSpotCol = curCol;
 			blindSpotRow = curRow - 2;
 			break;
+		}
+
+		blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
+		if (blindSpotGrid != null) {
+			if (blindSpotGrid.hasBeenExplored()) {
+				return blindSpotGrid.hasObstacle();
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean rightBlindSpotHasObstacle2() {
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+
+		int blindSpotRow;
+		int blindSpotCol;
+		Grid blindSpotGrid;
+
+		switch (curOrientation) {
+			case N:
+				blindSpotCol = curCol + 3;
+				blindSpotRow = curRow;
+				break;
+			case E:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow + 3;
+				break;
+			case S:
+				blindSpotCol = curCol - 3;
+				blindSpotRow = curRow;
+				break;
+			default:
+				blindSpotCol = curCol;
+				blindSpotRow = curRow - 3;
+				break;
 		}
 
 		blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
