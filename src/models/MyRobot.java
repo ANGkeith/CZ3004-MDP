@@ -87,11 +87,11 @@ public class MyRobot {
 		return true;
 	}
 
-	public void calibrate() {
+	public void calibrateRight() {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
 		}
-		//System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
 		timesNotCalibratedR = 0;
 	}
 
@@ -99,7 +99,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 		}
-		//System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + timesNotCalibratedR);
+		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
 		timesNotCalibratedF = 0;
 	}
 
@@ -308,7 +308,7 @@ public class MyRobot {
 
 	public void forward() {
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrate();
+			calibrateRight();
 		}
 
 		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
@@ -355,7 +355,7 @@ public class MyRobot {
 
 	public void turnRight() {
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrate();
+			calibrateRight();
 		}
 		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
 			calibrateFront();
@@ -395,7 +395,7 @@ public class MyRobot {
 
 	public void turnLeft() {
 		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrate();
+			calibrateRight();
 		}
 
 		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
@@ -735,6 +735,14 @@ public class MyRobot {
 
 	public boolean isAtGoalZone() {
 		return (getCurRow() == GOAL_ZONE_ROW && getCurCol() == GOAL_ZONE_COL);
+	}
+
+	public boolean isAtBtmRight() {
+		return (getCurRow() == 18 && getCurCol() == 13);
+	}
+
+	public boolean isAtTopLeft() {
+		return (getCurRow() == 1 && getCurCol() == 1);
 	}
 
 	public boolean isAtStartZone() {

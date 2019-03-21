@@ -129,6 +129,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
             myRobot.reverse();
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             myRobot.takePicture();
+        } else if (e.getKeyCode() == KeyEvent.VK_T) {
         }
     }
 

@@ -353,7 +353,6 @@ public class SimulatorController implements MouseListener {
                 if (bestStartingPosition == Orientation.N) {
                     myRobot.leftFP();
                 }
-                System.out.println(constructMessageForAndroid(myRobot));
                 myRobot.setStartOrientation(bestStartingPosition);
                 if (isRealRun) {
                     tcpConn.sendMessage(constructMessageForAndroid(myRobot));

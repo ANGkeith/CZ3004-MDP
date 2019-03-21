@@ -13,6 +13,9 @@ public class ExplorationAlgorithm {
     public static int timesNotCalibratedR = 0;
     public static int timesNotCalibratedF = 0;
     public static int picTaken = 0;
+    private boolean visitedTopLeft;
+    private boolean visitedBottomRight;
+    private boolean visitedGoalZone;
 
 
     public ExplorationAlgorithm(MyRobot myRobot, SimulatorController sim, ExplorationType explorationType) {
@@ -23,6 +26,9 @@ public class ExplorationAlgorithm {
 
     public void explorationLogic() throws Exception {
         boolean explorationCompletedFlag = false;
+        visitedBottomRight = false;
+        visitedGoalZone = false;
+        visitedTopLeft = false;
         int count = 0;
         boolean takePicFlag = false;
         myRobot.takePicture();
@@ -61,7 +67,21 @@ public class ExplorationAlgorithm {
                 }
 
             }
-            if (myRobot.isAtGoalZone()) {
+
+            if (myRobot.isAtBtmRight() && !visitedBottomRight) {
+                visitedBottomRight = true;
+                timesNotCalibratedF = 200;
+                timesNotCalibratedR = 200;
+            }
+
+            if (myRobot.isAtTopLeft() && !visitedTopLeft) {
+                visitedTopLeft = true;
+                timesNotCalibratedF = 200;
+                timesNotCalibratedR = 200;
+            }
+
+            if (myRobot.isAtGoalZone() && !visitedGoalZone) {
+                visitedGoalZone = true;
                 timesNotCalibratedF = 200;
                 timesNotCalibratedR = 200;
                 myRobot.setHasFoundGoalZoneFlag(true);
