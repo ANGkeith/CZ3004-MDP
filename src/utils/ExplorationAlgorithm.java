@@ -64,7 +64,7 @@ public class ExplorationAlgorithm {
                             sim.right();
                             sim.forward();
                             sim.forward();
-                        } else if (myRobot.rightBlindSpotHasObstacle()){
+                        } else if (myRobot.rightBlindSpotHasObstacle() || myRobot.rightSensorReadingGives(1, 2)){
                             sim.forward();
                         } else if (myRobot.rightSensorReadingGives(2, 2)){
                             sim.right();
