@@ -3,10 +3,8 @@ package models;
 import static models.Constants.*;
 
 public class Grid {
-    //  JunYaw changes start
-//    private Grid sensedFrom;
+    // used as an indicator for the reliability of the sensor reading. (The lower the timesNotCalibrated, the more reliable)
     private int timesNotCalibrated;
-    //  JunYaw changes end
 
     private boolean hasObstacle;
     private boolean hasBeenExplored;
@@ -26,9 +24,7 @@ public class Grid {
     private boolean r;
 
     public Grid(int row, int col) {
-        //  JunYaw changes start
         timesNotCalibrated = 100000;
-        //  JunYaw changes end
 
         hasObstacle = false;
         hasBeenExplored = false;
@@ -72,7 +68,6 @@ public class Grid {
     public void setTimesNotCalibrated(int timesNotCalibrated) {
         this.timesNotCalibrated = timesNotCalibrated;
     }
-    //  JunYaw changes end
 
     public Grid getCameFrom() {
         return cameFrom;

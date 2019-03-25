@@ -18,4 +18,12 @@ public class Utils {
             e.printStackTrace();
         }
     }
+
+    public static void longDelay2() {
+        try{
+            TimeUnit.MILLISECONDS.sleep(2000);
+        } catch	(InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
