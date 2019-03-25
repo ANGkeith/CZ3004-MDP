@@ -88,19 +88,47 @@ public class MyRobot {
 	}
 
 	public void calibrateRight() {
-		if (isRealRun()) {
-			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+		if (detectObstacleAtBothRightSensor())  {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				if (timesNotCalibratedHorizontal != 0) {
+					if (isRealRun()) {
+						tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
+					}
+					System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
+					timesNotCalibratedHorizontal = 0;
+				}
+			} else {
+				if (timesNotCalibratedVertical != 0) {
+					if (isRealRun()) {
+						tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
+					}
+					System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
+					timesNotCalibratedVertical = 0;
+				}
+			}
 		}
-		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
-		timesNotCalibratedR = 0;
 	}
 
 	public void calibrateFront() {
-		if (isRealRun()) {
-			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
+	    if (detectObstacleAtBothFrontCalibratingSensor()) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+			    if (timesNotCalibratedVertical != 0) {
+					if (isRealRun()) {
+						tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
+					}
+					System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
+					timesNotCalibratedVertical = 0;
+				}
+			} else {
+				if (timesNotCalibratedHorizontal != 0) {
+					if (isRealRun()) {
+						tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
+					}
+					System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
+					timesNotCalibratedHorizontal = 0;
+				}
+			}
 		}
-		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
-		timesNotCalibratedF = 0;
 	}
 
 	public void forwardFP() {
@@ -148,7 +176,7 @@ public class MyRobot {
 	}
 
 	public void reverse() {
-		timesNotCalibratedF++;
+		timesNotCalibratedVertical++;
 		SimulatorController.numFwd++;
 		if (curOrientation == Orientation.N) {
 			temp = curRow + 1;
@@ -307,18 +335,26 @@ public class MyRobot {
 	}
 
 	public void forward() {
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrateRight();
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
 		}
 
-		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
-			calibrateFront();
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
 		}
 
 		if (!hasObstacleRightInFront()) {
 			SimulatorController.numFwd++;
-			timesNotCalibratedR++;
-			timesNotCalibratedF++;
+			timesNotCalibratedHorizontal++;
+			timesNotCalibratedVertical++;
 
 			if (curOrientation == Orientation.N) {
 				temp = curRow - 1;
@@ -357,16 +393,25 @@ public class MyRobot {
 	}
 
 	public void turnRight() {
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrateRight();
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
 		}
-		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
-			calibrateFront();
+
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
 		}
 
 		SimulatorController.numTurn++;
-		timesNotCalibratedR++;
-		timesNotCalibratedF++;
+		timesNotCalibratedHorizontal++;
+		timesNotCalibratedVertical++;
 
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.E);
@@ -397,17 +442,25 @@ public class MyRobot {
 	}
 
 	public void turnLeft() {
-		if (timesNotCalibratedR > TIMES_NOT_CALIBRATED_R_THRESHOLD && detectObstacleAtBothRightSensor()) {
-			calibrateRight();
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
 		}
 
-		if (timesNotCalibratedF > TIMES_NOT_CALIBRATED_F_THRESHOLD && frontFacingArenaWall()) {
-			calibrateFront();
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
 		}
 
 		SimulatorController.numTurn++;
-		timesNotCalibratedR++;
-		timesNotCalibratedF++;
+		timesNotCalibratedHorizontal++;
+		timesNotCalibratedVertical++;
 
 		if (curOrientation == Orientation.N) {
 			setCurOrientation(Orientation.W);
@@ -569,6 +622,10 @@ public class MyRobot {
 
 	public boolean detectObstacleAtBothRightSensor() {
 		return (rightSensor[0].getSensorReading()  == 1) && (rightSensor[1].getSensorReading() == 1);
+	}
+
+	public boolean detectObstacleAtBothFrontCalibratingSensor() {
+		return (frontSensor[0].getSensorReading()  == 1) && (frontSensor[2].getSensorReading() == 1);
 	}
 
 	public boolean rightSideFrontSensorThirdGridNeedsToBeExplored() {

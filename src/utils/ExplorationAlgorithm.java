@@ -10,8 +10,8 @@ public class ExplorationAlgorithm {
     private MyRobot myRobot;
     private ExplorationType explorationType;
     private SimulatorController sim;
-    public static int timesNotCalibratedR = 0;
-    public static int timesNotCalibratedF = 0;
+    public static int timesNotCalibratedHorizontal = 0;
+    public static int timesNotCalibratedVertical = 0;
     public static int picTaken = 0;
     private boolean visitedTopLeft;
     private boolean visitedBottomRight;
@@ -31,8 +31,8 @@ public class ExplorationAlgorithm {
         visitedTopLeft = false;
         int antiLoopCounter = 0;
 
-        timesNotCalibratedR = 0;
-        timesNotCalibratedF = 0;
+        timesNotCalibratedHorizontal = 0;
+        timesNotCalibratedVertical = 0;
 
         boolean takePicFlag = false;
         myRobot.takePicture();
@@ -63,7 +63,9 @@ public class ExplorationAlgorithm {
 //                    }
 //                    antiLoopCounter = 0;
                 } else if (!myRobot.hasObstacleToImmediateLeft()) {
+                    myRobot.calibrateRight();
                     sim.left();
+                    myRobot.calibrateRight();
                     antiLoopCounter = 0;
                 } else if (myRobot.hasObstacleToImmediateLeft()) {
                     sim.right();
@@ -130,20 +132,14 @@ public class ExplorationAlgorithm {
 
             if (myRobot.isAtBtmRight() && !visitedBottomRight) {
                 visitedBottomRight = true;
-                timesNotCalibratedF = 200;
-                timesNotCalibratedR = 200;
             }
 
             if (myRobot.isAtTopLeft() && !visitedTopLeft) {
                 visitedTopLeft = true;
-                timesNotCalibratedF = 200;
-                timesNotCalibratedR = 200;
             }
 
             if (myRobot.isAtGoalZone() && !visitedGoalZone) {
                 visitedGoalZone = true;
-                timesNotCalibratedF = 200;
-                timesNotCalibratedR = 200;
                 myRobot.setHasFoundGoalZoneFlag(true);
             }
 
@@ -230,8 +226,6 @@ public class ExplorationAlgorithm {
                 }
             }
             if (myRobot.isAtGoalZone()) {
-                timesNotCalibratedF = 200;
-                timesNotCalibratedR = 200;
                 myRobot.setHasFoundGoalZoneFlag(true);
             }
 

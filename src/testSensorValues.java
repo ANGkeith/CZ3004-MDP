@@ -7,8 +7,6 @@ import java.nio.file.FileSystems;
 import java.util.concurrent.TimeUnit;
 
 import static models.Constants.*;
-import static utils.Utils.delay;
-import static utils.Utils.longDelay;
 
 public class testSensorValues {
 
@@ -45,7 +43,7 @@ public class testSensorValues {
         tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
         tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
         tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-        tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+        tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
 
         for (int i = 0; i<10; i++ ) {
             tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);

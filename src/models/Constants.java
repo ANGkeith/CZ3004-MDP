@@ -49,7 +49,7 @@ public class Constants {
 
     public static final String[] orientationList = new String[]{"North", "East", "South", "West"};
 
-    public static final String CALIBRATE_INSTRUCTION_TO_ARDUINO = "arC";
+    public static final String CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO = "arC";
     public static final String CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO = "arc";
     public static final String FORWARD_INSTRUCTION_TO_ARDUINO = "arW";
     public static final String TURN_LEFT_INSTRUCTION_TO_ARDUINO = "arA";

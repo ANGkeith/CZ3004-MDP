@@ -371,9 +371,9 @@ public class SimulatorController implements MouseListener {
                     if (myRobot.getCurOrientation() == Orientation.W) {
                         tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
                     }
-                    tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+                    tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
                     tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
-                    tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
+                    tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
                     if (bestStartingPosition == Orientation.N) {
                         tcpConn.sendMessage(TURN_LEFT_INSTRUCTION_TO_ARDUINO);
                     }
