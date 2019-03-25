@@ -64,6 +64,8 @@ public class SimulatorController implements MouseListener {
 
         centerPanel.addRPIBtnListener(e -> {
             centerPanel.getRpiBtn().setEnabled(false);
+            centerPanel.setExplorationAndFastestPathBtns(false);
+            centerPanel.getModifyBtn().setEnabled(false);
             startRealRun(myRobot, centerPanel);
         });
         
@@ -168,14 +170,22 @@ public class SimulatorController implements MouseListener {
         if (timer != null) {
             timer.stop();
         }
+        if (worker != null) {
+            worker.cancel(true);
+        }
+        if (isRealRun) {
+            isRealRun = false;
+            try {
+                tcpConn.endConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         setConfigurations(centerPanel, myRobot, true);
         centerPanel.setExplorationAndFastestPathBtns(true);
         centerPanel.getFastestPathBtn().setEnabled(false);
         reinitStatusPanelVariables();
         centerPanel.reinitStatusPanelTxt();
-        if (worker != null) {
-            worker.cancel(true);
-        }
     }
     private void reinitStatusPanelVariables() {
         timeElapsed[0] = 0;

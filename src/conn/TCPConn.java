@@ -50,7 +50,7 @@ public class TCPConn {
 	}
 	
 	public void endConnection () throws IOException {
-		if (mSocket.isClosed() != true)
+		if (mSocket != null && mSocket.isClosed() != true)
 			mSocket.close();
 	}
 	
