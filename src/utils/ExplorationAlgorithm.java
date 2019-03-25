@@ -46,6 +46,18 @@ public class ExplorationAlgorithm {
                 if (!myRobot.hasObstacleRightInFront()) {
                     sim.forward();
                     antiLoopCounter = 0;
+//                } else if (myRobot.isInDeadEnd() != 0) {
+//                    int backwardTimes = myRobot.isInDeadEnd();
+//                    for (int i=0; i<backwardTimes; i++) {
+//                        sim.reverse();
+//                    }
+//                    sim.left();
+//                    if (!myRobot.hasObstacleRightInFront()) {
+//                        sim.forward();
+//                    } else {
+//                        sim.left();
+//                    }
+//                    antiLoopCounter = 0;
                 } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     sim.left();
                     antiLoopCounter = 0;
@@ -81,6 +93,7 @@ public class ExplorationAlgorithm {
                             sim.right();
                             sim.forward();
                         } else if (!myRobot.frontFacingArenaWall()) {
+                            System.out.println("looping here");
                             sim.right();
                             sim.forward();
                         } else {

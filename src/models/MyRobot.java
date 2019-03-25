@@ -447,7 +447,7 @@ public class MyRobot {
 		if (SimulatorController.manualSensorReading) {
 			System.out.println(constructMessageForRpi(this));
 		} else {
-			//tcpConn.sendMessage(constructMessageForRpi(this));
+			tcpConn.sendMessage(constructMessageForRpi(this));
 		}
 	}
 
@@ -1192,5 +1192,126 @@ public class MyRobot {
 			}
 		}
 		return leftFront5Grids;
+	}
+
+	public int isInDeadEnd() {
+
+		int result = 0;
+
+		Grid grid00 = null;
+		Grid grid01 = null;
+		Grid grid02 = null;
+		Grid grid10 = null;
+		Grid grid11 = null;
+		Grid grid12 = null;
+
+		switch (curOrientation) {
+			case N:
+				if (isAtStartZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
+					return result;
+				}
+				grid00 = arena.getGrid(curRow-1, curCol-2);
+				grid01 = arena.getGrid(curRow, curCol-2);
+				grid02 = arena.getGrid(curRow+1, curCol-2);
+				grid10 = arena.getGrid(curRow-1, curCol-3);
+				grid11 = arena.getGrid(curRow, curCol-3);
+				grid12 = arena.getGrid(curRow+1, curCol-3);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					if (arena.getGrid(curRow+2, curCol-2).hasObstacle()) {
+						result = 4;
+					} else {
+						if (grid02.hasObstacle()) {
+							result = 3;
+						} else if (grid01.hasObstacle()) {
+							result = 2;
+						} else {
+							result = 1;
+						}
+					}
+				}
+
+				break;
+			case S:
+				if (isAtGoalZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
+					return result;
+				}
+				grid00 = arena.getGrid(curRow+1, curCol+2);
+				grid01 = arena.getGrid(curRow, curCol+2);
+				grid02 = arena.getGrid(curRow-1, curCol+2);
+				grid10 = arena.getGrid(curRow+1, curCol+3);
+				grid11 = arena.getGrid(curRow, curCol+3);
+				grid12 = arena.getGrid(curRow-1, curCol+3);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					if (arena.getGrid(curRow-2, curCol+2).hasObstacle()) {
+						result = 4;
+					} else {
+						if (grid02.hasObstacle()) {
+							result = 3;
+						} else if (grid01.hasObstacle()) {
+							result = 2;
+						} else {
+							result = 1;
+						}
+					}
+				}
+
+				break;
+			case E:
+				if (isAtGoalZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
+					return result;
+				}
+				grid00 = arena.getGrid(curRow-2, curCol+1);
+				grid01 = arena.getGrid(curRow-2, curCol);
+				grid02 = arena.getGrid(curRow-2, curCol-1);
+				grid10 = arena.getGrid(curRow-3, curCol+1);
+				grid11 = arena.getGrid(curRow-3, curCol);
+				grid12 = arena.getGrid(curRow-3, curCol-1);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					if (arena.getGrid(curRow-2, curCol-2).hasObstacle()) {
+						result = 4;
+					} else {
+						if (grid02.hasObstacle()) {
+							result = 3;
+						} else if (grid01.hasObstacle()) {
+							result = 2;
+						} else {
+							result = 1;
+						}
+					}
+				}
+
+				break;
+			case W:
+				if (isAtStartZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
+					return result;
+				}
+
+				grid00 = arena.getGrid(curRow+2, curCol-1);
+				grid01 = arena.getGrid(curRow+2, curCol);
+				grid02 = arena.getGrid(curRow+2, curCol+1);
+				grid10 = arena.getGrid(curRow+3, curCol-1);
+				grid11 = arena.getGrid(curRow+3, curCol);
+				grid12 = arena.getGrid(curRow+3, curCol+1);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					if (arena.getGrid(curRow+2, curCol+2).hasObstacle()) {
+						result = 4;
+					} else {
+						if (grid02.hasObstacle()) {
+							result = 3;
+						} else if (grid01.hasObstacle()) {
+							result = 2;
+						} else {
+							result = 1;
+						}
+					}
+				}
+				break;
+		}
+
+		return result;
 	}
 }

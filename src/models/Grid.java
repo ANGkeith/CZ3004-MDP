@@ -3,6 +3,11 @@ package models;
 import static models.Constants.*;
 
 public class Grid {
+    //  JunYaw changes start
+//    private Grid sensedFrom;
+    private int timesNotCalibrated;
+    //  JunYaw changes end
+
     private boolean hasObstacle;
     private boolean hasBeenExplored;
     private boolean isVirtualWall;
@@ -21,6 +26,10 @@ public class Grid {
     private boolean r;
 
     public Grid(int row, int col) {
+        //  JunYaw changes start
+        timesNotCalibrated = 100000;
+        //  JunYaw changes end
+
         hasObstacle = false;
         hasBeenExplored = false;
         setIsVirtualWall(false);
@@ -46,6 +55,24 @@ public class Grid {
         h = INFINITY;
         cameFrom = null;
     }
+
+    //  JunYaw changes start
+//    public Grid getSensedFrom() {
+//        return this.sensedFrom;
+//    }
+//
+//    public void setSensedFrom(Grid grid) {
+//        this.sensedFrom = sensedFrom;
+//    }
+
+    public int getTimesNotCalibrated() {
+        return this.timesNotCalibrated;
+    }
+
+    public void setTimesNotCalibrated(int timesNotCalibrated) {
+        this.timesNotCalibrated = timesNotCalibrated;
+    }
+    //  JunYaw changes end
 
     public Grid getCameFrom() {
         return cameFrom;
