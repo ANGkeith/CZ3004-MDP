@@ -88,57 +88,40 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                     curGrid = arena.getGrid(curRow, curCol);
                     if (curGrid != null && !Arena.isStartZone(curRow, curCol) && !Arena.isGoalZone(curRow, curCol)) {
 
-                        //  JunYaw changes start
-                        int timesNotCalibrated = (ExplorationAlgorithm.timesNotCalibratedF < ExplorationAlgorithm.timesNotCalibratedR) ?
-                                ExplorationAlgorithm.timesNotCalibratedF : ExplorationAlgorithm.timesNotCalibratedR;
-                        //  JunYaw changes end
+                        int timesNotCalibrated = ExplorationAlgorithm.timesNotCalibratedF + ExplorationAlgorithm.timesNotCalibratedR;
 
                         if (i == sensor.getSensorReading()) {
-
                             if (curGrid.isHasBeenExplored() && !curGrid.isHasObstacle()) {
                                 // TODO handle this case
                                 System.out.println("Previously no obstacle, but now has obstacle at : "
                                         + Arena.getActualRowFromRow(curRow) + ", " + curCol);
 
-                                //  JunYaw changes start
-                                if (curGrid.getTimesNotCalibrated() < timesNotCalibrated) {
-                                    curGrid.setHasObstacle(false);
+                                if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
+                                    System.out.println("old " + curGrid.getTimesNotCalibrated());
+                                    System.out.println("new" + timesNotCalibrated);
+                                    curGrid.setHasObstacle(true);
                                     curGrid.setTimesNotCalibrated(timesNotCalibrated);
                                 }
-                                //  JunYaw changes end
-                            }
-
-                            //  JunYaw changes start
-                            else {
+                            } else {
                                 curGrid.setHasObstacle(true);
                                 curGrid.setTimesNotCalibrated(timesNotCalibrated);
                             }
-                            //  JunYaw changes end
-
-                            //  JunYaw changes start
-                            //  this is not commented originally
-//                            curGrid.setHasObstacle(true);
-                            //  JunYaw changes end
                         } else {
                             if (curGrid.isHasObstacle() && curGrid.isHasBeenExplored()) {
                                 // TODO handle this case
                                 System.out.println("Previously has obstacle, but now no obstacle at : "
                                         + Arena.getActualRowFromRow(curRow) + ", " + curCol);
-                                //curGrid.setHasBeenExplored(false);
 
-                                //  JunYaw changes start
-                                if (curGrid.getTimesNotCalibrated() < timesNotCalibrated) {
+                                if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
+                                    System.out.println("old " + curGrid.getTimesNotCalibrated());
+                                    System.out.println("new" + timesNotCalibrated);
                                     curGrid.setHasObstacle(false);
                                     curGrid.setTimesNotCalibrated(timesNotCalibrated);
                                 }
-                                //  JunYaw changes end
-                            }
-
-                            //  JunYaw changes start
-                            else {
+                            } else {
+                                curGrid.setHasObstacle(false);
                                 curGrid.setTimesNotCalibrated(timesNotCalibrated);
                             }
-                            //  JunYaw changes end
                         }
 
                         // prevent obstacle from being added to path taken

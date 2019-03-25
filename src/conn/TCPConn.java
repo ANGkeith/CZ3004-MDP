@@ -44,6 +44,7 @@ public class TCPConn {
 	
 	public void instantiateConnection (String ip, int port) throws IOException {
 		mSocket = new Socket(RPI_IP, RPI_PORT);
+		mSocket.setSoTimeout(900000);
 		mWriterToRPI = new PrintWriter(mSocket.getOutputStream());
 		mScannerFromRPI = new Scanner(mSocket.getInputStream());
 	}

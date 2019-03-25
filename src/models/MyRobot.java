@@ -91,7 +91,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_INSTRUCTION_TO_ARDUINO);
 		}
-		//System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
+		System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedR);
 		timesNotCalibratedR = 0;
 	}
 
@@ -99,7 +99,7 @@ public class MyRobot {
 		if (isRealRun()) {
 			tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 		}
-		//System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
+		System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " " + timesNotCalibratedF);
 		timesNotCalibratedF = 0;
 	}
 

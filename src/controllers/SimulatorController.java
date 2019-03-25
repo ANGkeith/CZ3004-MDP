@@ -3,9 +3,7 @@ package controllers;
 import static models.Constants.*;
 
 import models.Arena;
-import models.Grid;
 import models.MyRobot;
-import models.Result;
 import utils.API;
 import utils.ExplorationAlgorithm;
 import utils.FastestPathAlgorithm;
@@ -27,11 +25,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import static models.Constants.ARENA_DESCRIPTOR_PATH;
-import static models.MyRobot.REPAINT;
 import static models.MyRobot.isRealRun;
 import static utils.API.*;
 import static utils.ExplorationAlgorithm.picTaken;
@@ -287,6 +282,7 @@ public class SimulatorController implements MouseListener {
         this.myRobot = myRobot;
         myRobot.setCurPositionToStart();
         myRobot.getArena().reinitializeArena(myRobot);
+        myRobot.addCurGridToPathTaken();
 
         myRobot.pcs.firePropertyChange(myRobot.REPAINT, null, null);
         if (isRealRun) {

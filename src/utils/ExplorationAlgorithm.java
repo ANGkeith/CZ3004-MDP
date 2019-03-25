@@ -30,6 +30,10 @@ public class ExplorationAlgorithm {
         visitedGoalZone = false;
         visitedTopLeft = false;
         int antiLoopCounter = 0;
+
+        timesNotCalibratedR = 0;
+        timesNotCalibratedF = 0;
+
         boolean takePicFlag = false;
         myRobot.takePicture();
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
@@ -100,6 +104,7 @@ public class ExplorationAlgorithm {
                             sim.right();
                             sim.right();
                             if (myRobot.rightSensorReadingGives(2, 2) || myRobot.rightSensorReadingGives(2, 0) || myRobot.rightSensorReadingGives(0, 2)) {
+                                System.out.println("OH YES");
                                 sim.forward();
                             }
                         }
@@ -185,7 +190,6 @@ public class ExplorationAlgorithm {
                         sim.left();
                         myRobot.takePicture();
                         sim.right();
-                        //System.out.println((19 - myRobot.getCurRow() + " , " + myRobot.getCurCol()));
                     } else {
                         sim.left();
                     }
