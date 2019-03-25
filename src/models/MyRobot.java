@@ -1194,6 +1194,32 @@ public class MyRobot {
 		return leftFront5Grids;
 	}
 
+	public boolean hasObstacleDiagonalLeftBehindRobot() {
+	    Grid grid;
+	    int row;
+	    int col;
+		if (curOrientation == Orientation.N) {
+			row = curRow + 2;
+			col = curCol - 2;
+		} else if (curOrientation == Orientation.S) {
+			row = curRow - 2;
+			col = curCol + 2;
+		} else if (curOrientation == Orientation.E) {
+			row = curRow - 2;
+			col = curCol - 2;
+		} else if (curOrientation == Orientation.S) {
+			row = curRow + 2;
+			col = curCol + 2;
+		} else {
+			System.out.println("Unexpected value at hasObstacleDiagonalLeftBehindRobot");
+			row = -1;
+			col = -1;
+		}
+
+		grid = getArena().getGrid(row, col);
+		return (grid != null && grid.hasBeenExplored() && grid.hasObstacle());
+	}
+
 	public int isInDeadEnd() {
 
 		int result = 0;

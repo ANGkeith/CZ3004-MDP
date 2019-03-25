@@ -100,13 +100,16 @@ public class ExplorationAlgorithm {
                             sim.right();
                             sim.forward();
                         } else {
-                            sim.right();
-                            sim.right();
-                            if ((myRobot.rightSensorReadingGives(2, 2)
-                                    || myRobot.rightSensorReadingGives(2, 0)
-                                    || myRobot.rightSensorReadingGives(0, 2))) {
-                                System.out.println("OH YES");
-                                sim.forward();
+                            if (myRobot.hasObstacleDiagonalLeftBehindRobot()) {
+                                sim.right();
+                                sim.right();
+                                if ((myRobot.rightSensorReadingGives(2, 2)
+                                        || myRobot.rightSensorReadingGives(2, 0)
+                                        || myRobot.rightSensorReadingGives(0, 2))) {
+                                    sim.forward();
+                                }
+                            } else {
+                                sim.left();
                             }
                         }
                     }
