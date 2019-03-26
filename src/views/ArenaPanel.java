@@ -86,6 +86,7 @@ public class ArenaPanel extends JPanel {
             }
         }
     }
+
     private void displaySensorRange(Graphics g) {
         int numOfSensibleGrid;
         int curRow;
