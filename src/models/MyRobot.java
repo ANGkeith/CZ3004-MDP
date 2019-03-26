@@ -72,21 +72,6 @@ public class MyRobot {
 		this.tcpConn = tcpConn;
 	}
 
-	public boolean possibleStartingPosition(int row, int col) {
-		Grid curGrid;
-		for (int r = -1; r < 2; r++) {
-			for (int c = -1; c < 2; c++) {
-				curGrid = referenceArena.getGrid(row + r, col + c);
-				if (curGrid == null) {
-					return false;
-				} else if (curGrid.hasObstacle()) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public void calibrateRight() {
 		if (detectObstacleAtBothRightSensor())  {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
@@ -196,7 +181,17 @@ public class MyRobot {
 
 		pcs.firePropertyChange(REPAINT, null, null);
 
-		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+		if (isRealRun) {
+			if (SimulatorController.manualSensorReading) {
+				System.out.println("FORWARD");
+			} else {
+				tcpConn.sendMessage(REVERSE_INSTRUCTION_TO_ARDUINO);
+				updateArenaBasedOnRealReadings("F");
+				sendPositionToAndroid();
+			}
+		} else {
+			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+		}
 	}
 
 
@@ -788,16 +783,6 @@ public class MyRobot {
 				} catch (NumberFormatException e) {
 					rightBSensorReading = getRealShortSensorRreadings(80.0, RIGHT_B_SENSOR_THRESHOLD);
 				}
-
-				/*
-				int leftSensorReading = getRealLeftSensorReadings(Double.parseDouble(readingsArr[1]));
-				int frontLSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[2]), FRONT_L_SENSOR_THRESHOLD);
-				int frontMSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[3]), FRONT_M_SENSOR_THRESHOLD);
-				int frontMSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[3]), FRONT_M_SENSOR_THRESHOLD);
-				int frontRSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[4]), FRONT_R_SENSOR_THRESHOLD);
-				int rightFSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[5]), RIGHT_F_SENSOR_THRESHOLD);
-				int rightBSensorReading = getRealShortSensorRreadings(Double.parseDouble(readingsArr[6]), RIGHT_B_SENSOR_THRESHOLD);
-				*/
 
 				leftSensor[0].setRealReading(leftSensorReading);
 				frontSensor[0].setRealReading(frontLSensorReading);

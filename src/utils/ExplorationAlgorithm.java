@@ -64,8 +64,8 @@ public class ExplorationAlgorithm {
 //                    antiLoopCounter = 0;
                 } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     myRobot.calibrateRight();
+                    myRobot.calibrateFront();
                     sim.left();
-                    myRobot.calibrateRight();
                     antiLoopCounter = 0;
                 } else if (myRobot.hasObstacleToImmediateLeft()) {
                     sim.right();
@@ -147,6 +147,57 @@ public class ExplorationAlgorithm {
                 explorationCompletedFlag = true;
             }
 
+        }
+    }
+
+    public void explorationLogic2() throws Exception {
+        boolean takePicFlag = false;
+        boolean explorationCompletedFlag = false;
+        int count = 0;
+        myRobot.takePicture();
+        while (!explorationCompletedFlag && explorationStoppingConditions()) {
+            if (takePicFlag == true) {
+                myRobot.takePicture();
+                takePicFlag = false;
+            }
+            if (myRobot.leftSensorDetectedObstacle()) {
+                takePicFlag = true;
+            }
+
+            if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
+                if (!myRobot.hasObstacleRightInFront()) {
+                    sim.forward();
+                    count = 0;
+                } else if (!myRobot.hasObstacleToImmediateLeft()) {
+                    myRobot.calibrateRight();
+                    myRobot.calibrateFront();
+                    sim.left();
+                    count = 0;
+                } else if (myRobot.hasObstacleToImmediateLeft()) {
+                    sim.right();
+                    sim.right();
+                    count = 0;
+                }
+            } else {
+                sim.right();
+                if (myRobot.leftSensorDetectedObstacle()) {
+                    takePicFlag = true;
+                }
+                sim.forward();
+                count++;
+                if (count == 5) {
+                    count = 0;
+                    sim.left();
+                }
+
+            }
+            if (myRobot.isAtGoalZone()) {
+                myRobot.setHasFoundGoalZoneFlag(true);
+            }
+
+            if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
+                explorationCompletedFlag = true;
+            }
         }
     }
 

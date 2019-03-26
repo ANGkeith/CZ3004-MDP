@@ -66,7 +66,7 @@ public class SimulatorController implements MouseListener {
             centerPanel.getRpiBtn().setEnabled(false);
             centerPanel.setExplorationAndFastestPathBtns(false);
             centerPanel.getModifyBtn().setEnabled(false);
-            startRealRun(myRobot, centerPanel);
+            startRealRun(myRobot, centerPanel, ExplorationType.NORMAL);
         });
         
         centerPanel.addModifyBtnListener(e -> {
@@ -91,7 +91,7 @@ public class SimulatorController implements MouseListener {
         centerPanel.addExplorationBtnListener(e -> {
             exploration(centerPanel, myRobot, ExplorationType.NORMAL);
         });
-        centerPanel.addExplorationRightClickListener(this);
+        centerPanel.addRPIRightClickListener(this);
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
         centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
         centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
@@ -252,7 +252,7 @@ public class SimulatorController implements MouseListener {
         clipboard.setContents(contentToBeCopied, contentToBeCopied);
     }
 
-    private void startRealRun(MyRobot myRobot, CenterPanel centerPanel) {
+    private void startRealRun(MyRobot myRobot, CenterPanel centerPanel, ExplorationType type) {
         isRealRun = true;
         tcpConn = TCPConn.getInstance();
         worker = new SwingWorker<Boolean, Void>(){
@@ -280,7 +280,11 @@ public class SimulatorController implements MouseListener {
                     }
                     API.processStartExplorationMsg(message, myRobot);
                 }
-                exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+                if (type == ExplorationType.NEW) {
+                    exploration(centerPanel, myRobot, ExplorationType.NEW);
+                } else {
+                    exploration(centerPanel, myRobot, ExplorationType.NORMAL);
+                }
                 return true;
             }
         };
@@ -323,7 +327,11 @@ public class SimulatorController implements MouseListener {
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
-                explorationAlgo.explorationLogic();
+                if (explorationType == ExplorationType.NEW) {
+                    explorationAlgo.explorationLogic2();
+                } else {
+                    explorationAlgo.explorationLogic();
+                }
                 myRobot.getArena().printSensorReadingReliability();
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
@@ -495,6 +503,10 @@ public class SimulatorController implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == 3) {
+            centerPanel.getRpiBtn().setEnabled(false);
+            centerPanel.setExplorationAndFastestPathBtns(false);
+            centerPanel.getModifyBtn().setEnabled(false);
+            startRealRun(myRobot, centerPanel, ExplorationType.NEW);
         }
     }
 

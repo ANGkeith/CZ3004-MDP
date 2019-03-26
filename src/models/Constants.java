@@ -52,6 +52,7 @@ public class Constants {
     public static final String CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO = "arC";
     public static final String CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO = "arc";
     public static final String FORWARD_INSTRUCTION_TO_ARDUINO = "arW";
+    public static final String REVERSE_INSTRUCTION_TO_ARDUINO = "arr";
     public static final String TURN_LEFT_INSTRUCTION_TO_ARDUINO = "arA";
     public static final String TURN_RIGHT_INSTRUCTION_TO_ARDUINO = "arD";
     public static final String EXPLORATION_DONE_TO_ARDUINO = "arf";
@@ -72,8 +73,8 @@ public class Constants {
     public static final String END_DELIMITER = ";";
 
 
-    public static final double[] FRONT_L_SENSOR_THRESHOLD = {16.5, 23.4};
-    public static final double[] FRONT_M_SENSOR_THRESHOLD = {16.5, 23.7};
+    public static final double[] FRONT_L_SENSOR_THRESHOLD = {15.5, 23.4};
+    public static final double[] FRONT_M_SENSOR_THRESHOLD = {15.5, 23.4};
     public static final double[] FRONT_R_SENSOR_THRESHOLD = {15.5, 23.4};
     public static final double[] RIGHT_F_SENSOR_THRESHOLD = {14.0, 23.5};
     public static final double[] RIGHT_B_SENSOR_THRESHOLD = {14.0, 22.0};
