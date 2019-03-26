@@ -91,35 +91,43 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                         int timesNotCalibrated = ExplorationAlgorithm.timesNotCalibratedVertical + ExplorationAlgorithm.timesNotCalibratedHorizontal;
 
                         if (i == sensor.getSensorReading()) {
-                            if (curGrid.isHasBeenExplored() && !curGrid.isHasObstacle()) {
-                                // TODO handle this case
-                                System.out.println("Previously no obstacle, but now has obstacle at : "
-                                        + Arena.getActualRowFromRow(curRow) + ", " + curCol);
+                            if (curGrid.isHasBeenExplored()) {
+                                if (!curGrid.isHasObstacle()) {
+                                    System.out.println("Previously no obstacle, but now has obstacle at : "
+                                            + Arena.getActualRowFromRow(curRow) + ", " + curCol);
 
-                                if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
-                                    System.out.println("old " + curGrid.getTimesNotCalibrated());
-                                    System.out.println("new" + timesNotCalibrated);
-                                    curGrid.setHasObstacle(true);
-                                    curGrid.setTimesNotCalibrated(timesNotCalibrated);
+                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
+                                        System.out.println("old " + curGrid.getTimesNotCalibrated());
+                                        System.out.println("new" + timesNotCalibrated);
+                                        curGrid.setHasObstacle(true);
+                                        curGrid.setTimesNotCalibrated(timesNotCalibrated);
+                                    }
+                                } else {
+                                    curGrid.updateTimesNotCalibrated(timesNotCalibrated);
                                 }
                             } else {
                                 curGrid.setHasObstacle(true);
+                                curGrid.setHasBeenExplored(true);
                                 curGrid.setTimesNotCalibrated(timesNotCalibrated);
                             }
                         } else {
-                            if (curGrid.isHasObstacle() && curGrid.isHasBeenExplored()) {
-                                // TODO handle this case
-                                System.out.println("Previously has obstacle, but now no obstacle at : "
-                                        + Arena.getActualRowFromRow(curRow) + ", " + curCol);
+                            if (curGrid.isHasBeenExplored()) {
+                                if (curGrid.isHasObstacle()) {
+                                    System.out.println("Previously has obstacle, but now no obstacle at : "
+                                            + Arena.getActualRowFromRow(curRow) + ", " + curCol);
 
-                                if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
-                                    System.out.println("old " + curGrid.getTimesNotCalibrated());
-                                    System.out.println("new" + timesNotCalibrated);
-                                    curGrid.setHasObstacle(false);
-                                    curGrid.setTimesNotCalibrated(timesNotCalibrated);
+                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
+                                        System.out.println("old " + curGrid.getTimesNotCalibrated());
+                                        System.out.println("new" + timesNotCalibrated);
+                                        curGrid.setHasObstacle(false);
+                                        curGrid.setTimesNotCalibrated(timesNotCalibrated);
+                                    }
+                                } else {
+                                    curGrid.updateTimesNotCalibrated(timesNotCalibrated);
                                 }
                             } else {
                                 curGrid.setHasObstacle(false);
+                                curGrid.setHasBeenExplored(true);
                                 curGrid.setTimesNotCalibrated(timesNotCalibrated);
                             }
                         }
@@ -129,10 +137,10 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                             for (int k = -1; k < 2; k++) {
                                 for (int l = -1; l < 2; l++) {
                                     myRobot.getArena().getGrid(q.getRow() + k, q.getCol() + l).setHasObstacle(false);
+                                    myRobot.getArena().getGrid(q.getRow() + k, q.getCol() + l).setTimesNotCalibrated(0);
                                 }
                             }
                         }
-                        curGrid.setHasBeenExplored(true);
                     }
                 }
             }
@@ -152,7 +160,11 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             myRobot.takePicture();
         } else if (e.getKeyCode() == KeyEvent.VK_T) {
-            System.out.println("a" + myRobot.hasObstacleOneGridFromTheRight());
+            myRobot.getArena().printSensorReadingReliability();
+        } else if (e.getKeyCode() == KeyEvent.VK_R) {
+            myRobot.calibrateRight();
+        } else if (e.getKeyCode() == KeyEvent.VK_F) {
+            myRobot.calibrateFront();
         }
     }
 

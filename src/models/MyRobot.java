@@ -107,6 +107,7 @@ public class MyRobot {
 				}
 			}
 		}
+		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
 	public void calibrateFront() {
@@ -129,6 +130,7 @@ public class MyRobot {
 				}
 			}
 		}
+		pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
 	}
 
 	public void forwardFP() {

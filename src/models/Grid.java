@@ -24,7 +24,7 @@ public class Grid {
     private boolean r;
 
     public Grid(int row, int col) {
-        timesNotCalibrated = 100000;
+        timesNotCalibrated = INFINITY;
 
         hasObstacle = false;
         hasBeenExplored = false;
@@ -67,6 +67,12 @@ public class Grid {
 
     public void setTimesNotCalibrated(int timesNotCalibrated) {
         this.timesNotCalibrated = timesNotCalibrated;
+    }
+
+    public void updateTimesNotCalibrated(int timesNotCalibrated) {
+        if (timesNotCalibrated < this.timesNotCalibrated) {
+            this.timesNotCalibrated = timesNotCalibrated;
+        }
     }
 
     public Grid getCameFrom() {

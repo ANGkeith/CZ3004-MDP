@@ -217,4 +217,28 @@ public class Arena {
         }
     }
     */
+
+    public void printSensorReadingReliability() {
+        System.out.println("$$$$$$$$$$$Debug Arena$$$$$$$$$$$$");
+        System.out.print("    ");
+        for (int c = 0; c < ARENA_WIDTH; c++) {
+            System.out.printf("%3s ", c);
+        }
+        System.out.println();
+        System.out.println();
+        for (int r = 0; r < ARENA_HEIGHT; r++) {
+            System.out.printf("%3s ", 19 - r);
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                System.out.printf("%3s ", grids[r][c].getTimesNotCalibrated());
+            }
+            System.out.println();
+        }
+        System.out.println();
+        System.out.print("    ");
+        for (int c = 0; c < ARENA_WIDTH; c++) {
+            System.out.printf("%3s ", c);
+        }
+        System.out.println();
+        System.out.println("$$$$$$$$$$$Debug Arena$$$$$$$$$$$$");
+    }
 }
