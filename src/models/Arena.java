@@ -225,7 +225,6 @@ public class Arena {
             System.out.printf("%3s ", c);
         }
         System.out.println();
-        System.out.println();
         for (int r = 0; r < ARENA_HEIGHT; r++) {
             System.out.printf("%3s ", 19 - r);
             for (int c = 0; c < ARENA_WIDTH; c++) {
@@ -233,7 +232,6 @@ public class Arena {
             }
             System.out.println();
         }
-        System.out.println();
         System.out.print("    ");
         for (int c = 0; c < ARENA_WIDTH; c++) {
             System.out.printf("%3s ", c);
