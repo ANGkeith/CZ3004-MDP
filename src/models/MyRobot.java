@@ -567,7 +567,59 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleRightInFront() {
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+		Grid[] rightGrid = new Grid[3];
+
+		int[] row = {0, 0, 0};
+		int[] col = {0, 0, 0};
+
+		switch (curOrientation) {
+			case N:
+				col[0] = curCol - 1;
+				row[0] = curRow - 2;
+				col[1] = curCol;
+				row[1] = curRow - 2;
+				col[2] = curCol + 1;
+				row[2] = curRow - 2;
+				break;
+			case E:
+				col[0] = curCol + 2;
+				row[0] = curRow - 1;
+				col[1] = curCol + 2;
+				row[1] = curRow;
+				col[2] = curCol + 2;
+				row[2] = curRow + 1;
+				break;
+			case S:
+				col[0] = curCol + 1;
+				row[0] = curRow + 2;
+				col[1] = curCol;
+				row[1] = curRow + 2;
+				col[2] = curCol - 1;
+				row[2] = curRow + 2;
+				break;
+			default:
+				col[0] = curCol - 2;
+				row[0] = curRow + 1;
+				col[1] = curCol - 2;
+				row[1] = curRow;
+				col[2] = curCol - 2;
+				row[2] = curRow - 1;
+				break;
+		}
+
+		rightGrid[0] = arena.getGrid(row[0], col[0]);
+		rightGrid[1] = arena.getGrid(row[1], col[1]);
+		rightGrid[2] = arena.getGrid(row[2], col[2]);
+
 		for (int i = 0; i < frontSensor.length; i++) {
+			if (rightGrid[i] != null) {
+				if (arena.isStartZone(row[i], col[i]) || arena.isGoalZone(row[i], col[i])) {
+					continue;
+				}
+			}
 			if (frontSensor[i].getSensorReading() == 1) {
 				return true;
 			}
@@ -608,8 +660,8 @@ public class MyRobot {
                         [ ][ ][ ]
                         [ ][ ][ ]
 
-        
-         Sensor Value Format = 
+
+         Sensor Value Format =
          */
 
 
@@ -630,7 +682,51 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleToImmediateRight() {
+
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+		Grid[] rightGrid = new Grid[2];
+
+		int[] row = {0, 0};
+		int[] col = {0, 0};
+
+		switch (curOrientation) {
+			case N:
+				col[0] = curCol + 2;
+				row[0] = curRow - 1;
+				col[1] = curCol + 2;
+				row[1] = curRow + 1;
+				break;
+			case E:
+				col[0] = curCol + 1;
+				row[0] = curRow + 2;
+				col[1] = curCol - 1;
+				row[1] = curRow + 2;
+				break;
+			case S:
+				col[0] = curCol - 2;
+				row[0] = curRow + 1;
+				col[1] = curCol - 2;
+				row[1] = curRow - 1;
+				break;
+			default:
+				col[0] = curCol - 1;
+				row[0] = curRow - 2;
+				col[1] = curCol + 1;
+				row[1] = curRow - 2;
+				break;
+		}
+
+		rightGrid[0] = arena.getGrid(row[0], col[0]);
+		rightGrid[1] = arena.getGrid(row[1], col[1]);
+
 		for (int i = 0; i < rightSensor.length; i++) {
+			if (rightGrid[i] != null) {
+				if (arena.isStartZone(row[i], col[i]) || arena.isGoalZone(row[i], col[i])) {
+					continue;
+				}
+			}
 			if (rightSensor[i].getSensorReading() == 1) {
 				return true;
 			}
@@ -880,7 +976,42 @@ public class MyRobot {
 	}
 
 	public boolean hasObstacleToImmediateLeft() {
+
+		int curRow = getCurRow();
+		int curCol = getCurCol();
+		Orientation curOrientation = getCurOrientation();
+		Grid leftGrid = null;
+
+		int row = 0;
+		int col = 0;
+
+		switch (curOrientation) {
+			case N:
+				col = curCol - 2;
+				row = curRow - 1;
+				break;
+			case E:
+				col = curCol + 1;
+				row = curRow - 2;
+				break;
+			case S:
+				col = curCol + 2;
+				row = curRow + 1;
+				break;
+			default:
+				col = curCol - 1;
+				row = curRow + 2;
+				break;
+		}
+
+		leftGrid = arena.getGrid(row, col);
+
 		for (int i = 0; i < leftSensor.length; i++) {
+			if (leftGrid != null) {
+				if (arena.isStartZone(row, col) || arena.isGoalZone(row, col)) {
+					continue;
+				}
+			}
 			if (leftSensor[i].getSensorReading() == 1) {
 				return true;
 			}
@@ -1230,6 +1361,9 @@ public class MyRobot {
 
 		blindSpotGrid = arena.getGrid(blindSpotRow, blindSpotCol);
 		if (blindSpotGrid != null) {
+			if (arena.isStartZone(blindSpotRow, blindSpotCol) || arena.isGoalZone(blindSpotRow, blindSpotCol)) {
+				return false;
+			}
 			if (blindSpotGrid.hasBeenExplored()) {
 				return blindSpotGrid.hasObstacle();
 			} else {
