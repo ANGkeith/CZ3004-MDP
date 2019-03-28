@@ -88,7 +88,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                             break;
                     }
                     curGrid = arena.getGrid(curRow, curCol);
-                    if (curGrid != null) {
+                    if (curGrid != null && !Arena.isStartZone(curRow, curCol) && !Arena.isGoalZone(curRow, curCol)) {
 
                         int timesNotCalibrated = ExplorationAlgorithm.timesNotCalibratedVertical + ExplorationAlgorithm.timesNotCalibratedHorizontal;
 
