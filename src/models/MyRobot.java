@@ -301,6 +301,22 @@ public class MyRobot {
 	}
 
 	public void reverse() {
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
+		}
+
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
+		}
+
 		timesNotCalibratedVertical++;
 		timesNotCalibratedHorizontal++;
 		SimulatorController.numFwd++;
