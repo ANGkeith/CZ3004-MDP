@@ -10,6 +10,8 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import static models.Constants.INFINITY;
+
 public class ArenaPanelController  implements PropertyChangeListener, KeyListener {
 
     private ArenaPanel arenaPanel;
@@ -97,11 +99,14 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                             + Arena.getActualRowFromRow(curRow) + ", " + curCol);
                                     curGrid.addErrorCount();
 
-                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated || curGrid.getErrorCount() > 1) {
+                                    if (curGrid.getErrorCount() > 1) {
+                                        curGrid.setTimesNotCalibrated(INFINITY);
+                                        curGrid.setErrorCount(0);
+                                    }
+                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
                                         System.out.println("old " + curGrid.getTimesNotCalibrated());
                                         System.out.println("new" + timesNotCalibrated);
                                         curGrid.setHasObstacle(true);
-                                        curGrid.setErrorCount(0);
                                         curGrid.setTimesNotCalibrated(timesNotCalibrated);
                                     }
                                 } else {
@@ -119,11 +124,15 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                             + Arena.getActualRowFromRow(curRow) + ", " + curCol);
                                     curGrid.addErrorCount();
 
-                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated || curGrid.getErrorCount() > 1) {
+                                    if (curGrid.getErrorCount() > 1) {
+                                        curGrid.setTimesNotCalibrated(INFINITY);
+                                        curGrid.setErrorCount(0);
+                                    }
+
+                                    if (curGrid.getTimesNotCalibrated() > timesNotCalibrated) {
                                         System.out.println("old " + curGrid.getTimesNotCalibrated());
                                         System.out.println("new" + timesNotCalibrated);
                                         curGrid.setHasObstacle(false);
-                                        curGrid.setErrorCount(0);
                                         curGrid.setTimesNotCalibrated(timesNotCalibrated);
                                     }
                                 } else {
