@@ -35,8 +35,14 @@ public class ButtonArenaPanel extends JPanel {
                 createArenaGridLine(arenaGrids, r, c);
                 if (Arena.isGoalZone(r, c)) {
                     createGoalZone(arenaGrids, r, c);
+                    //TODO remove
+                    toggleButtonController = new ToggleButtonController(arenaGrids[r][c], referenceArena.getGrid(r, c));
+                    arenaGrids[r][c].addActionListener(toggleButtonController);
                 } else if (Arena.isStartZone(r, c)) {
                     createStartZone(arenaGrids, r, c);
+                    //TODO remove
+                    toggleButtonController = new ToggleButtonController(arenaGrids[r][c], referenceArena.getGrid(r, c));
+                    arenaGrids[r][c].addActionListener(toggleButtonController);
                 } else {
                     if (referenceArena.getGrid(r, c).hasObstacle()) {
                         fillObstacle(arenaGrids, r, c);
@@ -69,6 +75,8 @@ public class ButtonArenaPanel extends JPanel {
 
     private void createGoalZone(JButton[][] arenaGrids, int r, int c) {
         arenaGrids[r][c].setEnabled(false);
+        // TODO remove
+        arenaGrids[r][c].setEnabled(true);
         arenaGrids[r][c].setBackground(GOAL_ZONE_COLOR);
         if ((r == ZONE_SIZE/2) && (c == ARENA_WIDTH - 1 - ZONE_SIZE/2)) {
             arenaGrids[r][c].setText("G");
@@ -77,6 +85,8 @@ public class ButtonArenaPanel extends JPanel {
 
     private void createStartZone(JButton[][] arenaGrids, int r, int c) {
         arenaGrids[r][c].setEnabled(false);
+        // TODO remove
+        arenaGrids[r][c].setEnabled(true);
         arenaGrids[r][c].setBackground(START_ZONE_COLOR);
         if ((r == ARENA_HEIGHT - 1 - ZONE_SIZE/2 ) && (c == ZONE_SIZE/2)) {
             arenaGrids[r][c].setText("S");
