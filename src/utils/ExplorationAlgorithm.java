@@ -48,8 +48,12 @@ public class ExplorationAlgorithm {
 
             if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
-                    sim.forward();
-                    antiLoopCounter = 0;
+                    if (myRobot.frontSensorReadingGives(0, 0, 0) && myRobot.nextFwdLeftSideAlreadyExplored()) {
+                        sim.ultraInstinct();
+                    } else {
+                        sim.forward();
+                        antiLoopCounter = 0;
+                    }
                 } else if (myRobot.isInDeadEnd() != 0) {
                     int backwardTimes = myRobot.isInDeadEnd();
                     for (int i=0; i<backwardTimes; i++) {

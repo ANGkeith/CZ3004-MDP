@@ -161,7 +161,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             myRobot.takePicture();
         } else if (e.getKeyCode() == KeyEvent.VK_T) {
-            myRobot.getArena().printSensorReadingReliability();
+            System.out.println("ASD: " + myRobot.nextFwdLeftSideAlreadyExplored());
         } else if (e.getKeyCode() == KeyEvent.VK_R) {
             myRobot.calibrateRight();
         } else if (e.getKeyCode() == KeyEvent.VK_F) {

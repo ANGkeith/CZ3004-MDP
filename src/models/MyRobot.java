@@ -9,11 +9,11 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static models.Constants.*;
 
 import conn.TCPConn;
 
 
-import static models.Constants.*;
 import static utils.API.constructMessageForAndroid;
 import static utils.API.constructMessageForRpi;
 import static utils.ExplorationAlgorithm.*;
@@ -335,6 +335,67 @@ public class MyRobot {
 		}
 	}
 
+	public void ultraInstinct() {
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
+		}
+
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
+		}
+
+		if (!hasObstacleRightInFront()) {
+			System.out.println("here " + curRow + ", " + curCol + " "  + ULTRA_INSTINCT_INSTRUCTION_TO_ARDUINO);
+			SimulatorController.numFwd++;
+			timesNotCalibratedHorizontal++;
+			timesNotCalibratedVertical++;
+			SimulatorController.numFwd++;
+			timesNotCalibratedHorizontal++;
+			timesNotCalibratedVertical++;
+
+			if (curOrientation == Orientation.N) {
+				temp = curRow - 2;
+				setCurRow(temp);
+			} else if (curOrientation == Orientation.E) {
+				temp = curCol + 2;
+				setCurCol(temp);
+			} else if (curOrientation == Orientation.S) {
+				temp = curRow + 2;
+				setCurRow(temp);
+			} else if (curOrientation == Orientation.W) {
+				temp = curCol - 2;
+				setCurCol(temp);
+			}
+
+			pcs.firePropertyChange(REPAINT, null, null);
+
+			if (isRealRun) {
+				if (SimulatorController.manualSensorReading) {
+					System.out.println("FORWARD");
+				} else {
+					tcpConn.sendMessage(ULTRA_INSTINCT_INSTRUCTION_TO_ARDUINO);
+				}
+			}
+
+			if (isRealRun) {
+				updateArenaBasedOnRealReadings();
+				sendPositionToAndroid();
+			} else {
+				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+			}
+		} else {
+			System.out.println(curRow + " " + curCol + " " + curOrientation);
+			System.out.println("WARNING: COLLIDING");
+		}
+	}
 	public void forward() {
 		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
@@ -583,6 +644,88 @@ public class MyRobot {
 				return true;
 			}
 		}
+		return false;
+	}
+
+	public boolean frontSensorReadingGives(int reading0, int reading1, int reading2) {
+	    return (frontSensor[0].getSensorReading() == reading0 && frontSensor[1].getSensorReading() == reading1 && frontSensor[2].getSensorReading() == reading2);
+	}
+
+	public int fastFwdMovement() {
+		if (curOrientation == Orientation.N) {
+
+        }
+		return 0;
+
+	}
+
+	public boolean nextFwdLeftSideAlreadyExplored() {
+		if (curOrientation == Orientation.E) {
+			int row = curRow - 2;
+			int col = curCol + 2;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row - range, col);
+				if (grid == null || grid.hasObstacle()) {
+					break;
+				}
+				if (!grid.hasBeenExplored()) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (curOrientation == Orientation.W) {
+            int row = curRow + 2;
+            int col = curCol - 2;
+            Grid grid;
+
+            for (int range = 0; range < 5; range++) {
+                grid = getArena().getGrid(row + range, col);
+                if (grid == null || grid.hasObstacle()) {
+                    break;
+                }
+                if (!grid.hasBeenExplored()) {
+                    return false;
+                }
+            }
+
+            return true;
+		} else if (curOrientation == Orientation.N) {
+			int row = curRow - 2;
+			int col = curCol - 2;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row, col-range);
+				if (grid == null || grid.hasObstacle()) {
+					break;
+				}
+				if (!grid.hasBeenExplored()) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (curOrientation == Orientation.S) {
+			int row = curRow + 2;
+			int col = curCol + 2;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row, col+range);
+				if (grid == null || grid.hasObstacle()) {
+					break;
+				}
+				if (!grid.hasBeenExplored()) {
+					return false;
+				}
+			}
+
+			return true;
+        }
+		System.out.println("UNexpectedValue: asd");
 		return false;
 	}
 

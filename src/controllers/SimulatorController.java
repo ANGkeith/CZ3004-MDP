@@ -476,7 +476,10 @@ public class SimulatorController implements MouseListener {
         myRobot.reverse();
         myRobot.addCurGridToPathTaken();
     }
-
+    public void ultraInstinct() throws InterruptedException {
+        Thread.sleep(0);
+        myRobot.ultraInstinct();
+    }
     public void forward() throws InterruptedException {
         Thread.sleep(fwdSpeedMs);
         myRobot.forward();
