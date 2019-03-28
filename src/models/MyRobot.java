@@ -1373,6 +1373,62 @@ public class MyRobot {
 		return true;
 	}
 
+	public boolean immediateLeftSideHasObstacle() {
+		Grid grid00 = null;
+		Grid grid01 = null;
+		Grid grid02 = null;
+
+		switch (curOrientation) {
+			case N:
+				grid00 = arena.getGrid(curRow-1, curCol-2);
+				grid01 = arena.getGrid(curRow, curCol-2);
+				grid02 = arena.getGrid(curRow+1, curCol-2);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					return true;
+				}
+
+				break;
+			case S:
+				if (isAtCenterOfGoalZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
+					return false;
+				}
+				grid00 = arena.getGrid(curRow+1, curCol+2);
+				grid01 = arena.getGrid(curRow, curCol+2);
+				grid02 = arena.getGrid(curRow-1, curCol+2);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+				    return true;
+				}
+
+				break;
+			case E:
+				grid00 = arena.getGrid(curRow-2, curCol+1);
+				grid01 = arena.getGrid(curRow-2, curCol);
+				grid02 = arena.getGrid(curRow-2, curCol-1);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+					return true;
+				}
+
+				break;
+			case W:
+				if (isAtStartZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
+					return false;
+				}
+				grid00 = arena.getGrid(curRow+2, curCol-1);
+				grid01 = arena.getGrid(curRow+2, curCol);
+				grid02 = arena.getGrid(curRow+2, curCol+1);
+
+				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
+				    return true;
+				}
+				break;
+		}
+		System.out.println("UNEXPECTED VALUE AT HASDASDAS");
+		return false;
+	}
+
 	public boolean rightBlindSpotHasObstacle2() {
 		int curRow = getCurRow();
 		int curCol = getCurCol();
@@ -1635,9 +1691,7 @@ public class MyRobot {
 		return (grid != null && grid.hasBeenExplored() && grid.hasObstacle());
 	}
 
-	public int isInDeadEnd() {
-
-		int result = 0;
+	public boolean isInDeadEnd() {
 
 		Grid grid00 = null;
 		Grid grid01 = null;
@@ -1649,7 +1703,7 @@ public class MyRobot {
 		switch (curOrientation) {
 			case N:
 				if (isAtStartZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
-					return result;
+					return false;
 				}
 				grid00 = arena.getGrid(curRow-1, curCol-2);
 				grid01 = arena.getGrid(curRow, curCol-2);
@@ -1659,23 +1713,13 @@ public class MyRobot {
 				grid12 = arena.getGrid(curRow+1, curCol-3);
 
 				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
-					if (arena.getGrid(curRow+2, curCol-2).hasObstacle()) {
-						result = 4;
-					} else {
-						if (grid02.hasObstacle()) {
-							result = 3;
-						} else if (grid01.hasObstacle()) {
-							result = 2;
-						} else {
-							result = 1;
-						}
-					}
+				    return true;
 				}
 
 				break;
 			case S:
 				if (isAtCenterOfGoalZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
-					return result;
+					return false;
 				}
 				grid00 = arena.getGrid(curRow+1, curCol+2);
 				grid01 = arena.getGrid(curRow, curCol+2);
@@ -1686,22 +1730,14 @@ public class MyRobot {
 
 				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
 					if (arena.getGrid(curRow-2, curCol+2).hasObstacle()) {
-						result = 4;
-					} else {
-						if (grid02.hasObstacle()) {
-							result = 3;
-						} else if (grid01.hasObstacle()) {
-							result = 2;
-						} else {
-							result = 1;
-						}
+						return true;
 					}
 				}
 
 				break;
 			case E:
 				if (isAtCenterOfGoalZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
-					return result;
+					return false;
 				}
 				grid00 = arena.getGrid(curRow-2, curCol+1);
 				grid01 = arena.getGrid(curRow-2, curCol);
@@ -1711,23 +1747,13 @@ public class MyRobot {
 				grid12 = arena.getGrid(curRow-3, curCol-1);
 
 				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
-					if (arena.getGrid(curRow-2, curCol-2).hasObstacle()) {
-						result = 4;
-					} else {
-						if (grid02.hasObstacle()) {
-							result = 3;
-						} else if (grid01.hasObstacle()) {
-							result = 2;
-						} else {
-							result = 1;
-						}
-					}
+				    return true;
 				}
 
 				break;
 			case W:
 				if (isAtStartZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
-					return result;
+					return false;
 				}
 
 				grid00 = arena.getGrid(curRow+2, curCol-1);
@@ -1739,20 +1765,80 @@ public class MyRobot {
 
 				if (grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) {
 					if (arena.getGrid(curRow+2, curCol+2).hasObstacle()) {
-						result = 4;
-					} else {
-						if (grid02.hasObstacle()) {
-							result = 3;
-						} else if (grid01.hasObstacle()) {
-							result = 2;
-						} else {
-							result = 1;
-						}
+					    return true;
 					}
 				}
 				break;
 		}
 
-		return result;
+		System.out.println("UNEXPECTED Asdasdasd");
+		return false;
+	}
+
+	public boolean isInDeadEnd(int row, int col, int numOfFwd) {
+
+
+		Grid grid00 = null;
+		Grid grid01 = null;
+		Grid grid02 = null;
+		Grid gridf0 = null;
+		Grid gridf1 = null;
+		Grid gridf2 = null;
+		Grid gridr0 = null;
+
+		switch (curOrientation) {
+			case N:
+				row = row - numOfFwd;
+				if (isAtStartZone() || isAtTopLeft()  || seeIfObstacleIsArenaWall(1)) {
+					return false;
+				}
+				grid00 = arena.getGrid(row-1, col-2);
+				grid01 = arena.getGrid(row, col-2);
+				grid02 = arena.getGrid(row+1, col-2);
+				gridf0 = arena.getGrid(row-2, col-1);
+				gridf1 = arena.getGrid(row-2, col);
+				gridf2 = arena.getGrid(row-2, col+1);
+				gridr0 = arena.getGrid(row-1, col+2);
+				System.out.println(grid00.hasBeenExplored());
+
+				if ((grid00.hasBeenExplored() && grid01.hasBeenExplored() && grid02.hasBeenExplored())
+						&& gridf0.hasBeenExplored() && gridf1.hasBeenExplored() && gridf2.hasBeenExplored()
+						&& (gridr0 == null || gridr0.hasBeenExplored())) {
+
+					if ((grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) && (gridf0.hasObstacle() || gridf1.hasObstacle() || gridf2.hasObstacle())) {
+						return true;
+					}
+				}
+				break;
+			case S:
+				row = row + numOfFwd;
+				if (isAtStartZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
+					return false;
+				}
+				grid00 = arena.getGrid(row-1, col-2);
+				grid01 = arena.getGrid(row, col-2);
+				grid02 = arena.getGrid(row+1, col-2);
+				gridf0 = arena.getGrid(row-2, col-1);
+				gridf1 = arena.getGrid(row-2, col);
+				gridf2 = arena.getGrid(row-2, col+1);
+				gridr0 = arena.getGrid(row-1, col+2);
+
+				if ((grid00.hasBeenExplored() && grid01.hasBeenExplored() && grid02.hasBeenExplored())
+						&& gridf0.hasBeenExplored() && gridf1.hasBeenExplored() && gridf2.hasBeenExplored()
+						&& (gridr0 == null || gridr0.hasBeenExplored())) {
+
+					if ((grid00.hasObstacle() || grid01.hasObstacle() || grid02.hasObstacle()) && (gridf0.hasObstacle() || gridf1.hasObstacle() || gridf2.hasObstacle())) {
+						return true;
+					}
+				}
+				break;
+			case E:
+
+				break;
+			case W:
+				break;
+		}
+
+		return false;
 	}
 }

@@ -55,21 +55,15 @@ public class ExplorationAlgorithm {
                         sim.forward();
                         antiLoopCounter = 0;
                     }
-                } else if (myRobot.isInDeadEnd() != 0) {
-                    int backwardTimes = myRobot.isInDeadEnd();
+                } else if (myRobot.isInDeadEnd()) {
                     myRobot.calibrateFront();
                     myRobot.calibrateRight();
-                    for (int i=0; i<backwardTimes; i++) {
+                    while(myRobot.immediateLeftSideHasObstacle()) {
                         sim.reverse();
                     }
                     myRobot.calibrateRight();
                     sim.left();
-                    if (!myRobot.hasObstacleRightInFront()) {
-                        sim.forward();
-                    } else {
-                        sim.left();
-                    }
-                    antiLoopCounter = 0;
+                    sim.forward();
                 } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     myRobot.calibrateRight();
                     myRobot.calibrateFront();
