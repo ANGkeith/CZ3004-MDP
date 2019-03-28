@@ -514,6 +514,14 @@ public class MyRobot {
 		return false;
 	}
 
+	public boolean inGoalZone() {
+		return getArena().isGoalZone(curRow, curCol);
+	}
+
+	public boolean inStartZone() {
+		return getArena().isStartZone(curRow, curCol);
+	}
+
 	public void setCurPositionToStart() {
 		setCurRow(startRow);
 		setCurCol(startCol);
@@ -825,7 +833,7 @@ public class MyRobot {
 		return 0;
 	}
 
-	public boolean isAtGoalZone() {
+	public boolean isAtCenterOfGoalZone() {
 		return (getCurRow() == GOAL_ZONE_ROW && getCurCol() == GOAL_ZONE_COL);
 	}
 
@@ -1307,7 +1315,7 @@ public class MyRobot {
 
 				break;
 			case S:
-				if (isAtGoalZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
+				if (isAtCenterOfGoalZone() || isAtBtmRight() || seeIfObstacleIsArenaWall(1)) {
 					return result;
 				}
 				grid00 = arena.getGrid(curRow+1, curCol+2);
@@ -1333,7 +1341,7 @@ public class MyRobot {
 
 				break;
 			case E:
-				if (isAtGoalZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
+				if (isAtCenterOfGoalZone() || isAtTopLeft() || seeIfObstacleIsArenaWall(1)) {
 					return result;
 				}
 				grid00 = arena.getGrid(curRow-2, curCol+1);

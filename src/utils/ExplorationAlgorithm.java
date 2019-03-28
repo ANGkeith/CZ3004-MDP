@@ -50,18 +50,18 @@ public class ExplorationAlgorithm {
                 if (!myRobot.hasObstacleRightInFront()) {
                     sim.forward();
                     antiLoopCounter = 0;
-//                } else if (myRobot.isInDeadEnd() != 0) {
-//                    int backwardTimes = myRobot.isInDeadEnd();
-//                    for (int i=0; i<backwardTimes; i++) {
-//                        sim.reverse();
-//                    }
-//                    sim.left();
-//                    if (!myRobot.hasObstacleRightInFront()) {
-//                        sim.forward();
-//                    } else {
-//                        sim.left();
-//                    }
-//                    antiLoopCounter = 0;
+                } else if (myRobot.isInDeadEnd() != 0) {
+                    int backwardTimes = myRobot.isInDeadEnd();
+                    for (int i=0; i<backwardTimes; i++) {
+                        sim.reverse();
+                    }
+                    sim.left();
+                    if (!myRobot.hasObstacleRightInFront()) {
+                        sim.forward();
+                    } else {
+                        sim.left();
+                    }
+                    antiLoopCounter = 0;
                 } else if (!myRobot.hasObstacleToImmediateLeft()) {
                     myRobot.calibrateRight();
                     myRobot.calibrateFront();
@@ -75,7 +75,7 @@ public class ExplorationAlgorithm {
             } else {
                 if (myRobot.hasObstacleOneGridFromTheRight()) {
                     antiLoopCounter = 0;
-                    if (!myRobot.hasObstacleRightInFront()) {
+                    if (!myRobot.hasObstacleRightInFront() && !myRobot.inStartZone()) {
                         // delay turning by one step
                         sim.forward();
                         if (myRobot.rightSensorReadingGives(0, 0) && !myRobot.rightBlindSpotHasObstacle2() && !myRobot.rightBlindSpotHasObstacle()) {
@@ -95,7 +95,7 @@ public class ExplorationAlgorithm {
                         }
                     } else {
 
-                        if (myRobot.rightSideFrontSensorThirdGridNeedsToBeExplored()) {
+                        if (myRobot.rightSideFrontSensorThirdGridNeedsToBeExplored() || myRobot.inStartZone()) {
                             sim.right();
                             sim.forward();
                         } else if (!myRobot.frontFacingArenaWall()) {
@@ -138,7 +138,7 @@ public class ExplorationAlgorithm {
                 visitedTopLeft = true;
             }
 
-            if (myRobot.isAtGoalZone() && !visitedGoalZone) {
+            if (myRobot.inGoalZone() && !visitedGoalZone) {
                 visitedGoalZone = true;
                 myRobot.setHasFoundGoalZoneFlag(true);
             }
@@ -191,7 +191,7 @@ public class ExplorationAlgorithm {
                 }
 
             }
-            if (myRobot.isAtGoalZone()) {
+            if (myRobot.isAtCenterOfGoalZone()) {
                 myRobot.setHasFoundGoalZoneFlag(true);
             }
 
@@ -276,7 +276,7 @@ public class ExplorationAlgorithm {
                     sim.left();
                 }
             }
-            if (myRobot.isAtGoalZone()) {
+            if (myRobot.isAtCenterOfGoalZone()) {
                 myRobot.setHasFoundGoalZoneFlag(true);
             }
 

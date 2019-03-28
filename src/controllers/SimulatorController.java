@@ -332,7 +332,6 @@ public class SimulatorController implements MouseListener {
                 } else {
                     explorationAlgo.explorationLogic();
                 }
-                myRobot.getArena().printSensorReadingReliability();
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
 
