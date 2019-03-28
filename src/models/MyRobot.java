@@ -659,70 +659,138 @@ public class MyRobot {
 
 	}
 
-	public boolean nextFwdLeftSideAlreadyExplored() {
+	public boolean nextFwdRightSideAlreadyExplored(int num) {
 		if (curOrientation == Orientation.E) {
-			int row = curRow - 2;
+			int row = curRow + 2;
+			int col = curCol + 2 + num;
+			Grid grid;
+
+			for (int range = 0; range < 2; range++) {
+				grid = getArena().getGrid(row - range, col);
+				if (grid == null || !grid.hasBeenExplored()) {
+					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
+				}
+			}
+
+			return true;
+		} else if (curOrientation == Orientation.W) {
+			int row = curRow + 2;
+			int col = curCol - 2 - num;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row + range, col);
+				if (grid == null || !grid.hasBeenExplored()) {
+					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
+				}
+			}
+
+			return true;
+		} else if (curOrientation == Orientation.N) {
+			int row = curRow - 2 - num;
+			int col = curCol - 2;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row, col-range);
+				if (grid == null || !grid.hasBeenExplored()) {
+					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
+				}
+			}
+
+			return true;
+		} else if (curOrientation == Orientation.S) {
+			int row = curRow + 2 + num;
 			int col = curCol + 2;
 			Grid grid;
 
 			for (int range = 0; range < 5; range++) {
-				grid = getArena().getGrid(row - range, col);
-				if (grid == null || grid.hasObstacle()) {
+				grid = getArena().getGrid(row, col+range);
+				if (grid == null || !grid.hasBeenExplored()) {
+					return false;
+				}
+				if (grid.hasObstacle()) {
 					break;
 				}
-				if (!grid.hasBeenExplored()) {
+			}
+			return true;
+		}
+		System.out.println("UNexpectedValue: asd");
+		return false;
+	}
+
+	public boolean nextFwdLeftSideAlreadyExplored(int num) {
+		if (curOrientation == Orientation.E) {
+			int row = curRow - 2;
+			int col = curCol + 2 + num;
+			Grid grid;
+
+			for (int range = 0; range < 5; range++) {
+				grid = getArena().getGrid(row - range, col);
+				if (grid == null || !grid.hasBeenExplored()) {
 					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
 				}
 			}
 
 			return true;
 		} else if (curOrientation == Orientation.W) {
             int row = curRow + 2;
-            int col = curCol - 2;
+            int col = curCol - 2 - num;
             Grid grid;
 
             for (int range = 0; range < 5; range++) {
                 grid = getArena().getGrid(row + range, col);
-                if (grid == null || grid.hasObstacle()) {
-                    break;
-                }
-                if (!grid.hasBeenExplored()) {
-                    return false;
-                }
+				if (grid == null || !grid.hasBeenExplored()) {
+					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
+				}
             }
 
             return true;
 		} else if (curOrientation == Orientation.N) {
-			int row = curRow - 2;
+			int row = curRow - 2 - num;
 			int col = curCol - 2;
 			Grid grid;
 
 			for (int range = 0; range < 5; range++) {
 				grid = getArena().getGrid(row, col-range);
-				if (grid == null || grid.hasObstacle()) {
-					break;
-				}
-				if (!grid.hasBeenExplored()) {
+				if (grid == null || !grid.hasBeenExplored()) {
 					return false;
+				}
+				if (grid.hasObstacle()) {
+					break;
 				}
 			}
 
 			return true;
 		} else if (curOrientation == Orientation.S) {
-			int row = curRow + 2;
+			int row = curRow + 2 + num;
 			int col = curCol + 2;
 			Grid grid;
 
 			for (int range = 0; range < 5; range++) {
 				grid = getArena().getGrid(row, col+range);
-				if (grid == null || grid.hasObstacle()) {
-					break;
-				}
-				if (!grid.hasBeenExplored()) {
+				if (grid == null || !grid.hasBeenExplored()) {
 					return false;
 				}
+				if (grid.hasObstacle()) {
+					break;
+				}
 			}
-
 			return true;
         }
 		System.out.println("UNexpectedValue: asd");
@@ -780,6 +848,7 @@ public class MyRobot {
 		return (frontSensor[0].getSensorReading()  == 1) && (frontSensor[2].getSensorReading() == 1);
 	}
 
+	//TODO fix
 	public boolean rightSideFrontSensorThirdGridNeedsToBeExplored() {
 		int row;
 		int col;
@@ -1324,6 +1393,19 @@ public class MyRobot {
 		this.explorationTimeLimit = explorationTimeLimit;
 	}
 
+	public void add2GridToPathTaken() {
+		if (curOrientation == Orientation.N) {
+			pathTaken.add(getArena().getGrid(curRow + 1, curCol));
+		} else if (curOrientation == Orientation.S) {
+			pathTaken.add(getArena().getGrid(curRow - 1, curCol));
+		} else if (curOrientation == Orientation.E) {
+			pathTaken.add(getArena().getGrid(curRow, curCol - 1));
+		} else if (curOrientation == Orientation.W) {
+			pathTaken.add(getArena().getGrid(curRow, curCol + 1));
+		}
+		pathTaken.add(getArena().getGrid(curRow, curCol));
+	}
+
 	public void addCurGridToPathTaken() {
 		pathTaken.add(getArena().getGrid(curRow, curCol));
 	}
@@ -1406,7 +1488,7 @@ public class MyRobot {
 		} else if (curOrientation == Orientation.E) {
 			row = curRow - 2;
 			col = curCol - 2;
-		} else if (curOrientation == Orientation.S) {
+		} else if (curOrientation == Orientation.W) {
 			row = curRow + 2;
 			col = curCol + 2;
 		} else {

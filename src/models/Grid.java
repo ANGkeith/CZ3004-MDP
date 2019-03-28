@@ -5,6 +5,7 @@ import static models.Constants.*;
 public class Grid {
     // used as an indicator for the reliability of the sensor reading. (The lower the timesNotCalibrated, the more reliable)
     private int timesNotCalibrated;
+    private int errorCount;
 
     private boolean hasObstacle;
     private boolean hasBeenExplored;
@@ -35,6 +36,7 @@ public class Grid {
         f = INFINITY;
         g = INFINITY;
         h = INFINITY;
+        errorCount = 0;
         cameFrom = null;
         o = null;
 
@@ -50,6 +52,8 @@ public class Grid {
         g = INFINITY;
         h = INFINITY;
         cameFrom = null;
+        timesNotCalibrated = INFINITY;
+        errorCount = 0;
     }
 
     //  JunYaw changes start
@@ -188,5 +192,17 @@ public class Grid {
 
     public void setR(boolean r) {
         this.r = r;
+    }
+
+    public void addErrorCount() {
+        errorCount += 1;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
     }
 }
