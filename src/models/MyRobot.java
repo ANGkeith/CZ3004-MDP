@@ -162,37 +162,6 @@ public class MyRobot {
 		pcs.firePropertyChange(REPAINT, null, null);
 	}
 
-	public void reverse() {
-		timesNotCalibratedVertical++;
-		SimulatorController.numFwd++;
-		if (curOrientation == Orientation.N) {
-			temp = curRow + 1;
-			setCurRow(temp);
-		} else if (curOrientation == Orientation.E) {
-			temp = curCol - 1;
-			setCurCol(temp);
-		} else if (curOrientation == Orientation.S) {
-			temp = curRow - 1;
-			setCurRow(temp);
-		} else if (curOrientation == Orientation.W) {
-			temp = curCol + 1;
-			setCurCol(temp);
-		}
-
-		pcs.firePropertyChange(REPAINT, null, null);
-
-		if (isRealRun) {
-			if (SimulatorController.manualSensorReading) {
-				System.out.println("FORWARD");
-			} else {
-				tcpConn.sendMessage(REVERSE_INSTRUCTION_TO_ARDUINO);
-				updateArenaBasedOnRealReadings("F");
-				sendPositionToAndroid();
-			}
-		} else {
-			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
-		}
-	}
 
 
 	public void takePicture() {
@@ -331,6 +300,41 @@ public class MyRobot {
 
 	}
 
+	public void reverse() {
+		timesNotCalibratedVertical++;
+		timesNotCalibratedHorizontal++;
+		SimulatorController.numFwd++;
+		if (curOrientation == Orientation.N) {
+			temp = curRow + 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.E) {
+			temp = curCol - 1;
+			setCurCol(temp);
+		} else if (curOrientation == Orientation.S) {
+			temp = curRow - 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.W) {
+			temp = curCol + 1;
+			setCurCol(temp);
+		}
+
+		pcs.firePropertyChange(REPAINT, null, null);
+
+		if (isRealRun) {
+			if (SimulatorController.manualSensorReading) {
+				System.out.println("FORWARD");
+			} else {
+				tcpConn.sendMessage(REVERSE_INSTRUCTION_TO_ARDUINO);
+			}
+		}
+		if (isRealRun) {
+			updateArenaBasedOnRealReadings();
+			sendPositionToAndroid();
+		} else {
+			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+		}
+	}
+
 	public void forward() {
 		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
@@ -378,7 +382,7 @@ public class MyRobot {
 			}
 
 			if (isRealRun) {
-				updateArenaBasedOnRealReadings("F");
+				updateArenaBasedOnRealReadings();
 				sendPositionToAndroid();
 			} else {
 				pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
@@ -431,7 +435,7 @@ public class MyRobot {
 		}
 
 		if (isRealRun) {
-			updateArenaBasedOnRealReadings("R");
+			updateArenaBasedOnRealReadings();
 			sendPositionToAndroid();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
@@ -478,7 +482,7 @@ public class MyRobot {
 		pcs.firePropertyChange(REPAINT, null, null);
 
 		if (isRealRun) {
-			updateArenaBasedOnRealReadings("L");
+			updateArenaBasedOnRealReadings();
 			sendPositionToAndroid();
 		} else {
 			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
@@ -711,7 +715,7 @@ public class MyRobot {
 		return true;
 	}
 
-	public void updateArenaBasedOnRealReadings(String instructions) {
+	public void updateArenaBasedOnRealReadings() {
 		boolean messageFound;
 		String realReadings;
 		try {

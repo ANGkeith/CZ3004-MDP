@@ -300,7 +300,7 @@ public class SimulatorController implements MouseListener {
 
         myRobot.pcs.firePropertyChange(myRobot.REPAINT, null, null);
         if (isRealRun) {
-            myRobot.updateArenaBasedOnRealReadings("Start");
+            myRobot.updateArenaBasedOnRealReadings();
         }
         myRobot.pcs.firePropertyChange(myRobot.UPDATE_GUI_BASED_ON_SENSOR, null, null);
 
