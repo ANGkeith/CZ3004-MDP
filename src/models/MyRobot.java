@@ -578,6 +578,7 @@ public class MyRobot {
 		if (SimulatorController.manualSensorReading) {
 			System.out.println(constructMessageForRpi(this));
 		} else {
+			System.out.println(constructMessageForRpi(this));
 			tcpConn.sendMessage(constructMessageForRpi(this));
 		}
 	}

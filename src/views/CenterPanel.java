@@ -59,7 +59,7 @@ public class CenterPanel extends JPanel implements PropertyChangeListener {
         rpiBtn = new JButton("Connect to RPI");
         rpiBtn.setToolTipText("Left Click to connect to RPI");
         explorationBtn = new JButton( "Exploration");
-        explorationBtn.setToolTipText("Right Click to find Best Starting Position");
+        explorationBtn.setToolTipText("Right Click to Explore Using Basic Right-Hugging Algorithm");
         fastestPathBtn = new JButton("Fastest Path");
         fastestPathBtn.setEnabled(false);
         coverageLimitedExplorationBtn = new JButton("Coverage-Limited Exploration ");
@@ -140,7 +140,6 @@ public class CenterPanel extends JPanel implements PropertyChangeListener {
         // Status Panel
 
         mainPanel.add(title, "alignx center, spanx, wrap");
-        
         mainPanel.add(rpiBtn, "gapy 10 0, growx, wrap, alignx center");
         mainPanel.add(explorationBtn, "gapy 20 0, split2, growx, alignx center");
         mainPanel.add(fastestPathBtn, "gapy 10 0, growx, wrap, alignx center");

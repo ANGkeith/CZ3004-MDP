@@ -219,6 +219,7 @@ public class ExplorationAlgorithm {
             if (myRobot.frontSensorDetectedObstacle2GridAway()) {
                 if (myRobot.canReverseByOne()) {
                     sim.reverse();
+                    myRobot.calibrateRight();
                     sim.right();
                     myRobot.takePicture();
                     sim.left();
@@ -228,12 +229,12 @@ public class ExplorationAlgorithm {
             if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
+                        myRobot.calibrateRight();
                         sim.left();
                         sim.left();
                         myRobot.takePicture();
                         sim.right();
                         sim.right();
-                        //System.out.println((19 - myRobot.getCurRow() + " , " + myRobot.getCurCol()));
                     }
                     sim.forward();
                     count = 0;
@@ -249,6 +250,7 @@ public class ExplorationAlgorithm {
                     count = 0;
                 } else if (myRobot.hasObstacleToImmediateLeft()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
+                        myRobot.calibrateRight();
                         sim.right();
                         sim.right();
                         myRobot.takePicture();

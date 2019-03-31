@@ -92,6 +92,34 @@ public class SimulatorController implements MouseListener {
             exploration(centerPanel, myRobot, ExplorationType.NORMAL);
         });
         centerPanel.addRPIRightClickListener(this);
+        centerPanel.addExplorationRightClickListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == 3) {
+                    exploration(centerPanel, myRobot, ExplorationType.NEW);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
         centerPanel.addFastestPathBtnListener(e -> fastestPath(centerPanel, myRobot));
         centerPanel.addCoverageLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.COVERAGE_LIMITED));
         centerPanel.addTimeLimitedExplorationBtnListener(e -> exploration(centerPanel, myRobot, ExplorationType.TIME_LIMITED));
@@ -330,7 +358,7 @@ public class SimulatorController implements MouseListener {
                 if (explorationType == ExplorationType.NEW) {
                     explorationAlgo.explorationLogic2();
                 } else {
-                    explorationAlgo.explorationLogic();
+                    explorationAlgo.imageExploration();
                 }
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
