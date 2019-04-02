@@ -358,7 +358,7 @@ public class SimulatorController implements MouseListener {
                 if (explorationType == ExplorationType.NEW) {
                     explorationAlgo.explorationLogic2();
                 } else {
-                    explorationAlgo.imageExploration();
+                    explorationAlgo.explorationLogic();
                 }
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
@@ -464,10 +464,10 @@ public class SimulatorController implements MouseListener {
 
                 timer.start();
                 if (isRealRun) {
-                    tcpConn.sendMessage(API.constructPathForArduino(fastestPathInstructions));
+                    tcpConn.sendMessage(API.constructSwervePathForArduino(fastestPathInstructions));
                 }
-                System.out.println(fastestPathInstructions);
-                System.out.println(API.constructPathForArduino(fastestPathInstructions));
+                System.out.println("Raw Fastest Path Instruction: " + fastestPathInstructions);
+                System.out.println("Sent to Arduino Fastest Path Instruction: " + API.constructSwervePathForArduino(fastestPathInstructions));
                 executeInstructionInSimulator(fastestPathInstructions);
                 timer.stop();
                 return true;
@@ -495,7 +495,6 @@ public class SimulatorController implements MouseListener {
             if (isRealRun) {
                 tcpConn.sendMessage(constructP0ForAndroid(myRobot));
             }
-            System.out.println(constructP0ForAndroid(myRobot));
         }
     }
 

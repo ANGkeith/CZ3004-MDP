@@ -148,7 +148,6 @@ public class ExplorationAlgorithm {
             if (myRobot.getHasFoundGoalZoneFlag() && myRobot.isAtStartZone()) {
                 explorationCompletedFlag = true;
             }
-
         }
     }
 

@@ -369,7 +369,6 @@ public class MyRobot {
 		}
 
 		if (!hasObstacleRightInFront()) {
-			System.out.println("here " + curRow + ", " + curCol + " "  + ULTRA_INSTINCT_INSTRUCTION_TO_ARDUINO);
 			SimulatorController.numFwd++;
 			timesNotCalibratedHorizontal++;
 			timesNotCalibratedVertical++;
@@ -1787,8 +1786,6 @@ public class MyRobot {
 				}
 				break;
 		}
-
-		System.out.println("UNEXPECTED Asdasdasd");
 		return false;
 	}
 
