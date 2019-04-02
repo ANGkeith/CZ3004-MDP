@@ -91,7 +91,7 @@ public class SimulatorController implements MouseListener {
         centerPanel.addExplorationBtnListener(e -> {
             exploration(centerPanel, myRobot, ExplorationType.NORMAL);
         });
-        centerPanel.addRPIRightClickListener(this);
+//        centerPanel.addRPIRightClickListener(this);
         centerPanel.addExplorationRightClickListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
