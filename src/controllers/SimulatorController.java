@@ -358,7 +358,7 @@ public class SimulatorController implements MouseListener {
                 if (explorationType == ExplorationType.NEW) {
                     explorationAlgo.explorationLogic2();
                 } else {
-                    explorationAlgo.explorationLogic();
+                    explorationAlgo.imageExploration();
                 }
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);

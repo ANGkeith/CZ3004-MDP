@@ -412,6 +412,8 @@ public class MyRobot {
 		}
 	}
 	public void forward() {
+		calibrateRight();
+		calibrateFront();
 		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
 				calibrateRight();
@@ -470,6 +472,8 @@ public class MyRobot {
 	}
 
 	public void turnRight() {
+		calibrateRight();
+		calibrateFront();
 		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
 				calibrateRight();
@@ -519,6 +523,8 @@ public class MyRobot {
 	}
 
 	public void turnLeft() {
+		calibrateRight();
+		calibrateFront();
 		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
 			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
 				calibrateRight();
