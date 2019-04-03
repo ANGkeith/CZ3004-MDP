@@ -96,6 +96,11 @@ public class API {
                     arrayList.add(k, part1);
                     arrayList.add(k + 1, part2);
                 }
+                if ((int) arrayList.get(k) == -1) {
+                    arrayList.remove(k);
+                    arrayList.add(k,'n');
+
+                }
             }
         }
         String formattedInstructions = "";
