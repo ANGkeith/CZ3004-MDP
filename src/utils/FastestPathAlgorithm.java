@@ -27,6 +27,21 @@ public class FastestPathAlgorithm {
         this.sim = sim;
     }
 
+    public String goTo(int fromRow, int fromCol, Orientation fromOri, int toRow, int toCol) {
+        String instructions = "";
+
+
+        // Path from starting zone to waypoint
+        myRobot.getArena().getGrid(fromRow, fromCol).setO(fromOri);
+        buildAStarTree(fromRow, fromCol, toRow, toCol);
+        path = reconstruct_path(toRow, toCol);
+        instructions += getRobotInstructions(path);
+        myRobot.getArena().resetGridCostAndCameFrom();
+        return instructions;
+    }
+
+
+
     public String generateInstructionsForFastestPath(Orientation startingOrientation) {
         String instructions = "";
 

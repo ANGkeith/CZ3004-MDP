@@ -65,6 +65,10 @@ public class Grid {
 //        this.sensedFrom = sensedFrom;
 //    }
 
+    public boolean hasFaceNotCaptured() {
+        return (!isU() || !isD() || !isL() || !isR());
+    }
+
     public int getTimesNotCalibrated() {
         return this.timesNotCalibrated;
     }

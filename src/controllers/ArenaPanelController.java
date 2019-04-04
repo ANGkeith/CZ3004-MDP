@@ -107,6 +107,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                                         System.out.println("old " + curGrid.getTimesNotCalibrated());
                                         System.out.println("new" + timesNotCalibrated);
                                         curGrid.setHasObstacle(true);
+                                        setNeightbourFace(curRow, curCol);
                                         curGrid.setTimesNotCalibrated(timesNotCalibrated);
                                     }
                                 } else {
@@ -115,6 +116,7 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
                             } else {
                                 curGrid.setHasObstacle(true);
                                 curGrid.setHasBeenExplored(true);
+                                setNeightbourFace(curRow, curCol);
                                 curGrid.setTimesNotCalibrated(timesNotCalibrated);
                             }
                         } else {
@@ -159,6 +161,40 @@ public class ArenaPanelController  implements PropertyChangeListener, KeyListene
             }
         }
     }
+
+    private void setNeightbourFace(int r, int c) {
+        Grid n = myRobot.getArena().getGrid(r - 1, c);
+        Grid s = myRobot.getArena().getGrid(r + 1, c);
+        Grid e = myRobot.getArena().getGrid(r, c + 1);
+        Grid w = myRobot.getArena().getGrid(r, c - 1);
+
+        Grid curGrid = myRobot.getArena().getGrid(r, c);
+        if (n == null || (n.hasBeenExplored() && n.hasObstacle())) {
+            curGrid.setU(true);
+            if (n != null) {
+                n.setD(true);
+            }
+        }
+        if (s == null || (s.hasBeenExplored() && s.hasObstacle())) {
+            curGrid.setD(true);
+            if (s != null) {
+                s.setU(true);
+            }
+        }
+        if (e == null || (e.hasBeenExplored() && e.hasObstacle())) {
+            curGrid.setR(true);
+            if (e != null) {
+                e.setL(true);
+            }
+        }
+        if (w == null || (w.hasBeenExplored() && w.hasObstacle())) {
+            curGrid.setL(true);
+            if (w != null) {
+                w.setR(true);
+            }
+        }
+    }
+
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {

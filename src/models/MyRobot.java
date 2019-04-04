@@ -409,6 +409,60 @@ public class MyRobot {
 			System.out.println("WARNING: COLLIDING");
 		}
 	}
+	public void forwardNoMatterWhat() {
+		calibrateRight();
+		calibrateFront();
+		if (timesNotCalibratedHorizontal > TIMES_NOT_CALIBRATED_R_THRESHOLD) {
+			if (curOrientation == Orientation.N || curOrientation == Orientation.S )  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.W || curOrientation == Orientation.E) {
+				calibrateFront();
+			}
+		}
+
+		if (timesNotCalibratedVertical > TIMES_NOT_CALIBRATED_F_THRESHOLD) {
+			if (curOrientation == Orientation.E || curOrientation == Orientation.W)  {
+				calibrateRight();
+			} else if (curOrientation == Orientation.N || curOrientation == Orientation.S) {
+				calibrateFront();
+			}
+		}
+
+		SimulatorController.numFwd++;
+		timesNotCalibratedHorizontal++;
+		timesNotCalibratedVertical++;
+
+		if (curOrientation == Orientation.N) {
+			temp = curRow - 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.E) {
+			temp = curCol + 1;
+			setCurCol(temp);
+		} else if (curOrientation == Orientation.S) {
+			temp = curRow + 1;
+			setCurRow(temp);
+		} else if (curOrientation == Orientation.W) {
+			temp = curCol - 1;
+			setCurCol(temp);
+		}
+
+		pcs.firePropertyChange(REPAINT, null, null);
+
+		if (isRealRun) {
+			if (SimulatorController.manualSensorReading) {
+				System.out.println("FORWARD");
+			} else {
+				tcpConn.sendMessage(FORWARD_INSTRUCTION_TO_ARDUINO);
+			}
+		}
+
+		if (isRealRun) {
+			updateArenaBasedOnRealReadings();
+			sendPositionToAndroid();
+		} else {
+			pcs.firePropertyChange(UPDATE_GUI_BASED_ON_SENSOR, null, null);
+		}
+	}
 	public void forward() {
 		calibrateRight();
 		calibrateFront();
@@ -1246,6 +1300,49 @@ public class MyRobot {
 		allSensor[2] = getLeftSensor();
 		return allSensor;
 	}
+
+	public boolean obstacleFaceBehindHasNotBeenCaptured() {
+
+		if (getCurOrientation() == Orientation.S) {
+			for (int i = -1; i < 2; i++) {
+				if (getArena().getGrid(curRow - 4, curCol - i) != null
+						&& getArena().getGrid(curRow - 4, curCol - i).hasObstacle()
+						&& !getArena().getGrid(curRow - 4, curCol - i).isD()) {
+					return true;
+				}
+			}
+		}
+		if (getCurOrientation() == Orientation.N) {
+			for (int i = -1; i < 2; i++) {
+				if (getArena().getGrid(curRow + 4, curCol - i) != null
+						&& getArena().getGrid(curRow + 4, curCol - i).hasObstacle()
+						&& !getArena().getGrid(curRow + 4, curCol - i).isU()) {
+					return true;
+				}
+			}
+		}
+		if (getCurOrientation() == Orientation.E) {
+			for (int i = -1; i < 2; i++) {
+				if (getArena().getGrid(curRow - i, curCol - 4) != null
+						&& getArena().getGrid(curRow - i, curCol - 4).hasObstacle()
+						&& !getArena().getGrid(curRow - i, curCol - 4).isR()) {
+					return true;
+				}
+			}
+		}
+		if (getCurOrientation() == Orientation.W) {
+			for (int i = -1; i < 2; i++) {
+				if (getArena().getGrid(curRow - i, curCol + 4) != null
+						&& getArena().getGrid(curRow - i, curCol + 4).hasObstacle()
+						&& !getArena().getGrid(curRow - i, curCol + 4).isL()) {
+					return true;
+				}
+			}
+		}
+		return false;
+
+	}
+
 
 	public boolean ifNeedToTakePictureOfBlindSpotGrid1() {
 		int curRow = getCurRow();

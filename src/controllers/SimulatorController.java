@@ -31,6 +31,7 @@ import static models.MyRobot.isRealRun;
 import static utils.API.*;
 import static utils.ExplorationAlgorithm.picTaken;
 import static utils.Utils.longDelay;
+import static utils.Utils.parsePositionToTakePic;
 
 public class SimulatorController implements MouseListener {
     private static MyRobot myRobot;
@@ -352,6 +353,7 @@ public class SimulatorController implements MouseListener {
             @Override
             protected Boolean doInBackground() throws Exception {
                 myRobot.setHasFoundGoalZoneFlag(false);
+                fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
                 numTurn = 0;
                 numFwd = 0;
                 timer.start();
@@ -359,11 +361,24 @@ public class SimulatorController implements MouseListener {
                     explorationAlgo.explorationLogic2();
                 } else {
                     explorationAlgo.imageExploration();
+                    // TODO NOT TESTED
+                    Object[] argument;
+                    String goToInstructions;
+                    for (String positionToTakePic: ExplorationAlgorithm.positionToTakePicArr) {
+                        argument = parsePositionToTakePic(positionToTakePic);
+                        goToInstructions = fastestPathAlgo.goTo(myRobot.getCurRow(), myRobot.getCurCol(), myRobot.getCurOrientation(), (int)argument[0], (int)argument[1]);
+                        executeInstructions(goToInstructions);
+                        turnTo((Orientation) argument[2]);
+                        myRobot.takePicture();
+                    }
+                    goToInstructions = fastestPathAlgo.goTo(myRobot.getCurRow(), myRobot.getCurCol(), myRobot.getCurOrientation(), START_ZONE_ROW, START_ZONE_COL);
+                    executeInstructions(goToInstructions);
+                    // TODO NOT TESTED
+
                 }
                 timer.stop();
                 centerPanel.getFastestPathBtn().setEnabled(true);
 
-                fastestPathAlgo = new FastestPathAlgorithm(myRobot, getInstance());
                 instructionsWhenStartAtEast = fastestPathAlgo.generateInstructionsForFastestPath(Orientation.E);
 
                 myRobot.getArena().resetGridCostAndCameFrom();
@@ -477,6 +492,17 @@ public class SimulatorController implements MouseListener {
     }
 
 
+    public void executeInstructions(String instructions) throws InterruptedException {
+        for (int i = 0; i < instructions.length(); i ++) {
+            if (instructions.charAt(i) == 'W') {
+                forwardNoMatterWhat();
+            } else if (instructions.charAt(i) == 'A') {
+                left();
+            } else if (instructions.charAt(i) == 'D') {
+                right();
+            }
+        }
+    }
     public void executeInstructionInSimulator(String instructions) throws InterruptedException {
         for (int i = 0; i < instructions.length(); i ++) {
             if (instructions.charAt(i) == 'W') {
@@ -514,6 +540,12 @@ public class SimulatorController implements MouseListener {
         myRobot.addCurGridToPathTaken();
     }
 
+    public void forwardNoMatterWhat() throws InterruptedException {
+        Thread.sleep(fwdSpeedMs);
+        myRobot.forwardNoMatterWhat();
+        myRobot.addCurGridToPathTaken();
+    }
+
     public void right() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         myRobot.turnRight();
@@ -522,6 +554,50 @@ public class SimulatorController implements MouseListener {
     public void left() throws InterruptedException {
         Thread.sleep(turningSpeedMs);
         myRobot.turnLeft();
+    }
+
+    public void turnTo(Orientation o) throws InterruptedException {
+        if (o == Orientation.N) {
+            if (myRobot.getCurOrientation() == Orientation.N) {
+            } else if (myRobot.getCurOrientation() == Orientation.S) {
+                right();
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.E) {
+                left();
+            } else if (myRobot.getCurOrientation() == Orientation.W) {
+                right();
+            }
+        } else if (o == Orientation.S) {
+            if (myRobot.getCurOrientation() == Orientation.N) {
+                right();
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.S) {
+            } else if (myRobot.getCurOrientation() == Orientation.E) {
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.W) {
+                left();
+            }
+        } else if (o == Orientation.E) {
+            if (myRobot.getCurOrientation() == Orientation.N) {
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.S) {
+                left();
+            } else if (myRobot.getCurOrientation() == Orientation.E) {
+            } else if (myRobot.getCurOrientation() == Orientation.W) {
+                right();
+                right();
+            }
+        } else if (o == Orientation.W) {
+            if (myRobot.getCurOrientation() == Orientation.N) {
+                left();
+            } else if (myRobot.getCurOrientation() == Orientation.S) {
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.E) {
+                right();
+                right();
+            } else if (myRobot.getCurOrientation() == Orientation.W) {
+            }
+        }
     }
 
     public SimulatorController getInstance() {

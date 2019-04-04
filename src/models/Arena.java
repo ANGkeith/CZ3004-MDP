@@ -2,6 +2,8 @@ package models;
 
 
 
+import java.util.ArrayList;
+
 import static models.Constants.*;
 
 public class Arena {
@@ -147,6 +149,35 @@ public class Arena {
             }
         }
     }
+
+    public ArrayList getUncapturedObstacle() {
+        ArrayList arrayList = new ArrayList();
+        int[] pos = new int[2];
+        for (int r = 0; r < ARENA_HEIGHT; r++) {
+            for (int c = 0; c < ARENA_WIDTH; c++) {
+                if (this.grids[r][c].hasBeenExplored() && this.grids[r][c].hasObstacle() && this.grids[r][c].hasFaceNotCaptured()) {
+                    arrayList.add(grids[r][c]);
+                }
+            }
+        }
+        return arrayList;
+    }
+
+    public boolean robotCanBePlaceAt(int row, int col) {
+        Grid grid;
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                grid = getGrid(row + i, col + j);
+                if (grid == null || !grid.hasBeenExplored() || grid.hasObstacle()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
 
     public void reinitializeArena(MyRobot myRobot) {
         for (int r = 0; r < ARENA_HEIGHT; r++) {
