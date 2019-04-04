@@ -79,7 +79,6 @@ public class MyRobot {
 					if (isRealRun()) {
 						tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
 					}
-					System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
 					timesNotCalibratedHorizontal = 0;
 				}
 			} else {
@@ -87,7 +86,6 @@ public class MyRobot {
 					if (isRealRun()) {
 						tcpConn.sendMessage(CALIBRATE_RIGHT_INSTRUCTION_TO_ARDUINO);
 					}
-					System.out.println("Calibrating right at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
 					timesNotCalibratedVertical = 0;
 				}
 			}
@@ -102,7 +100,6 @@ public class MyRobot {
 					if (isRealRun()) {
 						tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 					}
-					System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
 					timesNotCalibratedVertical = 0;
 				}
 			} else {
@@ -110,7 +107,6 @@ public class MyRobot {
 					if (isRealRun()) {
 						tcpConn.sendMessage(CALIBRATE_FRONT_INSTRUCTION_TO_ARDUINO);
 					}
-					System.out.println("Calibrating front at " + Arena.getActualRowFromRow(curRow) + "," + curCol + " " + curOrientation + " (h,v) " + timesNotCalibratedHorizontal + ":" + timesNotCalibratedVertical);
 					timesNotCalibratedHorizontal = 0;
 				}
 			}
@@ -296,6 +292,8 @@ public class MyRobot {
 
 		if (isRealRun()) {
 		    sendCommandToRpiToTakePicture();
+		} else {
+			System.out.println(constructMessageForRpi(this));
 		}
 
 	}

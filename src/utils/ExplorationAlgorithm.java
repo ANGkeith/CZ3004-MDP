@@ -205,7 +205,7 @@ public class ExplorationAlgorithm {
     public void imageExploration() throws Exception {
         boolean explorationCompletedFlag = false;
         int count = 0;
-        boolean takePicFlag = false;
+        boolean takePicFlag = true;
 
         while (!explorationCompletedFlag && explorationStoppingConditions()) {
             if (takePicFlag == true) {
@@ -218,7 +218,6 @@ public class ExplorationAlgorithm {
             if (myRobot.frontSensorDetectedObstacle2GridAway()) {
                 if (myRobot.canReverseByOne()) {
                     sim.reverse();
-                    myRobot.calibrateRight();
                     sim.right();
                     myRobot.takePicture();
                     sim.left();
@@ -228,7 +227,6 @@ public class ExplorationAlgorithm {
             if (myRobot.hasObstacleToImmediateRight() || myRobot.rightBlindSpotHasObstacle()) {
                 if (!myRobot.hasObstacleRightInFront()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
-                        myRobot.calibrateRight();
                         sim.left();
                         sim.left();
                         myRobot.takePicture();
@@ -249,7 +247,6 @@ public class ExplorationAlgorithm {
                     count = 0;
                 } else if (myRobot.hasObstacleToImmediateLeft()) {
                     if (myRobot.ifNeedToTakePictureOfBlindSpotGrid1()) {
-                        myRobot.calibrateRight();
                         sim.right();
                         sim.right();
                         myRobot.takePicture();
